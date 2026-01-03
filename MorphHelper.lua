@@ -80,7 +80,7 @@ local function doCommand(parsed_args)
 end
 
 local function parseArgs(args)
-    a = string.gmatch(args, '%S+')
+    a = string.gfind(args, '%S+')
     parsed_args = {}
     for i in a do
         table.insert(parsed_args,i)
