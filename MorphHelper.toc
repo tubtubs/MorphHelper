@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: MorphHelper
+## Author: |ccf3CE13Ftubtubs 
+## Version: 1.0
+## Notes: Slash command hooks for morphs
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: 
+MorphHelper.lua
