@@ -67,9 +67,9 @@ local function doCommand(parsed_args)
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
     elseif (l==4) then -- item morph commands
-        if parsed_args[1] == MH_OPT5 then
+        if parsed_args[1] == MH_OPT8 then
             SetUnitVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
-        elseif parsed_args[1] == MH_OPT8 then 
+        elseif parsed_args[1] == MH_OPT5 then 
             RemapVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
