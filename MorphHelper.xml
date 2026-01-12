@@ -255,7 +255,7 @@
             </Shadow>
         </DisabledFont>
     </Button>
-    <Frame name="MH_DisplayList" frameStrat="HIGH" movable="true" enableMouse="true" hidden="false">
+    <Frame name="MH_DisplayList" frameStrat="HIGH" movable="true" enableMouse="true" hidden="true">
         <Anchors>
             <Anchor point="CENTER" relativeTo="UIParent">
                 <Offset>
@@ -264,7 +264,7 @@
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="686" y="245" />
+            <AbsDimension x="686" y="200" />
         </Size>
         <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
             <BackgroundInsets>
@@ -525,9 +525,9 @@
             <!-- Scroll Frame Area Stuff-->
             <Frame name="$parentLayer2">
                 <Anchors>
-                    <Anchor point="CENTER" relativeTo="$parent">
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
                         <Offset>
-                            <AbsDimension x="-80" y="0"/>
+                            <AbsDimension x="15" y="-50"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -708,6 +708,70 @@
                     </Anchor>
                 </Anchors>
             </Button>
+            <!-- Manual DisplayID entry -->
+            <EditBox name = "$parent_IDEditBox" letters="7" numeric="true" autoFocus="false">
+                <Size x="100" y="32" />
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="-20" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <FontString name="$parentPlayerTitle" font="GameFontNormal" text="MH_TITLEMANUALID">
+                            <Size>
+                                <AbsDimension x="190" y="0" />
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPRIGHT">
+                                    <Offset>
+                                        <AbsDimension x="-65" y="-8" />
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                            <FontHeight>
+                                <AbsValue val="14" />
+                            </FontHeight>
+                            <Color r="1" g="0.8196079" b="0" />
+                            <Shadow>
+                                <Color r="0" g="0" b="0" />
+                                <Offset>
+                                    <AbsDimension x="1" y="-1" />
+                                </Offset>
+                            </Shadow>
+                        </FontString>
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+                            <Size x="75" y="32" />
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset x="-10" y="0" />
+                                </Anchor>
+                            </Anchors>
+                            <TexCoords left="0" right="0.2" top="0" bottom="1.0"/>
+                        </Texture>
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+                            <Size x="75" y="32" />
+                            <Anchors>
+                                <Anchor point="RIGHT">
+                                    <Offset x="10" y="0" />
+                                </Anchor>
+                            </Anchors>
+                            <TexCoords left="0.7" right="1.0" top="0" bottom="1.0"/>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnEscapePressed>
+                        MH_DisplayList_IDEditBox_OnEnter()
+                    </OnEscapePressed>
+                    <OnEnterPressed>
+                        MH_DisplayList_IDEditBox_OnEnter()
+                    </OnEnterPressed>
+                </Scripts>
+                <FontString inherits="ChatFontNormal" />
+            </EditBox>
             <!-- Morph Buttons -->
             <Button name="$parent_MorphPlayer" inherits="MH_MorphTemplate" id="1">
                 <Anchors>
@@ -1114,6 +1178,108 @@
 					</OnLeave>
                 </Scripts>
             </Button>
+            <!-- Category Tabs -->
+            <Button name="$parent_CategoryAllButton" text="MH_CATEGORY_ALL" inherits="MH_ButtonTemplate" id="1">
+                <Size>
+                    <AbsDimension x="50" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="4" y="-12"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+					MH_ChangeCategory()
+					</OnClick>
+                    <OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(MH_TEST);
+					GameTooltip:Show();
+					</OnEnter>
+                    <OnLeave>
+					GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="$parent_CategoryRacesButton" text="MH_CATEGORY_RACES" inherits="MH_ButtonTemplate" id="2">
+                <Size>
+                    <AbsDimension x="50" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_CategoryAllButton">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                    MH_ChangeCategory()
+					</OnClick>
+                    <OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(MH_TESTID);
+					GameTooltip:Show();
+					</OnEnter>
+                    <OnLeave>
+					GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="$parent_CategoryMountsButton" text="MH_CATEGORY_MOUNTS" inherits="MH_ButtonTemplate" id="3">
+                <Size>
+                    <AbsDimension x="70" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_CategoryRacesButton">
+                        <Offset>
+                            <AbsDimension x="70" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                    MH_ChangeCategory()
+					</OnClick>
+                    <OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(MH_TESTID);
+					GameTooltip:Show();
+					</OnEnter>
+                    <OnLeave>
+					GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="$parent_CategoryFavoritesButton" text="MH_CATEGORY_FAVORITES" inherits="MH_ButtonTemplate" id="4">
+                <Size>
+                    <AbsDimension x="70" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_CategoryMountsButton">
+                        <Offset>
+                            <AbsDimension x="70" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                    MH_ChangeCategory()
+					</OnClick>
+                    <OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(MH_TESTID);
+					GameTooltip:Show();
+					</OnEnter>
+                    <OnLeave>
+					GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <!-- Close Button -->
             <Button name="$parent_Close" inherits="UIPanelCloseButton">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
@@ -1130,6 +1296,9 @@
             </Button>
         </Frames>
         <Scripts>
+            <OnLoad>
+                this:RegisterEvent("ADDON_LOADED");
+            </OnLoad>
             <OnShow>
                 MH_DisplayList_OnShow()			
             </OnShow>
@@ -1139,6 +1308,9 @@
             <OnMouseUp>
                 this:StopMovingOrSizing()
             </OnMouseUp>
+            <OnEvent>
+                MH_VariablesLoaded()
+            </OnEvent>
         </Scripts>
     </Frame>
 </Ui>

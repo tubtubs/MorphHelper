@@ -27,7 +27,35 @@ MH_NAME		= "MorphHelper";
 MH_VERSION		= "1.0";
 
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
-
+MH_DISPLAY_LISTS ={}
+function MH_VariablesLoaded()
+    if (not MH_Vars) then
+        MH_Vars = {
+            Favorites = {},
+            FavoritesLen = 0;
+        };
+    end
+    DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
+    DEFAULT_CHAT_FRAME:AddMessage(format("%s",MH_Vars.FavoritesLen))
+    MH_DISPLAY_LISTS = {
+    {
+        list=MH_CreatureList,
+        len=MH_CreatureListLen
+    },
+    {
+        list=MH_RaceList,
+        len=MH_RaceListLen
+    },
+    {
+        list=MH_MountList,
+        len=MH_MountListLen
+    },
+    {
+        list=MH_Vars.Favorites,
+        len=MH_Vars.FavoritesLen
+    },
+}
+end
 
 -- slashcommands
 SLASH_MORPHHELPER1 = '/MorphHelper'
@@ -41,6 +69,7 @@ MH_OPT5 = "remapItemDisplayID"
 MH_OPT6 = "getUnitDisplay"
 MH_OPT7 = "getItemDisplay"
 MH_OPT8 = "morphUnitItem"
+MH_OPT9 = "show"
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .. SLASH_MORPHHELPER3 .. " .|r\n"
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
@@ -67,7 +96,11 @@ MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
 local function doCommand(parsed_args)
     l = getn(parsed_args)
-    if (l==2) then --info commands
+    if (l==1) then
+        if parsed_args[1]==MH_OPT9 then
+            MH_DisplayList:Show();
+        end
+    elseif (l==2) then --info commands
         if parsed_args[1] == MH_OPT6 then 
             displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("DisplayID: %s nativeDisplayID: %s mountDisplayID: %s",
@@ -129,45 +162,36 @@ end
 
 SlashCmdList['MORPHHELPER'] = TextMenu
 
---UI CODE--
+-- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8
-MH_DISPLAY_LISTS = {
-    {
-        list=MH_CreatureList,
-        len=MH_CreatureListLen
-    },
-    {
-        list=MH_RaceList,
-        len=MH_RaceListLen
-    }
-}
+
 MH_CurrentList = 1
 
 MH_MorphButtons = {
-"MH_DisplayList_MorphPlayer",
-"MH_DisplayList_MorphTarget",
-"MH_DisplayList_MorphParty1",
-"MH_DisplayList_MorphParty2",
-"MH_DisplayList_MorphParty3",
-"MH_DisplayList_MorphParty4"
+    "MH_DisplayList_MorphPlayer",
+    "MH_DisplayList_MorphTarget",
+    "MH_DisplayList_MorphParty1",
+    "MH_DisplayList_MorphParty2",
+    "MH_DisplayList_MorphParty3",
+    "MH_DisplayList_MorphParty4"
 }
 
 MH_MorphMountButtons = {
-"MH_DisplayList_MorphMountPlayer",
-"MH_DisplayList_MorphMountTarget",
-"MH_DisplayList_MorphMountParty1",
-"MH_DisplayList_MorphMountParty2",
-"MH_DisplayList_MorphMountParty3",
-"MH_DisplayList_MorphMountParty4"
+    "MH_DisplayList_MorphMountPlayer",
+    "MH_DisplayList_MorphMountTarget",
+    "MH_DisplayList_MorphMountParty1",
+    "MH_DisplayList_MorphMountParty2",
+    "MH_DisplayList_MorphMountParty3",
+    "MH_DisplayList_MorphMountParty4"
 }
 
 MH_MorphResetButtons = {
-"MH_DisplayList_MorphResetPlayer",
-"MH_DisplayList_MorphResetTarget",
-"MH_DisplayList_MorphResetParty1",
-"MH_DisplayList_MorphResetParty2",
-"MH_DisplayList_MorphResetParty3",
-"MH_DisplayList_MorphResetParty4"
+    "MH_DisplayList_MorphResetPlayer",
+    "MH_DisplayList_MorphResetTarget",
+    "MH_DisplayList_MorphResetParty1",
+    "MH_DisplayList_MorphResetParty2",
+    "MH_DisplayList_MorphResetParty3",
+    "MH_DisplayList_MorphResetParty4"
 }
 
 MH_UnitTokens = {
@@ -188,7 +212,6 @@ function MH_DisplayList_Update()
 	--local DeckBuilderFrame_DeckButtonText, DeckBuilderFrame_DeckButton;
 	local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame);
 	local index;
-		-- Deck list
 	for i=1, MH_NUM_DISPLAYS_SHOWN do
 		MH_DisplayList_ListButtonName = getglobal("MH_DisplayList_ListButton"..i.."Name");
         MH_DisplayList_ListButtonID = getglobal("MH_DisplayList_ListButton"..i.."ID");
@@ -217,12 +240,14 @@ end
 
 function MH_DisplayList_OnClick()
 	MH_DisplayList.selectedIcon =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
+    MH_DisplayList_IDEditBox:SetText("")
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()
 end
 
 function MH_DisplayList_UpdateButtons()
-    if MH_DisplayList.selectedIcon > 0 then
+    txtID = MH_DisplayList_IDEditBox:GetText()
+    if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
         for i=1,MH_UnitTokensLen do
             getglobal(MH_MorphButtons[i]):Enable()
             getglobal(MH_MorphMountButtons[i]):Enable()
@@ -239,7 +264,6 @@ function MH_DisplayList_OnShow()
     MH_DisplayList.selectedIcon = 0
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()
-   -- MH_DisplayList_Update()
 end
 
 function MH_DisplayList_OnMouseWheel()
@@ -249,7 +273,10 @@ function MH_DisplayList_OnMouseWheel()
     else
         s = s - 2
     end
-    local max = MH_DISPLAY_LISTS[MH_CurrentList].len
+    local max = MH_DISPLAY_LISTS[MH_CurrentList].len-MH_NUM_DISPLAYS_SHOWN
+    if(max < 0) then
+        max = 0
+    end
     if s < 0 then
         s=0
     elseif s > max then
@@ -258,11 +285,20 @@ function MH_DisplayList_OnMouseWheel()
     MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll(s*8);
 end
 
+function MH_GetDisplayID()
+    local manualID = MH_DisplayList_IDEditBox:GetText()
+    if manualID ~= nil and string.len(manualID) > 0 then
+        return tonumber(manualID)
+    else
+        index = MH_DisplayList.selectedIcon
+        displays = MH_DISPLAY_LISTS[MH_CurrentList].list
+        return displays[index].ID
+    end
+end
+
 function MH_DisplayList_Morph_OnClick()
     --get getDisplayID
-    local index = MH_DisplayList.selectedIcon
-    local displays = MH_DISPLAY_LISTS[MH_CurrentList].list
-    local displayID = displays[index].ID
+    local displayID = MH_GetDisplayID()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
@@ -271,9 +307,7 @@ end
 
 function MH_DisplayList_MorphMount_OnClick()
     --get getDisplayID
-    local index = MH_DisplayList.selectedIcon
-    local displays = MH_DISPLAY_LISTS[MH_CurrentList].list
-    local displayID = displays[index].ID
+    local displayID = MH_GetDisplayID()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
@@ -327,7 +361,6 @@ function MH_DisplayList_MorphInfo_OnClick()
     MH_ScrollToDisplayID(displayID)
 end
 
-
 function MH_DisplayList_MountInfo_OnClick()
     --get info about that unit, and then use that info?
     --get unitToken
@@ -342,6 +375,13 @@ function MH_DisplayList_MountInfo_OnClick()
     end
 end
 
+function MH_DisplayList_IDEditBox_OnEnter()
+    MH_DisplayList_IDEditBox:ClearFocus()
+    MH_DisplayList.selectedIcon = 0
+    MH_DisplayList_Update()
+    MH_DisplayList_UpdateButtons()
+end
+--Tooltips
 function MH_SetupTooltip(tip)
     local k = this:GetID()
     local u = MH_UnitTokens[k]
@@ -354,4 +394,18 @@ function MH_SetupTooltip(tip)
     GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
     GameTooltip:SetText(tooltip);
     GameTooltip:Show()
+end
+
+--Category Change
+MH_CAT_ALL=1
+MH_CAT_RACES=2
+MH_CAT_MOUNTS=3
+MH_CAT_FAVORITES=4
+
+function MH_ChangeCategory()
+    cat = this:GetID()
+    MH_CurrentList = cat
+    MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll(0)
+    MH_DisplayList_Update()
+    MH_DisplayList_UpdateButtons()
 end

@@ -1,251 +1,313 @@
 MH_RaceList = {
   {
-    Race = "Human Male",
-    ID = 49
+    ID = 49,
+    ModelName = "Human Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Human Female",
-    ID = 50
+    ID = 50,
+    ModelName = "Human Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Orc Male",
-    ID = 51
+    ID = 51,
+    ModelName = "Orc Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Orc Female",
-    ID = 52
+    ID = 52,
+    ModelName = "Orc Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Dwarf Male",
-    ID = 53
+    ID = 53,
+    ModelName = "Dwarf Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Dwarf Female",
-    ID = 54
+    ID = 54,
+    ModelName = "Dwarf Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "NightElf Male",
-    ID = 55
+    ID = 55,
+    ModelName = "NightElf Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "NightElf Female",
-    ID = 56
+    ID = 56,
+    ModelName = "NightElf Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Scourge Male",
-    ID = 57
+    ID = 57,
+    ModelName = "Scourge Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Scourge Female",
-    ID = 58
+    ID = 58,
+    ModelName = "Scourge Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Tauren Male",
-    ID = 59
+    ID = 59,
+    ModelName = "Tauren Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Tauren Female",
-    ID = 60
+    ID = 60,
+    ModelName = "Tauren Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Gnome Male",
-    ID = 1563
+    ID = 1563,
+    ModelName = "Gnome Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Gnome Female",
-    ID = 1564
+    ID = 1564,
+    ModelName = "Gnome Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Troll Male",
-    ID = 1478
+    ID = 1478,
+    ModelName = "Troll Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Troll Female",
-    ID = 1479
+    ID = 1479,
+    ModelName = "Troll Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Goblin Male",
-    ID = 6894
+    ID = 6894,
+    ModelName = "Goblin Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Goblin Female",
-    ID = 6895
+    ID = 6895,
+    ModelName = "Goblin Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "BloodElf_ Male",
-    ID = 15476
+    ID = 15476,
+    ModelName = "BloodElf_ Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "BloodElf_ Female",
-    ID = 15475
+    ID = 15475,
+    ModelName = "BloodElf_ Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Draenei Male",
-    ID = 16125
+    ID = 16125,
+    ModelName = "Draenei Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Draenei Female",
-    ID = 16126
+    ID = 16126,
+    ModelName = "Draenei Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "FelOrc Male",
-    ID = 16980
+    ID = 16980,
+    ModelName = "FelOrc Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "FelOrc Female",
-    ID = 16981
+    ID = 16981,
+    ModelName = "FelOrc Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Naga_ Male",
-    ID = 17402
+    ID = 17402,
+    ModelName = "Naga_ Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Naga_ Female",
-    ID = 17403
+    ID = 17403,
+    ModelName = "Naga_ Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Broken Male",
-    ID = 17576
+    ID = 17576,
+    ModelName = "Broken Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Broken Female",
-    ID = 17577
+    ID = 17577,
+    ModelName = "Broken Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Skeleton Male",
-    ID = 17578
+    ID = 17578,
+    ModelName = "Skeleton Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Skeleton Female",
-    ID = 17579
+    ID = 17579,
+    ModelName = "Skeleton Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Vrykul Male",
-    ID = 21685
+    ID = 21685,
+    ModelName = "Vrykul Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Vrykul Female",
-    ID = 21686
+    ID = 21686,
+    ModelName = "Vrykul Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Tuskarr Male",
-    ID = 21780
+    ID = 21780,
+    ModelName = "Tuskarr Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Tuskarr Female",
-    ID = 21781
+    ID = 21781,
+    ModelName = "Tuskarr Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "ForestTroll Male",
-    ID = 21963
+    ID = 21963,
+    ModelName = "ForestTroll Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "ForestTroll Female",
-    ID = 21964
+    ID = 21964,
+    ModelName = "ForestTroll Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Taunka Male",
-    ID = 26316
+    ID = 26316,
+    ModelName = "Taunka Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Taunka Female",
-    ID = 26317
+    ID = 26317,
+    ModelName = "Taunka Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "NorthrendSkeleton Male",
-    ID = 33074
+    ID = 33074,
+    ModelName = "NorthrendSkeleton Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "NorthrendSkeleton Female",
-    ID = 33075
+    ID = 33075,
+    ModelName = "NorthrendSkeleton Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "IceTroll Male",
-    ID = 26873
+    ID = 26873,
+    ModelName = "IceTroll Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "IceTroll Female",
-    ID = 26874
+    ID = 26874,
+    ModelName = "IceTroll Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "HighElf Male",
-    ID = 33028
+    ID = 33028,
+    ModelName = "HighElf Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "HighElf Female",
-    ID = 33029
+    ID = 33029,
+    ModelName = "HighElf Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Ogre Male",
-    ID = 33030
+    ID = 33030,
+    ModelName = "Ogre Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Ogre Female",
-    ID = 33031
+    ID = 33031,
+    ModelName = "Ogre Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Murloc Male",
-    ID = 33032
+    ID = 33032,
+    ModelName = "Murloc Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Murloc Female",
-    ID = 33033
+    ID = 33033,
+    ModelName = "Murloc Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Furbolg Male",
-    ID = 33034
+    ID = 33034,
+    ModelName = "Furbolg Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Furbolg Female",
-    ID = 33035
+    ID = 33035,
+    ModelName = "Furbolg Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Qiraji Male",
-    ID = 33066
+    ID = 33066,
+    ModelName = "Qiraji Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Qiraji Female",
-    ID = 33067
+    ID = 33067,
+    ModelName = "Qiraji Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Earthen Male",
-    ID = 33038
+    ID = 33038,
+    ModelName = "Earthen Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Earthen Female",
-    ID = 33039
+    ID = 33039,
+    ModelName = "Earthen Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "KulTiran Male",
-    ID = 33070
+    ID = 33070,
+    ModelName = "KulTiran Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "KulTiran Female",
-    ID = 33071
+    ID = 33071,
+    ModelName = "KulTiran Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Eredar Male",
-    ID = 33058
+    ID = 33058,
+    ModelName = "Eredar Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Eredar Female",
-    ID = 33061
+    ID = 33061,
+    ModelName = "Eredar Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Arakkoa Male",
-    ID = 33072
+    ID = 33072,
+    ModelName = "Arakkoa Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Arakkoa Female",
-    ID = 33073
+    ID = 33073,
+    ModelName = "Arakkoa Female",
+    TextureVariation1 = ""
   },
   {
-    Race = "Mechagnome Male",
-    ID = 33046
+    ID = 33046,
+    ModelName = "Mechagnome Male",
+    TextureVariation1 = ""
   },
   {
-    Race = "Mechagnome Female",
-    ID = 33047
+    ID = 33047,
+    ModelName = "Mechagnome Female",
+    TextureVariation1 = ""
   }
 }
 

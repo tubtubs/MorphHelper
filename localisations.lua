@@ -9,6 +9,7 @@ MH_Party2 = "Party" .. "2"
 MH_Party3 = "Party" .. "3"
 MH_Party4 = "Party" .. "4"
 MH_TitleName = "Model"
+MH_TITLEMANUALID = "Manual ID Entry:"
 MH_ADDPRESETS = "+"
 MH_DELETEPRESET = "-"
 
@@ -21,6 +22,10 @@ MH_TOOLTIPMOUNTRESET = "Click to reset %s's mount morphs\nRelogging will clear m
 MH_TOOLTIPNOUNIT = "Unit not found"
 MH_TOOLTIPFAVORITES = "Click to add to favorites"
 
+MH_CATEGORY_ALL = "All"
+MH_CATEGORY_RACES = "Races"
+MH_CATEGORY_MOUNTS = "Mounts"
+MH_CATEGORY_FAVORITES = "Favorites"
 
 MH_TEST = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
 MH_TESTID = "33093"

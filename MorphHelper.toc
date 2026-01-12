@@ -5,9 +5,10 @@
 ## Notes: Slash command hooks for morphs
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: 
+## SavedVariables: MH_Vars
 RaceList.lua
 CreatureList.lua
+MountList.lua
 localisations.lua
 MorphHelper.xml
 MorphHelper.lua
