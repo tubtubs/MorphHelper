@@ -1,0 +1,632 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Include file="MorphHelper.lua" />
+    <CheckButton name="MH_ListTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="425" y="16"/>
+        </Size>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentID" text="MH_TESTID" justifyH="LEFT" inherits="GameFontHighlightSmallOutline">
+                    <Size>
+                        <AbsDimension x="300" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+                            <Offset>
+
+							</Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentName" text="MH_TEST" justifyH="LEFT" inherits="GameFontHighlightSmallOutline">
+                    <Size>
+                        <AbsDimension x="300" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentID">
+                            <Offset>
+                                <AbsDimension x="38" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTexture" text="MH_TEST" justifyH="LEFT" inherits="GameFontHighlightSmallOutline">
+                    <Size>
+                        <AbsDimension x="300" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentName">
+                            <Offset>
+                                <AbsDimension x="200" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+        <CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+        <Scripts>
+            <OnClick>
+				MH_DisplayList_OnClick();	
+			</OnClick>
+        </Scripts>
+    </CheckButton>
+    <Button name="MH_ListFaveTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="16" y="16"/>
+        </Size>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star.tga" alphaMode="ADD"/>
+        <Scripts>
+            <OnClick>
+                MH_DisplayListFave_OnClick();
+            </OnClick>
+            <OnEnter>
+                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                GameTooltip:SetText(format(MH_TEST,EmoteButtons_ConfigDeck));
+                GameTooltip:Show();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Button>
+    <Button name="MH_MorphTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="16" y="16"/>
+        </Size>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph.tga" alphaMode="ADD"/>
+        <Scripts>
+            <OnClick>
+                MH_DisplayListFave_OnClick();
+            </OnClick>
+            <OnEnter>
+                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                GameTooltip:SetText(format(MH_TEST,EmoteButtons_ConfigDeck));
+                GameTooltip:Show();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Button>
+    <Frame name="MH_DisplayList" frameStrat="HIGH" hidden="false">
+        <Anchors>
+            <Anchor point="CENTER" relativeTo="UIParent">
+                <Offset>
+                    <AbsDimension x="0" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="600" y="245" />
+        </Size>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11" />
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32" />
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32" />
+            </EdgeSize>
+        </Backdrop>
+        <Layers>
+            <Layer>
+                <Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+                    <Size>
+                        <AbsDimension x="160" y="32" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="5" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+                </Texture>
+                <FontString name="$parentTitleString" font="GameFontNormal" text="MH_NAME">
+                    <!--Window Title -->
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-5" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="12" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+            </Layer>
+            <Layer>
+                <!-- List Titles -->
+                <FontString name="$parentListTextureTitle" font="GameFontNormal" text="MH_TitleTexture">
+                    <Size>
+                        <AbsDimension x="320" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="150" y="-35" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentListNameTitle" font="GameFontNormal" text="MH_TitleName">
+                    <Size>
+                        <AbsDimension x="210" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-35" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentListIDTitle" font="GameFontNormal" text="MH_TitleID">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-5" y="-35" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+            </Layer>
+            <Layer>
+                <!-- Morph Button Titles-->
+                <FontString name="$parentPlayerTitle" font="GameFontNormal" text="MH_Player">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="-60" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentTargetTitle" font="GameFontNormal" text="MH_Target">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentPlayerTitle">
+                            <Offset>
+                                <AbsDimension x="0" y="-20" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentParty1Title" font="GameFontNormal" text="MH_Party1">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentTargetTitle">
+                            <Offset>
+                                <AbsDimension x="0" y="-20" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentParty2Title" font="GameFontNormal" text="MH_Party2">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentParty1Title">
+                            <Offset>
+                                <AbsDimension x="0" y="-20" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentParty3Title" font="GameFontNormal" text="MH_Party3">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentParty2Title">
+                            <Offset>
+                                <AbsDimension x="0" y="-20" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentParty4Title" font="GameFontNormal" text="MH_Party4">
+                    <Size>
+                        <AbsDimension x="140" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentParty3Title">
+                            <Offset>
+                                <AbsDimension x="0" y="-20" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="14" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parentLayer2">
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="-40" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="495" y="145" />
+                </Size>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\GLUES\COMMON\TextPanel-Border" tile="true">
+                    <BackgroundInsets>
+                        <AbsInset left="8" right="9" top="6" bottom="8" />
+                    </BackgroundInsets>
+                    <TileSize>
+                        <AbsValue val="32" />
+                    </TileSize>
+                    <EdgeSize>
+                        <AbsValue val="32" />
+                    </EdgeSize>
+                </Backdrop>
+            </Frame>
+            <ScrollFrame name="$parent_DisplayListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+                <Size>
+                    <AbsDimension x="32" y="125"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="-10" y="-55"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnVerticalScroll>
+                        <!-- TODO: Create new update method-->
+							FauxScrollFrame_OnVerticalScroll(NUM_DISPLAYS_SHOWN, MH_DisplayList_Update);
+                    </OnVerticalScroll>
+                </Scripts>
+            </ScrollFrame>
+            <CheckButton name="$parent_ListButton1" inherits="MH_ListTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="48" y="-57"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton1" inherits="MH_ListFaveTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton1" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <ScrollFrame name="$parent_DisplayListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+                <Size>
+                    <AbsDimension x="32" y="125"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="-10" y="-55"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnVerticalScroll>
+                        <!-- TODO: Create new update method-->
+							FauxScrollFrame_OnVerticalScroll(NUM_DISPLAYS_SHOWN, MH_DisplayList_Update);
+                    </OnVerticalScroll>
+                </Scripts>
+            </ScrollFrame>
+            <CheckButton name="$parent_ListButton2" inherits="MH_ListTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton1">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton2" inherits="MH_ListFaveTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton2" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <CheckButton name="$parent_ListButton3" inherits="MH_ListTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton2">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton3" inherits="MH_ListFaveTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton3" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <CheckButton name="$parent_ListButton4" inherits="MH_ListTemplate" id="4">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton3">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton4" inherits="MH_ListFaveTemplate" id="4">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton4" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <CheckButton name="$parent_ListButton5" inherits="MH_ListTemplate" id="5">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton4">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton5" inherits="MH_ListFaveTemplate" id="5">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton5" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <CheckButton name="$parent_ListButton6" inherits="MH_ListTemplate" id="6">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton5">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton6" inherits="MH_ListFaveTemplate" id="6">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton6" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <CheckButton name="$parent_ListButton7" inherits="MH_ListTemplate" id="7">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton6">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton7" inherits="MH_ListFaveTemplate" id="7">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton7" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <CheckButton name="$parent_ListButton8" inherits="MH_ListTemplate" id="78">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_ListButton7">
+                        <Offset>
+                            <AbsDimension x="0" y="-16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_ListFaveButton8" inherits="MH_ListFaveTemplate" id="8">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton8" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="451" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parent_morphPlayer" inherits="MH_MorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-32" y="-60" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parent_morphTarget" inherits="MH_MorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_morphPlayer">
+                        <Offset>
+                            <AbsDimension x="0" y="-20" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+            <Button name="$parent_morphMountPlayer" inherits="MH_MorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_morphPlayer">
+                        <Offset>
+                            <AbsDimension x="20" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parent_morphMountTarget" inherits="MH_MorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_morphMountPlayer">
+                        <Offset>
+                            <AbsDimension x="0" y="-20" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>        
+
+            <Button name="$parent_resetMorphPlayer" inherits="MH_MorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_morphMountPlayer">
+                        <Offset>
+                            <AbsDimension x="20" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parent_resetMorphTarget" inherits="MH_MorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_resetMorphPlayer">
+                        <Offset>
+                            <AbsDimension x="0" y="-20" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+        </Frames>
+        <Scripts>
+            <OnShow>
+			</OnShow>
+        </Scripts>
+    </Frame>
+</Ui>

@@ -1,0 +1,13 @@
+MH_Player = "Player"
+MH_Target = "Target"
+MH_Party1 = "Party" .. "1"
+MH_Party2 = "Party" .. "2"
+MH_Party3 = "Party" .. "3"
+MH_Party4 = "Party" .. "4"
+MH_TitleName = "Name"
+MH_TitleID = "ID"
+MH_TitleTexture="Texture"
+
+MH_TEST = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+MH_TESTID = "33093"
+MH_TESTSTAR = " * "

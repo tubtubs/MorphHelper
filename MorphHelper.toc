@@ -6,4 +6,8 @@
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: 
+localisations.lua
+MorphHelper.xml
 MorphHelper.lua
+RaceList.lua
+CreatureList.lua
