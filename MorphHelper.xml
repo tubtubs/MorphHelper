@@ -1194,14 +1194,6 @@
                     <OnClick>
 					MH_ChangeCategory()
 					</OnClick>
-                    <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TEST);
-					GameTooltip:Show();
-					</OnEnter>
-                    <OnLeave>
-					GameTooltip:Hide();
-					</OnLeave>
                 </Scripts>
             </Button>
             <Button name="$parent_CategoryRacesButton" text="MH_CATEGORY_RACES" inherits="MH_ButtonTemplate" id="2">
@@ -1219,14 +1211,6 @@
                     <OnClick>
                     MH_ChangeCategory()
 					</OnClick>
-                    <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TESTID);
-					GameTooltip:Show();
-					</OnEnter>
-                    <OnLeave>
-					GameTooltip:Hide();
-					</OnLeave>
                 </Scripts>
             </Button>
             <Button name="$parent_CategoryMountsButton" text="MH_CATEGORY_MOUNTS" inherits="MH_ButtonTemplate" id="3">
@@ -1244,14 +1228,6 @@
                     <OnClick>
                     MH_ChangeCategory()
 					</OnClick>
-                    <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TESTID);
-					GameTooltip:Show();
-					</OnEnter>
-                    <OnLeave>
-					GameTooltip:Hide();
-					</OnLeave>
                 </Scripts>
             </Button>
             <Button name="$parent_CategoryFavoritesButton" text="MH_CATEGORY_FAVORITES" inherits="MH_ButtonTemplate" id="4">
@@ -1269,14 +1245,6 @@
                     <OnClick>
                     MH_ChangeCategory()
 					</OnClick>
-                    <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TESTID);
-					GameTooltip:Show();
-					</OnEnter>
-                    <OnLeave>
-					GameTooltip:Hide();
-					</OnLeave>
                 </Scripts>
             </Button>
             <!-- Close Button -->

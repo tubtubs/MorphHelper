@@ -213,6 +213,7 @@ function MH_DisplayList_Update()
 	local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame);
 	local index;
 	for i=1, MH_NUM_DISPLAYS_SHOWN do
+		MH_DisplayList_ListFaveButton = getglobal("MH_DisplayList_ListFaveButton"..i.."");
 		MH_DisplayList_ListButtonName = getglobal("MH_DisplayList_ListButton"..i.."Name");
         MH_DisplayList_ListButtonID = getglobal("MH_DisplayList_ListButton"..i.."ID");
         MH_DisplayList_ListButtonTexture = getglobal("MH_DisplayList_ListButton"..i.."Texture");
@@ -220,12 +221,29 @@ function MH_DisplayList_Update()
 		index = (Offset) + i;
 		if ( index <= numDisplays) then
 			MH_DisplayList_ListButton:Show();
+            MH_DisplayList_ListFaveButton:Show();
             MH_DisplayList_ListButtonName:SetText(displays[index].ModelName)
             MH_DisplayList_ListButtonID:SetText(displays[index].ID)
             MH_DisplayList_ListButtonTexture:SetText(displays[index].TextureVariation1)
+            found = 0
+            for i=1, MH_Vars.FavoritesLen do
+                a = MH_Vars.Favorites[i].ID
+                if a == displays[index].ID then
+                    found = i
+                    break
+                end
+            end
+            if found ~= 0 then
+                MH_DisplayList_ListFaveButton:SetNormalTexture("Interface\\AddOns\\MorphHelper\\star_disabled.tga")
+                MH_DisplayList_ListFaveButton:SetScript("OnEnter",MH_DisplayList_FavoriteDeleteTooltip);
+            else
+                MH_DisplayList_ListFaveButton:SetNormalTexture("Interface\\AddOns\\MorphHelper\\star.tga")
+                MH_DisplayList_ListFaveButton:SetScript("OnEnter",MH_DisplayList_FavoriteTooltip);
+            end
 			--DeckBuilderFrame_DeckButtonText:SetText(format("%s",EmoteButtons_DeckList[index]))
 		else
 			MH_DisplayList_ListButton:Hide();
+            MH_DisplayList_ListFaveButton:Hide();
 		end
 		if ( index == MH_DisplayList.selectedIcon  ) then
 			MH_DisplayList_ListButton:SetChecked(1);
@@ -402,10 +420,58 @@ MH_CAT_RACES=2
 MH_CAT_MOUNTS=3
 MH_CAT_FAVORITES=4
 
+function MH_DisplayList_FavoriteTooltip()
+    GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetText(format(MH_TOOLTIPFAVORITES,EmoteButtons_ConfigDeck));
+    GameTooltip:Show();
+end
+
+function MH_DisplayList_FavoriteDeleteTooltip()
+    GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetText(format(MH_TOOLTIPFAVORITESDELETE,EmoteButtons_ConfigDeck));
+    GameTooltip:Show();
+end
+
 function MH_ChangeCategory()
     cat = this:GetID()
     MH_CurrentList = cat
     MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll(0)
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()
+end
+
+local function sort_ids(a,b)
+    return a.ID < b.ID
+end
+
+function MH_DisplayListFave_OnClick()
+    local manualID = MH_DisplayList_IDEditBox:GetText()
+    index =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
+    displays = MH_DISPLAY_LISTS[MH_CurrentList].list
+    temp = {
+        ID = displays[index].ID,
+        ModelName= displays[index].ModelName,
+        TextureVariation1 = displays[index].TextureVariation1;
+    }
+    found = 0
+    for i=1, MH_Vars.FavoritesLen do
+        a = MH_Vars.Favorites[i].ID
+        if a == displays[index].ID then
+            found = i
+            break
+        end
+    end
+    if found == 0 then
+        table.insert(MH_Vars.Favorites,temp)
+        table.sort(MH_Vars.Favorites,sort_ids)
+        MH_Vars.FavoritesLen = MH_Vars.FavoritesLen + 1;
+        MH_DISPLAY_LISTS[4].len = MH_DISPLAY_LISTS[4].len+1
+        MH_DisplayList_Update()
+    else
+        table.remove(MH_Vars.Favorites, found)
+        MH_Vars.FavoritesLen = MH_Vars.FavoritesLen - 1;
+        MH_DISPLAY_LISTS[4].len = MH_DISPLAY_LISTS[4].len-1
+        MH_DisplayList_Update()
+    end
+
 end

@@ -21,6 +21,7 @@ MH_TOOLTIPMOUNTINFO = "Click to see %s's mount displayID"
 MH_TOOLTIPMOUNTRESET = "Click to reset %s's mount morphs\nRelogging will clear morphs if this fails"
 MH_TOOLTIPNOUNIT = "Unit not found"
 MH_TOOLTIPFAVORITES = "Click to add to favorites"
+MH_TOOLTIPFAVORITESDELETE = "Click to remove from favorites"
 
 MH_CATEGORY_ALL = "All"
 MH_CATEGORY_RACES = "Races"
