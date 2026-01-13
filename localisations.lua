@@ -15,6 +15,10 @@ MH_NEWPRESET = "New Preset"
 MH_ADDPRESETS = "+"
 MH_DELETEPRESET = "-"
 MH_APPLYPRESET = "Apply"
+MH_PRESETSTOOLTIP = "Click to select a preset"
+MH_ADDPRESETSTOOLTIP = "Click to add new preset"
+MH_DELETEPRESETTOOLTIP = "Click to delete current preset"
+MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
 
 MH_TOOLTIPMORPH = "Click to morph %s"
 MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount"
@@ -31,5 +35,127 @@ MH_CATEGORY_RACES = "Races"
 MH_CATEGORY_MOUNTS = "Mounts"
 MH_CATEGORY_FAVORITES = "Favorites"
 
-MH_TEST = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
-MH_TESTID = "33093"
+MH_DEFAULT_PRESETS = {
+    {
+        Name="Full Orc Male",
+        Morphs = {
+            { --player
+                ID = 51,
+                MID = -1;
+            },
+            { --target
+                ID = 51,
+                MID = -1;
+            },
+            { --party1
+                ID = 51,
+                MID = -1;
+            },
+            { --party2
+                ID = 51,
+                MID = -1;
+            },
+            { --party3
+                ID = 51,
+                MID = -1;
+            },
+            { --party4
+                ID = 51,
+                MID = -1;
+            },
+        };
+    },    
+    {
+        Name="Gnomish Motorcycle Gang",
+        Morphs = {
+            { --player
+                ID = 1563,
+                MID = 33086;
+            },
+            { --target
+                ID = 1563,
+                MID = 33086;
+            },
+            { --party1
+                ID = 1563,
+                MID = 33086;
+            },
+            { --party2
+                ID = 1563,
+                MID = 33086;
+            },
+            { --party3
+                ID = 1563,
+                MID = 33086;
+            },
+            { --party4
+                ID = 1563,
+                MID = 33086;
+            },
+        };
+    },
+    {
+        Name="Set All",
+        Morphs = {
+            { --player
+                ID = 240,
+                MID = 235;
+            },
+            { --target
+                ID = 240,
+                MID = 235;
+            },
+            { --party1
+                ID = 240,
+                MID = 235;
+            },
+            { --party2
+                ID = 240,
+                MID = 235;
+            },
+            { --party3
+                ID = 240,
+                MID = 235;
+            },
+            { --party4
+                ID = 240,
+                MID = 235;
+            },
+        }
+    },
+    {
+        Name="Reset All",
+        Morphs = {
+            { --player
+                ID = 0,
+                MID = 0;
+            },
+            { --target
+                ID = 0,
+                MID = 0;
+            },
+            { --party1
+                ID = 0,
+                MID = 0;
+            },
+            { --party2
+                ID = 0,
+                MID = 0;
+            },
+            { --party3
+                ID = 0,
+                MID = 0;
+            },
+            { --party4
+                ID = 0,
+                MID = 0;
+            },
+        }
+    }
+}
+
+MH_TEST = "ERROR"
+MH_TESTID = "ERROR"
+
+MH_STARDISABLEDICO = "Interface\\AddOns\\MorphHelper\\Assets\\star_disabled.tga"
+MH_STARICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2.tga"

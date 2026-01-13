@@ -1,5 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Include file="MorphHelper.lua" />
+    <Frame name="MH_Listener" hidden="true">
+        <Scripts>
+            <OnLoad>
+                this:RegisterEvent("PLAYER_LOGIN");
+                this:RegisterEvent("PLAYER_TARGET_CHANGED");
+                this:RegisterEvent("PARTY_MEMBERS_CHANGED");
+            </OnLoad>
+            <OnEvent>
+                MH_VariablesLoaded()
+            </OnEvent>
+        </Scripts>
+    </Frame>
     <CheckButton name="MH_ListTemplate" virtual="true" enableMouseWheel="true">
         <Size>
             <AbsDimension x="425" y="16"/>
@@ -59,10 +71,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star_disabled.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\star.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayListFave_OnClick();
@@ -81,10 +93,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph4.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph4.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph_disabled.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\morph3.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph4.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph4.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph3.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayList_Morph_OnClick();
@@ -101,10 +113,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\horsemorph1.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\horsemorph1.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\horsemorph_disabled.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\horsemorph1.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayList_MorphMount_OnClick()
@@ -121,10 +133,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\reset.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\reset.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\reset.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\reset.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\reset.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\reset.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\reset_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\reset.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayList_MorphReset_OnClick();
@@ -141,10 +153,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\resetmount.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\resetmount.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\resetmount.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\resetmount.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\resetmount.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\resetmount.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\resetmount_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\resetmount.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayList_MorphMountReset_OnClick();
@@ -161,10 +173,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\info.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\info.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\info.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\info.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\info.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\info.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\info_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\info.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayList_MorphInfo_OnClick();
@@ -181,10 +193,10 @@
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
-        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\mountinfo.tga"/>
-        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\mountinfo.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\mountinfo.tga"/>
-        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\mountinfo.tga" alphaMode="ADD"/>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\mountinfo.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\mountinfo.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\mountinfo_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\mountinfo.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
                 MH_DisplayList_MountInfo_OnClick();
@@ -1110,7 +1122,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parentParty4Title">
                         <Offset>
-                            <AbsDimension x="-68" y="-20"/>
+                            <AbsDimension x="-68" y="-10"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1124,7 +1136,7 @@
                    </OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TEST);
+					GameTooltip:SetText(MH_PRESETSTOOLTIP);
 					GameTooltip:Show();
 					</OnEnter>
                     <OnLeave>
@@ -1139,7 +1151,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_PresetsButton">
                         <Offset>
-                            <AbsDimension x="22" y="0"/>
+                            <AbsDimension x="22" y="-10"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1149,7 +1161,7 @@
 					</OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TEST);
+					GameTooltip:SetText(MH_ADDPRESETSTOOLTIP);
 					GameTooltip:Show();
 					</OnEnter>
                     <OnLeave>
@@ -1164,7 +1176,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_AddPresetButton">
                         <Offset>
-                            <AbsDimension x="22" y="0"/>
+                            <AbsDimension x="24" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1174,7 +1186,7 @@
 					</OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TEST);
+					GameTooltip:SetText(MH_DELETEPRESETTOOLTIP);
 					GameTooltip:Show();
 					</OnEnter>
                     <OnLeave>
@@ -1199,7 +1211,7 @@
 					</OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_TEST.."t");
+					GameTooltip:SetText(MH_APPLYPRESETTOOLTIP);
 					GameTooltip:Show();
 					</OnEnter>
                     <OnLeave>
@@ -1293,9 +1305,7 @@
             </Button>
         </Frames>
         <Scripts>
-            <OnLoad>
-                this:RegisterEvent("ADDON_LOADED");
-            </OnLoad>
+
             <OnShow>
                 MH_DisplayList_OnShow()			
             </OnShow>
@@ -1305,9 +1315,7 @@
             <OnMouseUp>
                 this:StopMovingOrSizing()
             </OnMouseUp>
-            <OnEvent>
-                MH_VariablesLoaded()
-            </OnEvent>
+
         </Scripts>
     </Frame>
 </Ui>

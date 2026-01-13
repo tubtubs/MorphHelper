@@ -1,130 +1,62 @@
 --[[
 MorphHelper
-Tubtubs
-
+By: Tubtubs
+Assists in using the morph lua commands provided by Vanilla Helpers.
+Slash commands, and morph window avaiable. Type /mh show to display the window , 
+/mh to learn more.
 
 TODO:
-UI 
--Presets dropdowns
--Disable buttons when no unit is available
-Reset window position slash command
-Readme
+DisplayID swaps
+Investigate Items
 
--manual displayID entry [CHECK]
--Tab buttons for categories [CHECK]
--Morph/MorphMount/Reset Buttons [CHECK]
---Apply, Add, Delete [CHECK]
--info button? [CHECK]
--Scrolling list [CHECK]
--Movable [CHECK]
--Tooltips[CHECK]
-
+ChangeLog v1.1:
+Added UI (/mh show)
+-/mh resetwindow to reset the window
+-Presets supported
+-Dynamicly disabled buttons
 ]]--
 
 -- addon info
 MH_NAME		= "MorphHelper";
-MH_VERSION		= "1.0";
+MH_VERSION		= "1.1";
 
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
 MH_DISPLAY_LISTS ={}
 
 function MH_VariablesLoaded()
-    if (not MH_Vars) then
-        MH_Vars = {
-            Presets={},
-            Favorites = {},
-            FavoritesLen = 0;
-        };
-        MH_TestPresets()
-    end
-    DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
-    DEFAULT_CHAT_FRAME:AddMessage(format("%s",MH_Vars.FavoritesLen))
-    MH_DISPLAY_LISTS = {
-        {
-            list=MH_CreatureList,
-            len=MH_CreatureListLen
-        },
-        {
-            list=MH_RaceList,
-            len=MH_RaceListLen
-        },
-        {
-            list=MH_MountList,
-            len=MH_MountListLen
-        },
-        {
-            list=MH_Vars.Favorites,
-            len=MH_Vars.FavoritesLen
-        },
-    }
-end
-
-function MH_TestPresets()
-    --all orc party
-    a = {
-        Name="Full Orc Male",
-        Morphs = {
-            { --player
-                ID = 51,
-                MID = -1;
+    if (event=="PLAYER_TARGET_CHANGED" or event=="PARTY_MEMBERS_CHANGED") then
+        if MH_DisplayList:IsShown() then
+            MH_DisplayList_UpdateButtons()
+        end
+    elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
+        if (not MH_Vars) then
+            MH_Vars = {
+                Presets=MH_DEFAULT_PRESETS,
+                Favorites = {},
+                FavoritesLen = 0;
+            };
+            MH_TestPresets()
+        end
+        DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
+        MH_DISPLAY_LISTS = {
+            {
+                list=MH_CreatureList,
+                len=MH_CreatureListLen
             },
-            { --target
-                ID = 51,
-                MID = -1;
+            {
+                list=MH_RaceList,
+                len=MH_RaceListLen
             },
-            { --party1
-                ID = 51,
-                MID = -1;
+            {
+                list=MH_MountList,
+                len=MH_MountListLen
             },
-            { --party2
-                ID = 51,
-                MID = -1;
-            },
-            { --party3
-                ID = 51,
-                MID = -1;
-            },
-            { --party4
-                ID = 51,
-                MID = -1;
-            },
-        };
-    };
-
-    table.insert(MH_Vars.Presets,a)
-
-    b = {
-        Name="Reset All",
-        Morphs = {
-            { --player
-                ID = 0,
-                MID = 0;
-            },
-            { --target
-                ID = 0,
-                MID = 0;
-            },
-            { --party1
-                ID = 0,
-                MID = 0;
-            },
-            { --party2
-                ID = 0,
-                MID = 0;
-            },
-            { --party3
-                ID = 0,
-                MID = 0;
-            },
-            { --party4
-                ID = 0,
-                MID = 0;
+            {
+                list=MH_Vars.Favorites,
+                len=MH_Vars.FavoritesLen
             },
         }
-    }
-
-    table.insert(MH_Vars.Presets,b)
-    DEFAULT_CHAT_FRAME:AddMessage("Loaded test pre-sets")
+    end
 end
 
 -- slashcommands
@@ -140,8 +72,14 @@ MH_OPT6 = "getUnitDisplay"
 MH_OPT7 = "getItemDisplay"
 MH_OPT8 = "morphUnitItem"
 MH_OPT9 = "show"
+MH_OPT10 = "resetwindow"
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .. SLASH_MORPHHELPER3 .. " .|r\n"
+MH_SLASHHELP9 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT9 ..
+"|r - Shows the morph helper window.\n"
+MH_SLASHHELP10 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT10 ..
+"|r - Resets the morph helper window position (center screen).\n"
+
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
 MH_SLASHHELP2 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT2 ..
@@ -159,16 +97,20 @@ MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot displayID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
 
 local function doCommand(parsed_args)
     l = getn(parsed_args)
+    DEFAULT_CHAT_FRAME:AddMessage(format("%s",l))
     if (l==1) then
         if parsed_args[1]==MH_OPT9 then
             MH_DisplayList:Show();
+        elseif parsed_args[1]==MH_OPT10 then
+            MH_DisplayList:ClearAllPoints()
+            MH_DisplayList:SetPoint("CENTER", UIParent ,"CENTER", 0, 0)
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -266,6 +208,33 @@ MH_MorphResetButtons = {
     "MH_DisplayList_MorphResetParty4"
 }
 
+MH_MorphMountResetButtons = {
+    "MH_DisplayList_MorphMountResetPlayer",
+    "MH_DisplayList_MorphMountResetTarget",
+    "MH_DisplayList_MorphMountResetParty1",
+    "MH_DisplayList_MorphMountResetParty2",
+    "MH_DisplayList_MorphMountResetParty3",
+    "MH_DisplayList_MorphMountResetParty4"
+}
+
+MH_MorphInfoButtons = {
+    "MH_DisplayList_MorphInfoPlayer",
+    "MH_DisplayList_MorphInfoTarget",
+    "MH_DisplayList_MorphInfoParty1",
+    "MH_DisplayList_MorphInfoParty2",
+    "MH_DisplayList_MorphInfoParty3",
+    "MH_DisplayList_MorphInfoParty4"
+}
+
+MH_MountInfoButtons = {
+    "MH_DisplayList_MountInfoPlayer",
+    "MH_DisplayList_MountInfoTarget",
+    "MH_DisplayList_MountInfoParty1",
+    "MH_DisplayList_MountInfoParty2",
+    "MH_DisplayList_MountInfoParty3",
+    "MH_DisplayList_MountInfoParty4"
+}
+
 MH_UnitTokens = {
     "player",
     "target",
@@ -340,10 +309,10 @@ function MH_DisplayList_Update()
                 end
             end
             if found ~= 0 then
-                MH_DisplayList_ListFaveButton:SetNormalTexture("Interface\\AddOns\\MorphHelper\\star_disabled.tga")
+                MH_DisplayList_ListFaveButton:SetNormalTexture(MH_STARDISABLEDICO)
                 MH_DisplayList_ListFaveButton:SetScript("OnEnter",MH_DisplayList_FavoriteDeleteTooltip);
             else
-                MH_DisplayList_ListFaveButton:SetNormalTexture("Interface\\AddOns\\MorphHelper\\star.tga")
+                MH_DisplayList_ListFaveButton:SetNormalTexture(MH_STARICO)
                 MH_DisplayList_ListFaveButton:SetScript("OnEnter",MH_DisplayList_FavoriteTooltip);
             end
 			--DeckBuilderFrame_DeckButtonText:SetText(format("%s",EmoteButtons_DeckList[index]))
@@ -372,15 +341,29 @@ end
 function MH_DisplayList_UpdateButtons()
     --Morph Buttons if no ID selected
     txtID = MH_DisplayList_IDEditBox:GetText()
-    if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
-        for i=1,MH_UnitTokensLen do
-            getglobal(MH_MorphButtons[i]):Enable()
-            getglobal(MH_MorphMountButtons[i]):Enable()
-        end
-    else
-        for i=1,MH_UnitTokensLen do
+    for i=1,MH_UnitTokensLen do
+        u = MH_UnitTokens[i]
+        if (UnitExists(u)) then
+            if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
+                getglobal(MH_MorphButtons[i]):Enable()
+                getglobal(MH_MorphMountButtons[i]):Enable()
+                getglobal(MH_MorphResetButtons[i]):Enable()
+                getglobal(MH_MorphMountResetButtons[i]):Enable()
+            else
+                getglobal(MH_MorphButtons[i]):Disable()
+                getglobal(MH_MorphMountButtons[i]):Disable()
+                getglobal(MH_MorphResetButtons[i]):Disable()
+                getglobal(MH_MorphMountResetButtons[i]):Disable()
+            end
+            getglobal(MH_MorphInfoButtons[i]):Enable()
+            getglobal(MH_MountInfoButtons[i]):Enable()
+        else
             getglobal(MH_MorphButtons[i]):Disable()
             getglobal(MH_MorphMountButtons[i]):Disable()
+            getglobal(MH_MorphResetButtons[i]):Disable()
+            getglobal(MH_MorphMountResetButtons[i]):Disable()
+            getglobal(MH_MorphInfoButtons[i]):Disable()
+            getglobal(MH_MountInfoButtons[i]):Disable()
         end
     end
     --Preset Buttons
@@ -482,6 +465,9 @@ function MH_DisplayList_MorphReset_OnClick()
     local u = MH_UnitTokens[k]
     MH_CurrentMorphs.Morphs[k].ID = -1
     MH_CurrentDisplaysCheckDirty()
+    --Morphing to a creature after another race makes resetting possible
+    --Resets native displayID or something
+    SetUnitDisplayID(u, 13) 
     SetUnitDisplayID(u, 0)
 end
 
@@ -582,6 +568,7 @@ end
 function MH_ChangeCategory()
     cat = this:GetID()
     MH_CurrentList = cat
+    MH_DisplayList.selectedIcon  = 0
     MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll(0)
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()

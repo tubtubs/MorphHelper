@@ -2,7 +2,7 @@
 ## Title: MorphHelper
 ## Author: |ccf3CE13Ftubtubs 
 ## Version: 1.0
-## Notes: Slash command hooks for morphs
+## Notes: Slash command hooks for morphs. /mh for more info
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: MH_Vars
