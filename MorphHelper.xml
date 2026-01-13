@@ -1115,9 +1115,13 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-                    <OnClick>
-					DeckManagerFrame:Show();
-					</OnClick>
+					<OnShow>
+                       UIDropDownMenu_Initialize(self, MH_PresetDropDown_OnShow);
+                   </OnShow>
+					<OnClick>
+					   GameTooltip:Hide();
+                       MH_PresetDropDownButton_OnClick();
+                   </OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
 					GameTooltip:SetText(MH_TEST);
@@ -1141,7 +1145,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-					DeckManagerFrame:Show();
+                        MH_AddPresetButton_OnClick()
 					</OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
@@ -1166,11 +1170,36 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-					DeckManagerFrame:Show();
+                        MH_DeletePresetButton_OnClick()
 					</OnClick>
                     <OnEnter>
 					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
 					GameTooltip:SetText(MH_TEST);
+					GameTooltip:Show();
+					</OnEnter>
+                    <OnLeave>
+					GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="$parent_ApplyPresetButton" text="MH_APPLYPRESET" inherits="MH_ButtonTemplate">
+                <Size>
+                    <AbsDimension x="52" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_DeletePresetButton">
+                        <Offset>
+                            <AbsDimension x="52" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        MH_ApplyPresetButton_OnClick()
+					</OnClick>
+                    <OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(MH_TEST.."t");
 					GameTooltip:Show();
 					</OnEnter>
                     <OnLeave>

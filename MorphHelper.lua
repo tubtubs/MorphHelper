@@ -5,14 +5,13 @@ Tubtubs
 
 TODO:
 UI 
--Tab buttons for categories
--manual displayID entry
 -Presets dropdowns
 -Disable buttons when no unit is available
 Reset window position slash command
 Readme
 
-
+-manual displayID entry [CHECK]
+-Tab buttons for categories [CHECK]
 -Morph/MorphMount/Reset Buttons [CHECK]
 --Apply, Add, Delete [CHECK]
 -info button? [CHECK]
@@ -28,33 +27,104 @@ MH_VERSION		= "1.0";
 
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
 MH_DISPLAY_LISTS ={}
+
 function MH_VariablesLoaded()
     if (not MH_Vars) then
         MH_Vars = {
+            Presets={},
             Favorites = {},
             FavoritesLen = 0;
         };
+        MH_TestPresets()
     end
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
     DEFAULT_CHAT_FRAME:AddMessage(format("%s",MH_Vars.FavoritesLen))
     MH_DISPLAY_LISTS = {
-    {
-        list=MH_CreatureList,
-        len=MH_CreatureListLen
-    },
-    {
-        list=MH_RaceList,
-        len=MH_RaceListLen
-    },
-    {
-        list=MH_MountList,
-        len=MH_MountListLen
-    },
-    {
-        list=MH_Vars.Favorites,
-        len=MH_Vars.FavoritesLen
-    },
-}
+        {
+            list=MH_CreatureList,
+            len=MH_CreatureListLen
+        },
+        {
+            list=MH_RaceList,
+            len=MH_RaceListLen
+        },
+        {
+            list=MH_MountList,
+            len=MH_MountListLen
+        },
+        {
+            list=MH_Vars.Favorites,
+            len=MH_Vars.FavoritesLen
+        },
+    }
+end
+
+function MH_TestPresets()
+    --all orc party
+    a = {
+        Name="Full Orc Male",
+        Morphs = {
+            { --player
+                ID = 51,
+                MID = -1;
+            },
+            { --target
+                ID = 51,
+                MID = -1;
+            },
+            { --party1
+                ID = 51,
+                MID = -1;
+            },
+            { --party2
+                ID = 51,
+                MID = -1;
+            },
+            { --party3
+                ID = 51,
+                MID = -1;
+            },
+            { --party4
+                ID = 51,
+                MID = -1;
+            },
+        };
+    };
+
+    table.insert(MH_Vars.Presets,a)
+
+    b = {
+        Name="Reset All",
+        Morphs = {
+            { --player
+                ID = 0,
+                MID = 0;
+            },
+            { --target
+                ID = 0,
+                MID = 0;
+            },
+            { --party1
+                ID = 0,
+                MID = 0;
+            },
+            { --party2
+                ID = 0,
+                MID = 0;
+            },
+            { --party3
+                ID = 0,
+                MID = 0;
+            },
+            { --party4
+                ID = 0,
+                MID = 0;
+            },
+        }
+    }
+
+    table.insert(MH_Vars.Presets,b)
+    DEFAULT_CHAT_FRAME:AddMessage("Loaded test pre-sets")
 end
 
 -- slashcommands
@@ -99,6 +169,8 @@ local function doCommand(parsed_args)
     if (l==1) then
         if parsed_args[1]==MH_OPT9 then
             MH_DisplayList:Show();
+        else
+            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
     elseif (l==2) then --info commands
         if parsed_args[1] == MH_OPT6 then 
@@ -205,6 +277,40 @@ MH_UnitTokens = {
 
 MH_UnitTokensLen = getn(MH_UnitTokens)
 
+MH_CurrentPreset = ""
+MH_CurrentPresetIndex= 0
+
+MH_CurrentMorphs = {
+    Dirty=false,
+    Morphs = {  
+        { --player
+            ID = -1,
+            MID = -1;
+        },
+        { --target
+            ID = -1,
+            MID = -1;
+        },
+        { --party1
+            ID = -1,
+            MID = -1;
+        },
+        { --party2
+            ID = -1,
+            MID = -1;
+        },
+        { --party3
+            ID = -1,
+            MID = -1;
+        },
+        { --party4
+            ID = -1,
+            MID = -1;
+        },
+    }
+}
+
+
 function MH_DisplayList_Update()
 	local numDisplays = MH_DISPLAY_LISTS[MH_CurrentList].len
     --DEFAULT_CHAT_FRAME:AddMessage(format("%s",numDisplays))
@@ -264,6 +370,7 @@ function MH_DisplayList_OnClick()
 end
 
 function MH_DisplayList_UpdateButtons()
+    --Morph Buttons if no ID selected
     txtID = MH_DisplayList_IDEditBox:GetText()
     if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
         for i=1,MH_UnitTokensLen do
@@ -275,6 +382,19 @@ function MH_DisplayList_UpdateButtons()
             getglobal(MH_MorphButtons[i]):Disable()
             getglobal(MH_MorphMountButtons[i]):Disable()
         end
+    end
+    --Preset Buttons
+    if MH_CurrentMorphs.Dirty then
+        MH_DisplayList_AddPresetButton:Enable()
+    else
+        MH_DisplayList_AddPresetButton:Disable()
+    end
+    if MH_CurrentPresetIndex > 0 then
+        MH_DisplayList_DeletePresetButton:Enable()
+        MH_DisplayList_ApplyPresetButton:Enable()
+    else
+        MH_DisplayList_DeletePresetButton:Disable()
+        MH_DisplayList_ApplyPresetButton:Disable()
     end
 end
 
@@ -320,6 +440,9 @@ function MH_DisplayList_Morph_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
+    MH_CurrentMorphs.Morphs[k].ID = displayID
+    MH_CurrentMorphs.Dirty=true
+    MH_DisplayList_UpdateButtons()
     SetUnitDisplayID(u, displayID)
 end
 
@@ -329,7 +452,27 @@ function MH_DisplayList_MorphMount_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
+    MH_CurrentMorphs.Morphs[k].MID = displayID
+    MH_CurrentMorphs.Dirty=true
+    MH_DisplayList_UpdateButtons()
     SetUnitMountDisplayID(u, displayID)
+end
+
+function MH_CurrentDisplaysCheckDirty()
+    found = 0
+    for i=1, MH_UnitTokensLen do
+        id = MH_CurrentMorphs.Morphs[i].ID
+        mid = MH_CurrentMorphs.Morphs[i].MID
+        if id > -1 or mid > -1 then
+            found = i 
+            break
+        end
+    end
+
+    if found == 0 then
+        MH_CurrentMorphs.Dirty = false
+    end
+    MH_DisplayList_UpdateButtons()
 end
 
 function MH_DisplayList_MorphReset_OnClick()
@@ -337,6 +480,8 @@ function MH_DisplayList_MorphReset_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
+    MH_CurrentMorphs.Morphs[k].ID = -1
+    MH_CurrentDisplaysCheckDirty()
     SetUnitDisplayID(u, 0)
 end
 
@@ -345,6 +490,8 @@ function MH_DisplayList_MorphMountReset_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
+    MH_CurrentMorphs.Morphs[k].MID = -1
+    MH_CurrentDisplaysCheckDirty()
     SetUnitMountDisplayID(u, 0)
 end
 
@@ -474,4 +621,105 @@ function MH_DisplayListFave_OnClick()
         MH_DisplayList_Update()
     end
 
+end
+
+--presets
+
+function MH_PresetDropDown_OnShow()
+	for i=1, getn(MH_Vars.Presets) do
+		info = {};
+		info.text       = MH_Vars.Presets[i].Name;
+		info.value      = i;
+		--if (MH_Vars.Presets[i].Name == MH_CurrentPreset) then
+        if (i == MH_CurrentPresetIndex) then
+			info.checked =true;
+		else
+			info.checked=false;
+		end
+		info.func =  function()
+            PlaySound("igCharacterInfoOpen"); 
+            MH_CurrentPresetIndex = this.value
+            MH_CurrentPreset = this.text
+            MH_DisplayList_UpdateButtons()
+			--EmoteButtons_SetProfile(this.value) 
+		end
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function MH_PresetDropDownButton_OnClick()
+    PlaySound("igCharacterInfoOpen");
+	ToggleDropDownMenu(1, nil, MH_DisplayList_PresetsButton, MH_DisplayList_PresetsButton, 0, 0);
+end
+
+function MH_AddPresetButton_OnClick()
+	--prompt for a new name
+    local accept = function()
+        local editBox=getglobal(this:GetParent():GetName().."EditBox");
+        local newPreset = editBox:GetText();
+        --decided to let presets have duplicate names. Why not?
+        a = {
+            Name=newPreset, 
+            Morphs = MH_CurrentMorphs.Morphs;
+        }
+        table.insert(MH_Vars.Presets,a)
+        DEFAULT_CHAT_FRAME:AddMessage(format("Preset %s added successfully!",newPreset));
+        this:GetParent():Hide();
+    end
+	StaticPopupDialogs["MH_ADDPRESET_DIALOG"]={
+		text=TEXT(MH_NEWPRESET),
+		button1=TEXT(ACCEPT),
+		button2=TEXT(CANCEL),
+		hasEditBox=1,
+		maxLetters=32,
+		OnAccept=accept,
+		EditBoxOnEnterPressed=accept,
+		EditBoxOnEscapePressed=function()
+			this:GetParent():Hide();
+		end,
+		timeout=0,
+		exclusive=1
+	};
+	StaticPopup_Show("MH_ADDPRESET_DIALOG");
+	getglobal(getglobal(StaticPopup_Visible("MH_ADDPRESET_DIALOG")):GetName().."EditBox"):SetText("");
+end
+
+function MH_DeletePresetButton_OnClick()
+    --Confirmation dialog
+    StaticPopupDialogs["MH_DELETEPRESET_CONFIRMATION"] = {
+	text = "Do you want to delete the preset: " .. MH_CurrentPreset .. "?",
+	button1 = "Yes",
+	button2 = "No",
+	OnAccept = function()
+        table.remove(MH_Vars.Presets,MH_CurrentPresetIndex)
+        MH_CurrentPresetIndex = 0
+        MH_CurrentPreset = ""
+	    --ReloadUI();	
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+	}
+	StaticPopup_Show("MH_DELETEPRESET_CONFIRMATION")
+end
+
+function MH_ApplyPresetButton_OnClick()
+    for i=1, MH_UnitTokensLen do
+        u = MH_UnitTokens[i]
+        id = MH_Vars.Presets[MH_CurrentPresetIndex].Morphs[i].ID
+        mid = MH_Vars.Presets[MH_CurrentPresetIndex].Morphs[i].MID
+        if (UnitExists(u)) then
+            if id ~= -1 then
+                SetUnitDisplayID(u, id)
+                DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s to %s", u, id))
+            end
+            if mid ~= -1 then
+                SetUnitMountDisplayID(u, mid)
+                DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s to %s", u, mid))
+            end
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("Skipped " .. u .. " when applying preset.")
+        end
+    end
 end

@@ -1,6 +1,5 @@
 MH_TitleID = "ID"
 MH_TitleTexture="Texture"
-MH_PRESETS = "Presets"
 
 MH_Player = "Player"
 MH_Target = "Target"
@@ -10,8 +9,12 @@ MH_Party3 = "Party" .. "3"
 MH_Party4 = "Party" .. "4"
 MH_TitleName = "Model"
 MH_TITLEMANUALID = "Manual ID Entry:"
+
+MH_PRESETS = "Presets"
+MH_NEWPRESET = "New Preset"
 MH_ADDPRESETS = "+"
 MH_DELETEPRESET = "-"
+MH_APPLYPRESET = "Apply"
 
 MH_TOOLTIPMORPH = "Click to morph %s"
 MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount"
