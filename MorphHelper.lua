@@ -6,7 +6,7 @@ Slash commands, and morph window avaiable. Type /mh show to display the window ,
 /mh to learn more.
 
 TODO:
-Minimap Icon
+Add Profiles Dropdown to Minimap Button
 Investigate Items
 
 ChangeLog
@@ -21,15 +21,18 @@ Preset mode implemented (checkbox beside apply preset button)
 Fixed issue with preset saving
 Fixed issue with dynamic morph buttons (reset shouldn't require ID selection)
 -Added morph status to dynamic morph buttons
+v1.3:
+Minimap Button Added
 ]]--
 
 -- addon info
 MH_NAME		= "MorphHelper";
-MH_VERSION		= "1.2";
+MH_VERSION		= "1.3";
 
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
+MH_MinimapButtonFunc = {}
 --event handler and init
 function MH_VariablesLoaded()
     if (event=="PLAYER_TARGET_CHANGED" or event=="PARTY_MEMBERS_CHANGED") then
@@ -41,9 +44,11 @@ function MH_VariablesLoaded()
             MH_Vars = {
                 Presets=MH_DEFAULT_PRESETS,
                 Favorites = {},
-                FavoritesLen = 0;
+                FavoritesLen = 0,
+                MinimapButtonPos = MH_DEFAULTMINIMAPPOS;
             };
-            MH_TestPresets()
+        elseif not MH_Vars.MinimapButtonPos then
+            MH_Vars.MinimapButtonPos = MH_DEFAULTMINIMAPPOS
         end
         DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
         MH_DISPLAY_LISTS = {
@@ -93,6 +98,17 @@ function MH_VariablesLoaded()
                 },
             }
         }
+        MH_MinimapButtonFunc = {
+            {
+                tip = "Open window",
+                func = function() MH_DisplayList:Show(); end
+            },
+            {
+                tip = "Reset position",
+                func = function () MH_DisplayList_ResetPos(); end
+            };
+        }
+        MH_MinimapButton_UpdatePosition();
     end
 end
 
@@ -166,8 +182,7 @@ local function doCommand(parsed_args)
         if parsed_args[1]==MH_OPT9 then
             MH_DisplayList:Show();
         elseif parsed_args[1]==MH_OPT10 then
-            MH_DisplayList:ClearAllPoints()
-            MH_DisplayList:SetPoint("CENTER", UIParent ,"CENTER", 0, 0)
+            MH_DisplayList_ResetPos()
         elseif parsed_args[1]==MH_OPT11 then
             MH_GenderFlipMode()
         else
@@ -313,6 +328,11 @@ MH_CurrentPreset = ""
 MH_CurrentPresetIndex= 0
 
 --DisplayList Functions
+function MH_DisplayList_ResetPos()
+    MH_DisplayList:ClearAllPoints()
+    MH_DisplayList:SetPoint("CENTER", UIParent ,"CENTER", 0, 0)
+end
+
 function MH_DisplayList_Update()
 	local numDisplays = MH_DISPLAY_LISTS[MH_CurrentList].len
     --DEFAULT_CHAT_FRAME:AddMessage(format("%s",numDisplays))
@@ -855,4 +875,50 @@ function MH_DisplayList_MountIDSwapsButton_OnClick()
     newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     RemapMountDisplayID(oldID, newID)
+end
+
+
+
+--Minimap button
+function MH_MinimapButton_UpdatePosition()
+	MH_MinimapButtonFrame:SetPoint(
+		"TOPLEFT",
+		"Minimap",
+		"TOPLEFT",
+		52 - (80 * cos(MH_Vars.MinimapButtonPos )),
+		(80 * sin(MH_Vars.MinimapButtonPos )) - 52
+	);
+end
+
+function MH_MinimapButton_OnClick()
+    local StartX, StartY = GetCursorPosition()
+
+    local EndX, EndY
+    if arg1 == 'LeftButton' then
+        ToggleDropDownMenu(1, nil, 
+        MH_MiniMapDownMenu, MH_MinimapButtonFrame,-100, 0);
+    elseif arg1 == 'RightButton' then
+        MH_MinimapButtonFrame:SetScript('OnUpdate', function(self)
+            EndX, EndY = GetCursorPosition()
+            --DEFAULT_CHAT_FRAME:AddMessage(format("%s", EndX-StartX))
+            MH_Vars.MinimapButtonPos = MH_Vars.MinimapButtonPos -(EndX-StartX)
+            MH_MinimapButton_UpdatePosition()
+            StartX, StartY = GetCursorPosition()
+        end)
+    end
+end
+
+function MH_MinimapButton_OnClickUp()
+    MH_MinimapButtonFrame:SetScript('OnUpdate', nil)
+end
+
+
+function MH_MinimapDrop_OnLoad()
+	for i=1, getn(MH_MinimapButtonFunc) do
+		info = {};
+		info.text       = MH_MinimapButtonFunc[i].tip
+		info.value      = i;
+		info.func =  MH_MinimapButtonFunc[i].func
+		UIDropDownMenu_AddButton(info);
+	end
 end

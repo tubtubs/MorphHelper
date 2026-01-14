@@ -1537,6 +1537,9 @@
             </Button>
         </Frames>
         <Scripts>
+            <OnLoad>
+                tinsert(UISpecialFrames, "MH_DisplayList");
+            </OnLoad>
             <OnShow>
                 MH_DisplayList_OnShow()			
             </OnShow>
@@ -1548,4 +1551,63 @@
             </OnMouseUp>
         </Scripts>
     </Frame>
+    <Frame name="MH_MinimapButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="LOW">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="MH_MinimapButton" enableMouse="true">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
+				<PushedTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnMouseDown>
+						MH_MinimapButton_OnClick();
+                        GameTooltip:Hide();
+					</OnMouseDown>
+                    <OnMouseUp>
+                        MH_MinimapButton_OnClickUp();
+                    </OnMouseUp>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                        GameTooltip:SetText(MH_MINIMAPTOOLTIP);
+                        GameTooltip:Show();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				<!--ParchmentButton_Init();-->
+                <!-- UIDropDownMenu_Initialize(self, MH_MinimapDrop_OnLoad); -->
+			</OnLoad>
+		</Scripts>
+	</Frame>
+    <Frame name="MH_MiniMapDownMenu" inherits="UIDropDownMenuTemplate" id="1">
+       <Scripts>
+           <OnLoad>
+               UIDropDownMenu_Initialize(self, MH_MinimapDrop_OnLoad, "MENU");
+           </OnLoad>
+       </Scripts>
+   </Frame>
 </Ui>

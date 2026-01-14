@@ -9,6 +9,7 @@ MH_Party3 = "Party" .. "3"
 MH_Party4 = "Party" .. "4"
 MH_TitleName = "Model"
 MH_TITLEMANUALID = "Manual ID Entry:"
+MH_DEFAULTMINIMAPPOS = 320
 
 MH_PRESETS = "Presets"
 MH_NEWPRESET = "New Preset"
@@ -41,6 +42,8 @@ MH_MOUNTIDSWAPS = "Mount ID Swap"
 MH_IDSWAPSTOOLTIP = "Click to enter ID\n|ccf3CE13FTIP:|r Click list after for ID"
 MH_OLDIDTITLE = "Old ID:"
 MH_NEWIDTITLE = "New ID:"
+
+MH_MINIMAPTOOLTIP = "MorphHelper\nClick to open options\nRight click and drag to move"
 
 MH_DEFAULT_PRESETS = {
     {
