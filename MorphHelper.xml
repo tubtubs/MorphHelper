@@ -81,7 +81,7 @@
             </OnClick>
             <OnEnter>
                 GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-                GameTooltip:SetText(format(MH_TOOLTIPFAVORITES,EmoteButtons_ConfigDeck));
+                GameTooltip:SetText(MH_TOOLTIPFAVORITES);
                 GameTooltip:Show();
             </OnEnter>
             <OnLeave>
@@ -89,12 +89,13 @@
             </OnLeave>
         </Scripts>
     </Button>
-    <Button name="MH_MorphTemplate" virtual="true">
+    <CheckButton name="MH_MorphTemplate" virtual="true">
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
         <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph4.tga"/>
         <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph4.tga"/>
+        <CheckedTexture file="Interface\AddOns\MorphHelper\Assets\morph3.tga" alphaMode="ADD" />
         <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph_disabled.tga"/>
         <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\morph3.tga" alphaMode="ADD"/>
         <Scripts>
@@ -108,13 +109,14 @@
                 GameTooltip:Hide();
             </OnLeave>
         </Scripts>
-    </Button>
-    <Button name="MH_MorphMountTemplate" virtual="true">
+    </CheckButton>
+    <CheckButton name="MH_MorphMountTemplate" virtual="true">
         <Size>
             <AbsDimension x="16" y="16"/>
         </Size>
         <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga"/>
         <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga"/>
+        <CheckedTexture file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga" alphaMode="ADD" />
         <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph_disabled.tga"/>
         <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\horsemorph1.tga" alphaMode="ADD"/>
         <Scripts>
@@ -128,7 +130,7 @@
                 GameTooltip:Hide();
             </OnLeave>
         </Scripts>
-    </Button>
+    </CheckButton>
     <Button name="MH_MorphResetTemplate" virtual="true">
         <Size>
             <AbsDimension x="16" y="16"/>
@@ -785,7 +787,7 @@
                 <FontString inherits="ChatFontNormal" />
             </EditBox>
             <!-- Morph Buttons -->
-            <Button name="$parent_MorphPlayer" inherits="MH_MorphTemplate" id="1">
+            <CheckButton name="$parent_MorphPlayer" inherits="MH_MorphTemplate" id="1">
                 <Anchors>
                     <Anchor point="TOPRIGHT">
                         <Offset>
@@ -793,8 +795,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphTarget" inherits="MH_MorphTemplate" id="2">
+            </CheckButton>
+            <CheckButton name="$parent_MorphTarget" inherits="MH_MorphTemplate" id="2">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphPlayer">
                         <Offset>
@@ -802,8 +804,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphParty1" inherits="MH_MorphTemplate" id="3">
+            </CheckButton>
+            <CheckButton name="$parent_MorphParty1" inherits="MH_MorphTemplate" id="3">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphTarget">
                         <Offset>
@@ -811,8 +813,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphParty2" inherits="MH_MorphTemplate" id="4">
+            </CheckButton>
+            <CheckButton name="$parent_MorphParty2" inherits="MH_MorphTemplate" id="4">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphParty1">
                         <Offset>
@@ -820,8 +822,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphParty3" inherits="MH_MorphTemplate" id="5">
+            </CheckButton>
+            <CheckButton name="$parent_MorphParty3" inherits="MH_MorphTemplate" id="5">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphParty2">
                         <Offset>
@@ -829,8 +831,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphParty4" inherits="MH_MorphTemplate" id="6">
+            </CheckButton>
+            <CheckButton name="$parent_MorphParty4" inherits="MH_MorphTemplate" id="6">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphParty3">
                         <Offset>
@@ -838,9 +840,9 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
+            </CheckButton>
             <!-- MorphMount Buttons -->
-            <Button name="$parent_MorphMountPlayer" inherits="MH_MorphMountTemplate" id="1">
+            <CheckButton name="$parent_MorphMountPlayer" inherits="MH_MorphMountTemplate" id="1">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphPlayer">
                         <Offset>
@@ -848,8 +850,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphMountTarget" inherits="MH_MorphMountTemplate" id="2">
+            </CheckButton>
+            <CheckButton name="$parent_MorphMountTarget" inherits="MH_MorphMountTemplate" id="2">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountPlayer">
                         <Offset>
@@ -857,8 +859,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphMountParty1" inherits="MH_MorphMountTemplate" id="3">
+            </CheckButton>
+            <CheckButton name="$parent_MorphMountParty1" inherits="MH_MorphMountTemplate" id="3">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountTarget">
                         <Offset>
@@ -866,8 +868,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphMountParty2" inherits="MH_MorphMountTemplate" id="4">
+            </CheckButton>
+            <CheckButton name="$parent_MorphMountParty2" inherits="MH_MorphMountTemplate" id="4">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountParty1">
                         <Offset>
@@ -875,8 +877,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphMountParty3" inherits="MH_MorphMountTemplate" id="5">
+            </CheckButton>
+            <CheckButton name="$parent_MorphMountParty3" inherits="MH_MorphMountTemplate" id="5">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountParty2">
                         <Offset>
@@ -884,8 +886,8 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
-            <Button name="$parent_MorphMountParty4" inherits="MH_MorphMountTemplate" id="6">
+            </CheckButton>
+            <CheckButton name="$parent_MorphMountParty4" inherits="MH_MorphMountTemplate" id="6">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountParty3">
                         <Offset>
@@ -893,7 +895,7 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-            </Button>
+            </CheckButton>
             <!-- MorphReset Buttons -->
             <Button name="$parent_MorphResetPlayer" inherits="MH_MorphResetTemplate" id="1">
                 <Anchors>
@@ -1127,20 +1129,20 @@
                     </Anchor>
                 </Anchors>
                 <Scripts>
-					<OnShow>
+                    <OnShow>
                        UIDropDownMenu_Initialize(self, MH_PresetDropDown_OnShow);
-                   </OnShow>
-					<OnClick>
+                    </OnShow>
+                    <OnClick>
 					   GameTooltip:Hide();
                        MH_PresetDropDownButton_OnClick();
-                   </OnClick>
+                    </OnClick>
                     <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_PRESETSTOOLTIP);
-					GameTooltip:Show();
+                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                        GameTooltip:SetText(MH_PRESETSTOOLTIP);
+                        GameTooltip:Show();
 					</OnEnter>
                     <OnLeave>
-					GameTooltip:Hide();
+				    	GameTooltip:Hide();
 					</OnLeave>
                 </Scripts>
             </Button>
@@ -1158,14 +1160,12 @@
                 <Scripts>
                     <OnClick>
                         MH_AddPresetButton_OnClick()
-					</OnClick>
+                    </OnClick>
                     <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_ADDPRESETSTOOLTIP);
-					GameTooltip:Show();
+                        MH_DisplayList_AddPresetButton_Tooltip()
 					</OnEnter>
                     <OnLeave>
-					GameTooltip:Hide();
+					    GameTooltip:Hide();
 					</OnLeave>
                 </Scripts>
             </Button>
@@ -1210,15 +1210,39 @@
                         MH_ApplyPresetButton_OnClick()
 					</OnClick>
                     <OnEnter>
-					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-					GameTooltip:SetText(MH_APPLYPRESETTOOLTIP);
-					GameTooltip:Show();
+                        MH_DisplayList_ApplyPresetButton_Tooltip()
 					</OnEnter>
                     <OnLeave>
-					GameTooltip:Hide();
+					    GameTooltip:Hide();
 					</OnLeave>
                 </Scripts>
             </Button>
+            <CheckButton name="$parent_PresetModeCheckButton" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size>
+                    <AbsDimension x="22" y="22" />
+                </Size>
+                <Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent_ApplyPresetButton">
+						<Offset>
+							<AbsDimension x="20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+                        MH_PRESETMODE = not MH_PRESETMODE
+                        MH_DisplayList_UpdateButtons()
+					</OnClick>
+					<OnEnter>
+                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                        GameTooltip:SetText(MH_PRESETMODETOOLTIP);
+                        GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+                        GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
             <!-- Category Tabs -->
             <Button name="$parent_CategoryAllButton" text="MH_CATEGORY_ALL" inherits="MH_ButtonTemplate" id="1">
                 <Size>
@@ -1303,9 +1327,216 @@
 					</OnClick>
                 </Scripts>
             </Button>
+            <!-- Swaps -->
+            <Frame name="$parent_SwapFrame">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="0" y="-190"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="235" y="48" />
+                </Size>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+                    <BackgroundInsets>
+                        <AbsInset left="8" right="9" top="6" bottom="8" />
+                    </BackgroundInsets>
+                    <TileSize>
+                        <AbsValue val="32" />
+                    </TileSize>
+                    <EdgeSize>
+                        <AbsValue val="32" />
+                    </EdgeSize>
+                </Backdrop>
+                <Frames>
+                    <EditBox name = "$parent_OldIDEditBox" letters="7" numeric="true" autoFocus="false">
+                        <Size x="50" y="32" />
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="60" y="-8" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <FontString name="$parentTitle" font="GameFontNormal" text="MH_OLDIDTITLE">
+                                    <Size>
+                                        <AbsDimension x="45" y="0" />
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="TOPRIGHT">
+                                            <Offset>
+                                                <AbsDimension x="-55" y="-8" />
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                    <FontHeight>
+                                        <AbsValue val="14" />
+                                    </FontHeight>
+                                    <Color r="1" g="0.8196079" b="0" />
+                                    <Shadow>
+                                        <Color r="0" g="0" b="0" />
+                                        <Offset>
+                                            <AbsDimension x="1" y="-1" />
+                                        </Offset>
+                                    </Shadow>
+                                </FontString>
+                                <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+                                    <Size x="38" y="32" />
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset x="-5" y="0" />
+                                        </Anchor>
+                                    </Anchors>
+                                    <TexCoords left="0" right="0.2" top="0" bottom="1.0"/>
+                                </Texture>
+                                <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+                                    <Size x="38" y="32" />
+                                    <Anchors>
+                                        <Anchor point="RIGHT">
+                                            <Offset x="5" y="0" />
+                                        </Anchor>
+                                    </Anchors>
+                                    <TexCoords left="0.7" right="1.0" top="0" bottom="1.0"/>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <OnEscapePressed>
+                                    MH_DisplayList_SwapFrame_OldIDEditBox_OnEnter()
+                            </OnEscapePressed>
+                            <OnEnterPressed>
+                                    MH_DisplayList_SwapFrame_OldIDEditBox_OnEnter()
+                            </OnEnterPressed>
+                            <OnEditFocusGained>
+                                    MH_OLDIDFOCUS = true
+                            </OnEditFocusGained>
+                            <OnEnter>
+                                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                                GameTooltip:SetText(MH_IDSWAPSTOOLTIP);
+                                GameTooltip:Show();
+                            </OnEnter>
+                            <OnLeave>
+                                GameTooltip:Hide();
+                            </OnLeave>
+                        </Scripts>
+                        <FontString inherits="ChatFontNormal" />
+                    </EditBox>
+                    <EditBox name = "$parent_NewIDEditBox" letters="7" numeric="true" autoFocus="false">
+                        <Size x="50" y="32" />
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="170" y="-8" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <FontString name="$parentTitle" font="GameFontNormal" text="MH_NEWIDTITLE">
+                                    <Size>
+                                        <AbsDimension x="50" y="0" />
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="TOPRIGHT">
+                                            <Offset>
+                                                <AbsDimension x="-55" y="-8" />
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                    <FontHeight>
+                                        <AbsValue val="14" />
+                                    </FontHeight>
+                                    <Color r="1" g="0.8196079" b="0" />
+                                    <Shadow>
+                                        <Color r="0" g="0" b="0" />
+                                        <Offset>
+                                            <AbsDimension x="1" y="-1" />
+                                        </Offset>
+                                    </Shadow>
+                                </FontString>
+                                <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+                                    <Size x="38" y="32" />
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset x="-5" y="0" />
+                                        </Anchor>
+                                    </Anchors>
+                                    <TexCoords left="0" right="0.2" top="0" bottom="1.0"/>
+                                </Texture>
+                                <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+                                    <Size x="38" y="32" />
+                                    <Anchors>
+                                        <Anchor point="RIGHT">
+                                            <Offset x="5" y="0" />
+                                        </Anchor>
+                                    </Anchors>
+                                    <TexCoords left="0.7" right="1.0" top="0" bottom="1.0"/>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <OnEscapePressed>
+                                    MH_DisplayList_SwapFrame_NewIDEditBox_OnEnter()
+                                </OnEscapePressed>
+                            <OnEnterPressed>
+                                    MH_DisplayList_SwapFrame_NewIDEditBox_OnEnter()
+                            </OnEnterPressed>
+                            <OnEditFocusGained>
+                                    MH_NEWIDFOCUS = true
+                            </OnEditFocusGained>
+                            <OnEnter>
+                                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                                GameTooltip:SetText(MH_IDSWAPSTOOLTIP);
+                                GameTooltip:Show();
+                            </OnEnter>
+                            <OnLeave>
+                                GameTooltip:Hide();
+                            </OnLeave>
+                        </Scripts>
+                        <FontString inherits="ChatFontNormal" />
+                    </EditBox>
+                </Frames>
+            </Frame>
+            <Button name="$parent_IDSwapsButton" text="MH_IDSWAPS" inherits="MH_ButtonTemplate">
+                <Size>
+                    <AbsDimension x="110" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_SwapFrame">
+                        <Offset>
+                            <AbsDimension x="-110" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        MH_DisplayList_IDSwapsButton_OnClick()
+					</OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parent_MountIDSwapsButton" text="MH_MOUNTIDSWAPS" inherits="MH_ButtonTemplate">
+                <Size>
+                    <AbsDimension x="110" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_IDSwapsButton">
+                        <Offset>
+                            <AbsDimension x="0" y="-22"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        MH_DisplayList_MountIDSwapsButton_OnClick()
+					</OnClick>
+                </Scripts>
+            </Button>
         </Frames>
         <Scripts>
-
             <OnShow>
                 MH_DisplayList_OnShow()			
             </OnShow>
@@ -1315,7 +1546,6 @@
             <OnMouseUp>
                 this:StopMovingOrSizing()
             </OnMouseUp>
-
         </Scripts>
     </Frame>
 </Ui>

@@ -19,6 +19,7 @@ MH_PRESETSTOOLTIP = "Click to select a preset"
 MH_ADDPRESETSTOOLTIP = "Click to add new preset"
 MH_DELETEPRESETTOOLTIP = "Click to delete current preset"
 MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
+MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually apply in this mode, unit's won't be checked."
 
 MH_TOOLTIPMORPH = "Click to morph %s"
 MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount"
@@ -34,6 +35,12 @@ MH_CATEGORY_ALL = "All"
 MH_CATEGORY_RACES = "Races"
 MH_CATEGORY_MOUNTS = "Mounts"
 MH_CATEGORY_FAVORITES = "Favorites"
+
+MH_IDSWAPS = "DisplayID Swap"
+MH_MOUNTIDSWAPS = "Mount ID Swap"
+MH_IDSWAPSTOOLTIP = "Click to enter ID\n|ccf3CE13FTIP:|r Click list after for ID"
+MH_OLDIDTITLE = "Old ID:"
+MH_NEWIDTITLE = "New ID:"
 
 MH_DEFAULT_PRESETS = {
     {
