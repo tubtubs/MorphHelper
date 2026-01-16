@@ -1,9 +1,14 @@
 ## Interface: 11200
 ## Title: MorphHelper
 ## Author: |ccf3CE13Ftubtubs 
-## Version: 1.0
-## Notes: Slash command hooks for morphs
+## Version: 1.3
+## Notes: Slash command hooks for morphs. /mh for more info
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: 
+## SavedVariables: MH_Vars
+RaceList.lua
+CreatureList.lua
+MountList.lua
+localisations.lua
+MorphHelper.xml
 MorphHelper.lua
