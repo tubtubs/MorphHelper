@@ -2,8 +2,10 @@
 MorphHelper
 By: Tubtubs
 Assists in using the morph lua commands provided by Vanilla Helpers.
-Slash commands, and morph window avaiable. Type /mh show to display the window , 
-/mh to learn more.
+Slash commands, and morph window avaiable. Type /mh show to display the window  or /mh to learn more.
+
+Requires VanillaHelpers, be sure to install that mod before using this addon.
+https://github.com/isfir/VanillaHelpers
 
 TODO:
 Add Profiles Dropdown to Minimap Button
@@ -26,6 +28,7 @@ Minimap Button Added
 v1.4:
 Added creature and race lists for Vanilla, Wallcraft, and TurtleWoW.
 Refined mount list for vanilla, don't have mount list for custom servers.
+Tweaked UI, added a button to swap IDs in the IDSwap textboxes
 ]]--
 
 MH_DISPLAY_LISTS ={}
@@ -152,7 +155,7 @@ function MH_VariablesLoaded()
                 func = function() MH_DisplayList:Show(); end
             },
             {
-                tip = "Reset position",
+                tip = "Reset window",
                 func = function () MH_DisplayList_ResetPos(); end
             };
         }
@@ -167,18 +170,18 @@ SLASH_MORPHHELPER2 = '/Morph'
 SLASH_MORPHHELPER3 = '/MH'
 MH_OPT1 = "morph"
 MH_OPT2 = "morphMount"
-MH_OPT3 = "remapDisplayID"
-MH_OPT4 = "remapMountDisplayID"
-MH_OPT5 = "remapItemDisplayID"
-MH_OPT6 = "getUnitDisplay"
-MH_OPT7 = "getItemDisplay"
+MH_OPT3 = "remap"
+MH_OPT4 = "remapMount"
+MH_OPT5 = "remapItem"
+MH_OPT6 = "getUnit"
+MH_OPT7 = "getItem"
 MH_OPT8 = "morphUnitItem"
 MH_OPT9 = "show"
 MH_OPT10 = "resetWindow"
 MH_OPT11 = "genderSwap"
 MH_OPT12 = "secretCowPowers"
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
-                    SLASH_MORPHHELPER2  .. SLASH_MORPHHELPER3 .. " .|r\n"
+                    SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. " .|r\n"
 MH_SLASHHELP9 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT9 ..
 "|r - Shows the morph helper window.\n"
 MH_SLASHHELP10 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT10 ..
@@ -519,14 +522,18 @@ function MH_DisplayList_UpdateButtons()
     txtID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     txtOID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     --only enable swap buttons if both displayID fields are filled
+
     if (string.len(txtID) > 0 and string.len(txtOID) > 0) then
         MH_DisplayList_IDSwapsButton:Enable()
         MH_DisplayList_MountIDSwapsButton:Enable()
     else
         MH_DisplayList_IDSwapsButton:Disable()
         MH_DisplayList_MountIDSwapsButton:Disable()
+        MH_DisplayList_SwapFrame_SwapIDsButton:Disable()
     end
-
+    if (string.len(txtID) > 0 or string.len(txtOID) > 0) then
+        MH_DisplayList_SwapFrame_SwapIDsButton:Enable()
+    end
 end
 
 function MH_DisplayList_OnShow()
@@ -970,6 +977,17 @@ function MH_DisplayList_MountIDSwapsButton_OnClick()
     newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     RemapMountDisplayID(oldID, newID)
+end
+
+function MH_DisplayList_SwapFrame_SwapIDsButton_OnClick()
+    newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
+    oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+
+    MH_DisplayList_SwapFrame_NewIDEditBox:SetText(oldID)
+    MH_DisplayList_SwapFrame_OldIDEditBox:SetText(newID)
+
+    MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
+    MH_DisplayList_SwapFrame_OldIDEditBox:ClearFocus()
 end
 
 

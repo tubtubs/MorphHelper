@@ -2,6 +2,9 @@
 MH_NAME		= "MorphHelper";
 MH_VERSION	= "1.4";
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
+MH_AUTHOR = "Tubtubs"
+
+MH_ABOUT = MH_NAMEVERSION .. " by " .. MH_AUTHOR
 
 --on load splashes
 MH_S_TWOW = MH_NAME .. ": Turtle Detected"
@@ -30,6 +33,7 @@ MH_PRESETSTOOLTIP = "Click to select a preset"
 MH_ADDPRESETSTOOLTIP = "Click to add new preset"
 MH_DELETEPRESETTOOLTIP = "Click to delete current preset"
 MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
+MH_PRESETMODETITLE = "Preset Mode:"
 MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually apply in this mode, unit's won't be checked."
 
 MH_TOOLTIPMORPH = "Click to morph %s"
@@ -52,6 +56,7 @@ MH_MOUNTIDSWAPS = "Mount ID Swap"
 MH_IDSWAPSTOOLTIP = "Click to enter ID\n|ccf3CE13FTIP:|r Click list or info buttons after for ID"
 MH_OLDIDTITLE = "Old ID:"
 MH_NEWIDTITLE = "New ID:"
+MH_SWAPBUTTONTIP = "Click to swap the old and the new IDs"
 
 MH_MINIMAPTOOLTIP = "MorphHelper\nClick to open options\nRight click and drag to move"
 

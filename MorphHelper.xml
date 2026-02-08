@@ -211,6 +211,28 @@
             </OnLeave>
         </Scripts>
     </Button>
+    <Button name="MH_SwapIDsButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="16" y="16"/>
+        </Size>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\swap.tga"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\swap.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\swap_disabled.tga"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\swap.tga" alphaMode="ADD"/>
+        <Scripts>
+            <OnClick>
+                MH_DisplayList_SwapFrame_SwapIDsButton_OnClick()
+            </OnClick>
+            <OnEnter>
+                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                GameTooltip:SetText(MH_SWAPBUTTONTIP);
+                GameTooltip:Show();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Button>
     <Button name="MH_ButtonTemplate" virtual="true">
         <Size>
             <AbsDimension x="100" y="22" />
@@ -278,7 +300,7 @@
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="686" y="200" />
+            <AbsDimension x="686" y="248" />
         </Size>
         <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
             <BackgroundInsets>
@@ -322,6 +344,28 @@
                         <AbsValue val="12" />
                     </FontHeight>
                     <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                        <Color r="0" g="0" b="0" />
+                        <Offset>
+                            <AbsDimension x="1" y="-1" />
+                        </Offset>
+                    </Shadow>
+                </FontString>
+                <FontString name="$parentAbout" font="GameFontNormalSmall" text="MH_ABOUT">
+                    <Size>
+                        <AbsDimension x="300" y="0" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="16" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                        <AbsValue val="12" />
+                    </FontHeight>
+                    <Color r="1" g="1" b="1" />
                     <Shadow>
                         <Color r="0" g="0" b="0" />
                         <Offset>
@@ -430,7 +474,7 @@
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentPlayerTitle">
                             <Offset>
-                                <AbsDimension x="0" y="-20" />
+                                <AbsDimension x="0" y="-25" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -452,7 +496,7 @@
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentTargetTitle">
                             <Offset>
-                                <AbsDimension x="0" y="-20" />
+                                <AbsDimension x="0" y="-25" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -474,7 +518,7 @@
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentParty1Title">
                             <Offset>
-                                <AbsDimension x="0" y="-20" />
+                                <AbsDimension x="0" y="-25" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -496,7 +540,7 @@
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentParty2Title">
                             <Offset>
-                                <AbsDimension x="0" y="-20" />
+                                <AbsDimension x="0" y="-25" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -518,7 +562,7 @@
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentParty3Title">
                             <Offset>
-                                <AbsDimension x="0" y="-20" />
+                                <AbsDimension x="0" y="-25" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -800,7 +844,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphPlayer">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -809,7 +853,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphTarget">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -818,7 +862,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphParty1">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -827,7 +871,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphParty2">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -836,7 +880,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphParty3">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -855,7 +899,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountPlayer">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -864,7 +908,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountTarget">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -873,7 +917,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountParty1">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -882,7 +926,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountParty2">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -891,7 +935,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountParty3">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -901,7 +945,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountPlayer">
                         <Offset>
-                            <AbsDimension x="20" y="0" />
+                            <AbsDimension x="19" y="0" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -910,7 +954,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphResetPlayer">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -919,7 +963,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphResetTarget">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -928,7 +972,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphResetParty1">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -937,7 +981,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphResetParty2">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -946,7 +990,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphResetParty3">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -956,7 +1000,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphResetPlayer">
                         <Offset>
-                            <AbsDimension x="20" y="0" />
+                            <AbsDimension x="19" y="0" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -965,7 +1009,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountResetPlayer">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -974,7 +1018,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountResetTarget">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -983,7 +1027,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountResetParty1">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -992,7 +1036,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountResetParty2">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1001,7 +1045,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountResetParty3">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1011,7 +1055,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountResetPlayer">
                         <Offset>
-                            <AbsDimension x="20" y="0" />
+                            <AbsDimension x="19" y="0" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1020,7 +1064,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphInfoPlayer">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1029,7 +1073,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphInfoTarget">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1038,7 +1082,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphInfoParty1">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1047,7 +1091,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphInfoParty2">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1056,7 +1100,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MorphInfoParty3">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1075,7 +1119,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MountInfoPlayer">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1084,7 +1128,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MountInfoTarget">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1093,7 +1137,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MountInfoParty1">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1102,7 +1146,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MountInfoParty2">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1111,7 +1155,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_MountInfoParty3">
                         <Offset>
-                            <AbsDimension x="0" y="-20" />
+                            <AbsDimension x="0" y="-25" />
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1124,7 +1168,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parentParty4Title">
                         <Offset>
-                            <AbsDimension x="-68" y="-10"/>
+                            <AbsDimension x="-68" y="-28"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1222,36 +1266,62 @@
                     <AbsDimension x="22" y="22" />
                 </Size>
                 <Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent_ApplyPresetButton">
-						<Offset>
-							<AbsDimension x="20" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
+                    <Anchor point="TOPLEFT" relativeTo="$parent_PresetsButton">
+                        <Offset>
+                            <AbsDimension x="128" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                <Layer level="BACKGROUND">
+                    <FontString name="$parentTitle" font="GameFontNormal" text="MH_PRESETMODETITLE">
+                        <Size>
+                            <AbsDimension x="120" y="0" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-" y="-4" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <FontHeight>
+                            <AbsValue val="14" />
+                        </FontHeight>
+                        <Color r="1" g="0.8196079" b="0" />
+                        <Shadow>
+                            <Color r="0" g="0" b="0" />
+                            <Offset>
+                                <AbsDimension x="1" y="-1" />
+                            </Offset>
+                        </Shadow>
+                    </FontString>
+                </Layer>
+                </Layers>
+                <Scripts>
+                    <OnClick>
                         MH_PRESETMODE = not MH_PRESETMODE
                         MH_DisplayList_UpdateButtons()
 					</OnClick>
-					<OnEnter>
+                    <OnEnter>
                         GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
                         GameTooltip:SetText(MH_PRESETMODETOOLTIP);
                         GameTooltip:Show();
 					</OnEnter>
-					<OnLeave>
+                    <OnLeave>
                         GameTooltip:Hide();
 					</OnLeave>
-				</Scripts>
-			</CheckButton>
+                </Scripts>
+            </CheckButton>
             <!-- Category Tabs -->
             <Button name="$parent_CategoryAllButton" text="MH_CATEGORY_ALL" inherits="MH_ButtonTemplate" id="1">
                 <Size>
                     <AbsDimension x="50" y="22" />
                 </Size>
                 <Anchors>
-                    <Anchor point="BOTTOMLEFT">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parentLayer2">
                         <Offset>
-                            <AbsDimension x="4" y="-12"/>
+                            <AbsDimension x="4" y="-16"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1332,24 +1402,13 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent">
                         <Offset>
-                            <AbsDimension x="0" y="-190"/>
+                            <AbsDimension x="-200" y="-180"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
                 <Size>
                     <AbsDimension x="235" y="48" />
                 </Size>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-                    <BackgroundInsets>
-                        <AbsInset left="8" right="9" top="6" bottom="8" />
-                    </BackgroundInsets>
-                    <TileSize>
-                        <AbsValue val="32" />
-                    </TileSize>
-                    <EdgeSize>
-                        <AbsValue val="32" />
-                    </EdgeSize>
-                </Backdrop>
                 <Frames>
                     <EditBox name = "$parent_OldIDEditBox" letters="7" numeric="true" autoFocus="false">
                         <Size x="50" y="32" />
@@ -1425,12 +1484,21 @@
                         </Scripts>
                         <FontString inherits="ChatFontNormal" />
                     </EditBox>
+                    <Button name="$parent_SwapIDsButton" inherits="MH_SwapIDsButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent_OldIDEditBox">
+                                <Offset>
+                                    <AbsDimension x="62" y="-8" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </Button>
                     <EditBox name = "$parent_NewIDEditBox" letters="7" numeric="true" autoFocus="false">
                         <Size x="50" y="32" />
                         <Anchors>
                             <Anchor point="TOPLEFT">
                                 <Offset>
-                                    <AbsDimension x="170" y="-8" />
+                                    <AbsDimension x="200" y="-8" />
                                 </Offset>
                             </Anchor>
                         </Anchors>
@@ -1506,9 +1574,9 @@
                     <AbsDimension x="110" y="22" />
                 </Size>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent_SwapFrame">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent_SwapFrame">
                         <Offset>
-                            <AbsDimension x="-110" y="0"/>
+                            <AbsDimension x="8" y="-8"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1525,7 +1593,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_IDSwapsButton">
                         <Offset>
-                            <AbsDimension x="0" y="-22"/>
+                            <AbsDimension x="138" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1552,33 +1620,33 @@
         </Scripts>
     </Frame>
     <Frame name="MH_MinimapButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="LOW">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="2" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Button name="MH_MinimapButton" enableMouse="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<NormalTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
-				<PushedTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
-				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-				<Scripts>
-					<OnMouseDown>
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+                <Offset>
+                    <AbsDimension x="2" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <Button name="MH_MinimapButton" enableMouse="true">
+                <Size>
+                    <AbsDimension x="32" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <NormalTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
+                <PushedTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
+                <HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+                <Scripts>
+                    <OnMouseDown>
 						MH_MinimapButton_OnClick();
                         GameTooltip:Hide();
 					</OnMouseDown>
@@ -1593,21 +1661,21 @@
                     <OnLeave>
                         GameTooltip:Hide();
                     </OnLeave>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				<!--ParchmentButton_Init();-->
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                <!--ParchmentButton_Init();-->
                 <!-- UIDropDownMenu_Initialize(self, MH_MinimapDrop_OnLoad); -->
-			</OnLoad>
-		</Scripts>
-	</Frame>
+            </OnLoad>
+        </Scripts>
+    </Frame>
     <Frame name="MH_MiniMapDownMenu" inherits="UIDropDownMenuTemplate" id="1">
-       <Scripts>
-           <OnLoad>
+        <Scripts>
+            <OnLoad>
                UIDropDownMenu_Initialize(self, MH_MinimapDrop_OnLoad, "MENU");
            </OnLoad>
-       </Scripts>
-   </Frame>
+        </Scripts>
+    </Frame>
 </Ui>
