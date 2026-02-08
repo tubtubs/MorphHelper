@@ -73,7 +73,7 @@
         </Size>
         <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2.tga"/>
         <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2.tga"/>
-        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star_disabled.tga"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2_disabled.tga"/>
         <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\star2.tga" alphaMode="ADD"/>
         <Scripts>
             <OnClick>
@@ -1630,10 +1630,54 @@
                 </Offset>
             </Anchor>
         </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture name="$parent_Overlay" file="Interface\Minimap\MiniMap-TrackingBorder">
+                    <Size>
+                        <AbsDimension x="53" y="53"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture name="$parent_Background" file="Interface\Minimap\UI-Minimap-Background">
+                    <Size>
+                        <AbsDimension x="20" y="20"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="$parent_Artwork" file="Interface\Icons\INV_Wand_02">
+                    <Size>
+                        <AbsDimension x="17" y="17"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
         <Frames>
             <Button name="MH_MinimapButton" enableMouse="true">
                 <Size>
-                    <AbsDimension x="32" y="32"/>
+                    <AbsDimension x="31" y="31"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT">
@@ -1642,8 +1686,7 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <NormalTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
-                <PushedTexture file="Interface\Addons\MorphHelper\Assets\MorphHelper_Minimap.tga"/>
+
                 <HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
                 <Scripts>
                     <OnMouseDown>
@@ -1664,12 +1707,6 @@
                 </Scripts>
             </Button>
         </Frames>
-        <Scripts>
-            <OnLoad>
-                <!--ParchmentButton_Init();-->
-                <!-- UIDropDownMenu_Initialize(self, MH_MinimapDrop_OnLoad); -->
-            </OnLoad>
-        </Scripts>
     </Frame>
     <Frame name="MH_MiniMapDownMenu" inherits="UIDropDownMenuTemplate" id="1">
         <Scripts>

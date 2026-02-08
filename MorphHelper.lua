@@ -743,7 +743,6 @@ function MH_DisplayList_IDEditBox_OnEnter()
     MH_DisplayList_UpdateButtons()
 end
 
-
 local function sort_ids(a,b)
     return a.ID < b.ID
 end
