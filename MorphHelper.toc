@@ -2,13 +2,18 @@
 ## Title: MorphHelper
 ## Author: |ccf3CE13Ftubtubs 
 ## Version: 1.3
-## Notes: Slash command hooks for morphs. /mh for more info
+## Notes: Slash command hooks, and a window for morphs. /mh for more info
+## Requires VanillaHelpers. Most of the limits on morphing are imposed by the mod.
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: MH_Vars
-RaceList.lua
-CreatureList.lua
-MountList.lua
+Lists\RaceList_Wallcraft.lua
+Lists\CreatureList_Wallcraft.lua
+Lists\RaceList_Turtle.lua
+Lists\CreatureList_Turtle.lua
+Lists\RaceList_Vanilla.lua
+Lists\CreatureList_Vanilla.lua
+Lists\MountList_Vanilla.lua
 localisations.lua
 MorphHelper.xml
 MorphHelper.lua

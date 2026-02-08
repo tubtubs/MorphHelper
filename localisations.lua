@@ -1,3 +1,13 @@
+-- addon info
+MH_NAME		= "MorphHelper";
+MH_VERSION	= "1.4";
+MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
+
+--on load splashes
+MH_S_TWOW = MH_NAME .. ": Turtle Detected"
+MH_S_WC = MH_NAME .. ": Wallcraft Detected"
+MH_S_VWOW = MH_NAME .. ": Vanilla Detected"
+
 MH_TitleID = "ID"
 MH_TitleTexture="Texture"
 
@@ -39,7 +49,7 @@ MH_CATEGORY_FAVORITES = "Favorites"
 
 MH_IDSWAPS = "DisplayID Swap"
 MH_MOUNTIDSWAPS = "Mount ID Swap"
-MH_IDSWAPSTOOLTIP = "Click to enter ID\n|ccf3CE13FTIP:|r Click list after for ID"
+MH_IDSWAPSTOOLTIP = "Click to enter ID\n|ccf3CE13FTIP:|r Click list or info buttons after for ID"
 MH_OLDIDTITLE = "Old ID:"
 MH_NEWIDTITLE = "New ID:"
 
@@ -167,5 +177,5 @@ MH_DEFAULT_PRESETS = {
 MH_TEST = "ERROR"
 MH_TESTID = "ERROR"
 
-MH_STARDISABLEDICO = "Interface\\AddOns\\MorphHelper\\Assets\\star_disabled.tga"
+MH_STARDISABLEDICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2_disabled.tga"
 MH_STARICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2.tga"

@@ -23,13 +23,11 @@ Fixed issue with dynamic morph buttons (reset shouldn't require ID selection)
 -Added morph status to dynamic morph buttons
 v1.3:
 Minimap Button Added
+v1.4:
+Added creature and race lists for Vanilla, Wallcraft, and TurtleWoW.
+Refined mount list for vanilla, don't have mount list for custom servers.
 ]]--
 
--- addon info
-MH_NAME		= "MorphHelper";
-MH_VERSION		= "1.3";
-
-MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
 MH_MinimapButtonFunc = {}
@@ -50,25 +48,75 @@ function MH_VariablesLoaded()
         elseif not MH_Vars.MinimapButtonPos then
             MH_Vars.MinimapButtonPos = MH_DEFAULTMINIMAPPOS
         end
-        DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
-        MH_DISPLAY_LISTS = {
-            {
-                list=MH_CreatureList,
-                len=MH_CreatureListLen
-            },
-            {
-                list=MH_RaceList,
-                len=MH_RaceListLen
-            },
-            {
-                list=MH_MountList,
-                len=MH_MountListLen
-            },
-            {
-                list=MH_Vars.Favorites,
-                len=MH_Vars.FavoritesLen
-            },
-        }
+        --initialize display lists
+        r = GetRealmName()
+        find = 0
+        find = string.find(r,"Wallcraft")
+        if find==nil then --Standard, or Turtle?
+            if (TWMinimapShopFrame~=nil or TWMiniMapBattlefieldFrame~=nil or LFT_Minimap~=nil) then --turtle
+                MH_DISPLAY_LISTS = {
+                    {
+                        list=MH_CreatureList_TW,
+                        len=MH_CreatureList_TWLen
+                    },
+                    {
+                        list=MH_RaceList_TW,
+                        len=MH_RaceList_TWLen
+                    },
+                    {
+                        list=MH_MountList_TW,
+                        len=MH_MountList_TWLen
+                    },
+                    {
+                        list=MH_Vars.Favorites,
+                        len=MH_Vars.FavoritesLen
+                    }
+                }
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_TWOW)
+            else --standard vanilla
+                MH_DISPLAY_LISTS = {
+                    {
+                        list=MH_CreatureList_V,
+                        len=MH_CreatureList_VLen
+                    },
+                    {
+                        list=MH_RaceList_V,
+                        len=MH_RaceList_VLen
+                    },
+                    {
+                        list=MH_MountList_V,
+                        len=MH_MountList_VLen
+                    },
+                    {
+                        list=MH_Vars.Favorites,
+                        len=MH_Vars.FavoritesLen
+                    }
+                }
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_VWOW)
+            end
+        else --Wallcraft
+            MH_DISPLAY_LISTS = {
+                {
+                    list=MH_CreatureList_WC,
+                    len=MH_CreatureList_WCLen
+                },
+                {
+                    list=MH_RaceList_WC,
+                    len=MH_RaceList_WCLen
+                },
+                {
+                    list=MH_MountList_WC,
+                    len=MH_MountList_WCLen
+                },
+                {
+                    list=MH_Vars.Favorites,
+                    len=MH_Vars.FavoritesLen
+                },
+            }
+            DEFAULT_CHAT_FRAME:AddMessage(MH_S_WC)
+        end
+
+        --Initialize empty tables
         MH_CurrentMorphs = {
             Dirty=false,
             Morphs = {  
@@ -109,6 +157,7 @@ function MH_VariablesLoaded()
             };
         }
         MH_MinimapButton_UpdatePosition();
+        DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
     end
 end
 
@@ -125,8 +174,9 @@ MH_OPT6 = "getUnitDisplay"
 MH_OPT7 = "getItemDisplay"
 MH_OPT8 = "morphUnitItem"
 MH_OPT9 = "show"
-MH_OPT10 = "resetwindow"
+MH_OPT10 = "resetWindow"
 MH_OPT11 = "genderSwap"
+MH_OPT12 = "secretCowPowers"
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .. SLASH_MORPHHELPER3 .. " .|r\n"
 MH_SLASHHELP9 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT9 ..
@@ -169,31 +219,52 @@ local function MH_GenderFlipMode()
     l_p = getn(p)
     for i=1, l_p do
         RemapDisplayID(p[i][1],p[i][2])
-    end
-    for i=1, l_p do
         RemapDisplayID(p[i][2],p[i][1])
     end
     DEFAULT_CHAT_FRAME:AddMessage("Secret gender swap mode engaged!")
 end
 
+local function MH_SecretCowPowers()
+    t_w = 60
+    t_m = 59
+    p = {
+        {49,50}, --human
+        {51,52}, --orc
+        {53,54}, --dwarf
+        {55,56}, --NE
+        {57,58}, --UD
+        {59,60}, --Tauren
+        {1563, 1564}, --gnome  
+        {1478,1479}, --troll 
+    }
+    l_p = getn(p)
+    for i=1, l_p do
+        RemapDisplayID(p[i][1],t_m)
+        RemapDisplayID(p[i][2],t_w)
+    end
+    DEFAULT_CHAT_FRAME:AddMessage("Secret cow powers engaged!")
+end
+
 local function doCommand(parsed_args)
     l = getn(parsed_args)
     if (l==1) then
-        if parsed_args[1]==MH_OPT9 then
+        if parsed_args[1]==string.lower(MH_OPT9) then
             MH_DisplayList:Show();
-        elseif parsed_args[1]==MH_OPT10 then
+        elseif parsed_args[1]==string.lower(MH_OPT10) then
             MH_DisplayList_ResetPos()
-        elseif parsed_args[1]==MH_OPT11 then
+        elseif parsed_args[1]==string.lower(MH_OPT11) then
             MH_GenderFlipMode()
+        elseif parsed_args[1]==string.lower(MH_OPT12) then
+            MH_SecretCowPowers()
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
     elseif (l==2) then --info commands
-        if parsed_args[1] == MH_OPT6 then 
+        if parsed_args[1] == string.lower(MH_OPT6) then 
             displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("DisplayID: %s nativeDisplayID: %s mountDisplayID: %s",
              displayID, nativeDisplayID, mountDisplayID))
-        elseif parsed_args[1] == MH_OPT7 then
+        elseif parsed_args[1] ==string.lower(MH_OPT7)then
             itemDisplayID = GetItemDisplayID(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("ItemID: %s DisplayID: %s",
              parsed_args[2], itemDisplayID))
@@ -201,21 +272,21 @@ local function doCommand(parsed_args)
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
     elseif (l==3) then -- morph commands
-        if parsed_args[1] == MH_OPT1 then 
+        if parsed_args[1] == string.lower(MH_OPT1) then 
             SetUnitDisplayID(parsed_args[2], tonumber(parsed_args[3]))
-        elseif parsed_args[1] == MH_OPT2 then
+        elseif parsed_args[1] == string.lower(MH_OPT2) then
             SetUnitMountDisplayID(parsed_args[2], tonumber(parsed_args[3]))
-        elseif parsed_args[1] == MH_OPT3 then
+        elseif parsed_args[1] == string.lower(MH_OPT3) then
             RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
-        elseif parsed_args[1] == MH_OPT4 then
+        elseif parsed_args[1] == string.lower(MH_OPT4) then
             RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
     elseif (l==4) then -- item morph commands
-        if parsed_args[1] == MH_OPT8 then
+        if parsed_args[1] == string.lower(MH_OPT8) then
             SetUnitVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
-        elseif parsed_args[1] == MH_OPT5 then 
+        elseif parsed_args[1] == string.lower(MH_OPT5) then 
             RemapVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
@@ -409,7 +480,8 @@ function MH_DisplayList_UpdateButtons()
     txtID = MH_DisplayList_IDEditBox:GetText()
     for i=1,MH_UnitTokensLen do
         u = MH_UnitTokens[i]
-        if (UnitExists(u) or MH_PRESETMODE) then
+        if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
+            --disable morph buttons if no displayID is selected
             if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
                 getglobal(MH_MorphButtons[i]):Enable()
                 getglobal(MH_MorphMountButtons[i]):Enable()
@@ -431,12 +503,12 @@ function MH_DisplayList_UpdateButtons()
         end
     end
     --Preset Buttons
-    if MH_CurrentMorphs.Dirty then
+    if MH_CurrentMorphs.Dirty then --only offer to save if there's changes
         MH_DisplayList_AddPresetButton:Enable()
     else
         MH_DisplayList_AddPresetButton:Disable()
     end
-    if MH_CurrentPresetIndex > 0 then
+    if MH_CurrentPresetIndex > 0 then -- only offer to apply or delete if a preset is selected
         MH_DisplayList_DeletePresetButton:Enable()
         MH_DisplayList_ApplyPresetButton:Enable()
     else
@@ -446,6 +518,7 @@ function MH_DisplayList_UpdateButtons()
     --Swap Buttons
     txtID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     txtOID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+    --only enable swap buttons if both displayID fields are filled
     if (string.len(txtID) > 0 and string.len(txtOID) > 0) then
         MH_DisplayList_IDSwapsButton:Enable()
         MH_DisplayList_MountIDSwapsButton:Enable()
@@ -487,7 +560,7 @@ function MH_DisplayList_OnMouseWheel()
     MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll(s*8);
 end
 
---Scrolls to the displayID in the big list, doesn't scroll to any prefab categories
+--Scrolls to the displayID in the big list, only scrolls through All folder
 function MH_ScrollToDisplayID(displayID)
     found=0
     for i=1, MH_DISPLAY_LISTS[1].len do
@@ -598,7 +671,18 @@ function MH_DisplayList_MorphInfo_OnClick()
     local u = MH_UnitTokens[k]
     displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(u)
     --Find DisplayID in the big list?
-    DEFAULT_CHAT_FRAME:AddMessage(format("Found nativeDisplayID: %s",nativeDisplayID))
+    --DEFAULT_CHAT_FRAME:AddMessage(format("Found nativeDisplayID: %s",nativeDisplayID))
+    if (MH_NEWIDFOCUS) then 
+        MH_DisplayList_SwapFrame_NewIDEditBox:SetText(displayID)
+        MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
+        MH_NEWIDFOCUS = false
+        MH_DisplayList_UpdateButtons()
+    elseif (MH_OLDIDFOCUS) then
+        MH_DisplayList_SwapFrame_OldIDEditBox:SetText(displayID)
+        MH_DisplayList_SwapFrame_OldIDEditBox:ClearFocus()
+        MH_OLDIDFOCUS = false
+        MH_DisplayList_UpdateButtons()
+    end
     MH_ScrollToDisplayID(displayID)
 end
 
@@ -610,9 +694,20 @@ function MH_DisplayList_MountInfo_OnClick()
     displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(u)
     --Find DisplayID in the big list?
     if mountDisplayID == 0  then 
-        DEFAULT_CHAT_FRAME:AddMessage(format("Unit isn't mounted, displayID: %s",mountDisplayID))
+        DEFAULT_CHAT_FRAME:AddMessage(format("Unit isn't mounted"))
     else
        MH_ScrollToDisplayID(mountDisplayID)
+        if (MH_NEWIDFOCUS) then 
+            MH_DisplayList_SwapFrame_NewIDEditBox:SetText(mountDisplayID)
+            MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
+            MH_NEWIDFOCUS = false
+            MH_DisplayList_UpdateButtons()
+        elseif (MH_OLDIDFOCUS) then
+            MH_DisplayList_SwapFrame_OldIDEditBox:SetText(mountDisplayID)
+            MH_DisplayList_SwapFrame_OldIDEditBox:ClearFocus()
+            MH_OLDIDFOCUS = false
+            MH_DisplayList_UpdateButtons()
+        end
     end
 end
 

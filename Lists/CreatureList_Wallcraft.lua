@@ -1,4 +1,10 @@
-MH_CreatureList = {
+--[[
+Raw Creature List:
+select db_creaturedisplayinfo_5875.ID, db_creaturemodeldata_5875.ModelName, db_creaturedisplayinfo_5875.TextureVariation1 
+from db_creaturedisplayinfo_5875
+join db_creaturemodeldata_5875 on db_creaturedisplayinfo_5875.ModelID = db_creaturemodeldata_5875.ID
+--]] 
+MH_CreatureList_WC = {
   {
     ID = 4,
     ModelName = "CrystalSpider",
@@ -121800,4 +121806,4 @@ MH_CreatureList = {
     TextureVariation1 = ""
   }
 }
-MH_CreatureListLen = getn(MH_CreatureList)
+MH_CreatureList_WCLen = getn(MH_CreatureList_WC)

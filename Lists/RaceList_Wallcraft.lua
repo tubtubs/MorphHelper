@@ -1,4 +1,4 @@
-MH_RaceList = {
+MH_RaceList_WC = {
   {
     ID = 49,
     ModelName = "Human Male",
@@ -311,4 +311,4 @@ MH_RaceList = {
   }
 }
 
-MH_RaceListLen = getn(MH_RaceList)
+MH_RaceList_WCLen = getn(MH_RaceList_WC)
