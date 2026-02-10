@@ -191,3 +191,32 @@ MH_CloseButton =
     func =  function() MH_Dewdrop:Close() end,
     'notCheckable', true
 }
+
+MH_WI_Examples = 
+{
+    {
+        name = "MorphHelper Example",
+        tooltip = "Morphs the player into a murloc",
+        example = "\n/mh morph player 31",
+        check = function() 
+            if (MH_Vars) then
+                return true
+            else
+                return false
+            end
+        end,
+    },
+    {
+        name = "MorphHelper Presets",
+        tooltip = "Pick a preset",
+        example = "",
+        value = "MH_Presets",
+        check = function() 
+            if (MH_Vars) then
+                return true
+            else
+                return false
+            end
+        end,
+    },
+}

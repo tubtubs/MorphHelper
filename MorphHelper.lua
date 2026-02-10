@@ -133,7 +133,16 @@ function MH_VariablesLoaded()
             end
             DEFAULT_CHAT_FRAME:AddMessage(MH_S_WC)
         end
+        --Initialize WoWInit's list of presets
+        if (WI_Vars) then 
+            --Example Morph and Presets Menu Stub
+            for i,j in pairs(MH_WI_Examples) do
+                table.insert(WI_EXAMPLES[1], j)
+            end
 
+            --Presets Menu
+            MH_UpdateWoWInitPresets()
+        end
         --Initialize empty tables
         MH_CurrentMorphs = {
             Dirty=false,
@@ -173,6 +182,39 @@ function MH_VariablesLoaded()
         MH_DewdropRegister()
         MH_Presets_DewdropRegister()
         DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
+    end
+end
+
+function MH_UpdateWoWInitPresets()
+    --Presets Menu Purge
+    if (WI_Vars) then
+        l = getn(WI_EXAMPLES[2])
+        for i=1, l do
+            v = l + 1 - i
+            j = {}
+            j = WI_EXAMPLES[2][v]
+            DEFAULT_CHAT_FRAME:AddMessage(j.name)
+            if j.value == "MH_Presets" then
+                table.remove(WI_EXAMPLES[2],v)
+            end
+        end
+
+
+        --Presets Menu Re-Add
+        for i,j in pairs(MH_Vars.Presets) do
+            t = {}
+            t =         
+            {
+                name = i .. ". " .. j.Name,
+                tooltip = "",
+                example = "\n/mh applyPreset " .. i,
+                value = "MH_Presets",
+                check = function() 
+                    return true
+                end,
+        }
+        table.insert(WI_EXAMPLES[2], t)
+        end    
     end
 end
 
@@ -571,7 +613,9 @@ function MH_ResetAll()
         end
     end
     MH_CurrentMorphs.Dirty = false
-    MH_DisplayList_UpdateButtons()
+    if (MH_DisplayList:IsShown()) then
+        MH_DisplayList_UpdateButtons()
+    end
 end
 
 function MH_SetPreset(PresetIndex)
@@ -1020,6 +1064,7 @@ function MH_AddPresetButton_OnClick()
         table.insert(MH_Vars.Presets,a)
         DEFAULT_CHAT_FRAME:AddMessage(format("Preset %s added successfully!",newPreset));
         this:GetParent():Hide();
+        MH_UpdateWoWInitPresets()
     end
 	StaticPopupDialogs["MH_ADDPRESET_DIALOG"]={
 		text=TEXT(MH_NEWPRESET),
@@ -1085,6 +1130,8 @@ function MH_DeletePresetButton_OnClick()
         table.remove(MH_Vars.Presets,MH_CurrentPresetIndex)
         MH_CurrentPresetIndex = 0
         MH_CurrentPreset = ""
+        MH_DisplayList_UpdateButtons()
+        MH_UpdateWoWInitPresets()
 	    --ReloadUI();	
 	end,
 	timeout = 0,
