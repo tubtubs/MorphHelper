@@ -1,12 +1,20 @@
 ## Interface: 11200
 ## Title: MorphHelper
 ## Author: |ccf3CE13Ftubtubs 
-## Version: 1.3
+## Version: 1.4
 ## Notes: Slash command hooks, and a window for morphs. /mh for more info
 ## Requires VanillaHelpers. Most of the limits on morphing are imposed by the mod.
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: MH_Vars
+## SavedVariables: MH_Vars, MorphHelper_Icon
+libs\AceLibrary.lua
+libs\Dewdrop-2.0.lua
+libs\LibStub.lua
+libs\AceCore-3.0.lua
+libs\AceHook-3.0.lua
+libs\CallbackHandler-1.0.lua
+libs\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0.lua
 Lists\RaceList_Wallcraft.lua
 Lists\CreatureList_Wallcraft.lua
 Lists\RaceList_Turtle.lua

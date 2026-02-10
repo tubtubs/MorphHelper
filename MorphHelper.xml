@@ -1168,14 +1168,11 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parentParty4Title">
                         <Offset>
-                            <AbsDimension x="-68" y="-28"/>
+                            <AbsDimension x="-68" y="-38"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
                 <Scripts>
-                    <OnShow>
-                       UIDropDownMenu_Initialize(self, MH_PresetDropDown_OnShow);
-                    </OnShow>
                     <OnClick>
 					   GameTooltip:Hide();
                        MH_PresetDropDownButton_OnClick();
@@ -1197,7 +1194,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_PresetsButton">
                         <Offset>
-                            <AbsDimension x="22" y="-10"/>
+                            <AbsDimension x="22" y="0"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1268,7 +1265,7 @@
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_PresetsButton">
                         <Offset>
-                            <AbsDimension x="128" y="8"/>
+                            <AbsDimension x="138" y="18"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1313,6 +1310,31 @@
 					</OnLeave>
                 </Scripts>
             </CheckButton>
+            <Button name="$parent_ResetAllButton" text="MH_RESETALL" inherits="MH_ButtonTemplate">
+                <Size>
+                    <AbsDimension x="62" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_PresetsButton">
+                        <Offset>
+                            <AbsDimension x="10" y="22"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        MH_ResetAll()
+					</OnClick>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                        GameTooltip:SetText(MH_RESETALLTOOLTIP);
+                        GameTooltip:Show();
+                    </OnEnter>
+                    <OnLeave>
+					    GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </Button>
             <!-- Category Tabs -->
             <Button name="$parent_CategoryAllButton" text="MH_CATEGORY_ALL" inherits="MH_ButtonTemplate" id="1">
                 <Size>
@@ -1617,102 +1639,6 @@
             <OnMouseUp>
                 this:StopMovingOrSizing()
             </OnMouseUp>
-        </Scripts>
-    </Frame>
-    <Frame name="MH_MinimapButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="LOW">
-        <Size>
-            <AbsDimension x="32" y="32"/>
-        </Size>
-        <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
-                <Offset>
-                    <AbsDimension x="2" y="0"/>
-                </Offset>
-            </Anchor>
-        </Anchors>
-        <Layers>
-            <Layer level="OVERLAY">
-                <Texture name="$parent_Overlay" file="Interface\Minimap\MiniMap-TrackingBorder">
-                    <Size>
-                        <AbsDimension x="53" y="53"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="0" y="0"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
-            <Layer level="BACKGROUND">
-                <Texture name="$parent_Background" file="Interface\Minimap\UI-Minimap-Background">
-                    <Size>
-                        <AbsDimension x="20" y="20"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-5"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
-            <Layer level="ARTWORK">
-                <Texture name="$parent_Artwork" file="Interface\Icons\INV_Wand_02">
-                    <Size>
-                        <AbsDimension x="17" y="17"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
-        </Layers>
-        <Frames>
-            <Button name="MH_MinimapButton" enableMouse="true">
-                <Size>
-                    <AbsDimension x="31" y="31"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-
-                <HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-                <Scripts>
-                    <OnMouseDown>
-						MH_MinimapButton_OnClick();
-                        GameTooltip:Hide();
-					</OnMouseDown>
-                    <OnMouseUp>
-                        MH_MinimapButton_OnClickUp();
-                    </OnMouseUp>
-                    <OnEnter>
-                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
-                        GameTooltip:SetText(MH_MINIMAPTOOLTIP);
-                        GameTooltip:Show();
-                    </OnEnter>
-                    <OnLeave>
-                        GameTooltip:Hide();
-                    </OnLeave>
-                </Scripts>
-            </Button>
-        </Frames>
-    </Frame>
-    <Frame name="MH_MiniMapDownMenu" inherits="UIDropDownMenuTemplate" id="1">
-        <Scripts>
-            <OnLoad>
-               UIDropDownMenu_Initialize(self, MH_MinimapDrop_OnLoad, "MENU");
-           </OnLoad>
         </Scripts>
     </Frame>
 </Ui>

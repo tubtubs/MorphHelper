@@ -29,12 +29,14 @@ MH_NEWPRESET = "New Preset"
 MH_ADDPRESETS = "+"
 MH_DELETEPRESET = "-"
 MH_APPLYPRESET = "Apply"
+MH_RESETALL = "Reset All"
 MH_PRESETSTOOLTIP = "Click to select a preset"
 MH_ADDPRESETSTOOLTIP = "Click to add new preset"
 MH_DELETEPRESETTOOLTIP = "Click to delete current preset"
 MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
 MH_PRESETMODETITLE = "Preset Mode:"
 MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually apply in this mode, unit's won't be checked."
+MH_RESETALLTOOLTIP = "Click to reset all available unit's morphs"
 
 MH_TOOLTIPMORPH = "Click to morph %s"
 MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount"
@@ -60,36 +62,8 @@ MH_SWAPBUTTONTIP = "Click to swap the old and the new IDs"
 
 MH_MINIMAPTOOLTIP = "MorphHelper\nClick to open options\nRight click and drag to move"
 
-MH_DEFAULT_PRESETS = {
-    {
-        Name="Full Orc Male",
-        Morphs = {
-            { --player
-                ID = 51,
-                MID = -1;
-            },
-            { --target
-                ID = 51,
-                MID = -1;
-            },
-            { --party1
-                ID = 51,
-                MID = -1;
-            },
-            { --party2
-                ID = 51,
-                MID = -1;
-            },
-            { --party3
-                ID = 51,
-                MID = -1;
-            },
-            { --party4
-                ID = 51,
-                MID = -1;
-            },
-        };
-    },    
+--Wallcraft Presets
+MH_WC_PRESETS = {
     {
         Name="Gnomish Motorcycle Gang",
         Morphs = {
@@ -119,63 +93,44 @@ MH_DEFAULT_PRESETS = {
             },
         };
     },
+}
+
+--TurtleWoW presets
+--Don't have any to add to turtle, but will stage
+MH_TW_PRESETS = {
+
+}
+
+--Vanilla Presets, always loaded
+MH_DEFAULT_PRESETS = {
     {
-        Name="Set All",
+        Name="Full Orc Male",
         Morphs = {
             { --player
-                ID = 240,
-                MID = 235;
+                ID = 51,
+                MID = -1;
             },
             { --target
-                ID = 240,
-                MID = 235;
+                ID = 51,
+                MID = -1;
             },
             { --party1
-                ID = 240,
-                MID = 235;
+                ID = 51,
+                MID = -1;
             },
             { --party2
-                ID = 240,
-                MID = 235;
+                ID = 51,
+                MID = -1;
             },
             { --party3
-                ID = 240,
-                MID = 235;
+                ID = 51,
+                MID = -1;
             },
             { --party4
-                ID = 240,
-                MID = 235;
+                ID = 51,
+                MID = -1;
             },
-        }
-    },
-    {
-        Name="Reset All",
-        Morphs = {
-            { --player
-                ID = 0,
-                MID = 0;
-            },
-            { --target
-                ID = 0,
-                MID = 0;
-            },
-            { --party1
-                ID = 0,
-                MID = 0;
-            },
-            { --party2
-                ID = 0,
-                MID = 0;
-            },
-            { --party3
-                ID = 0,
-                MID = 0;
-            },
-            { --party4
-                ID = 0,
-                MID = 0;
-            },
-        }
+        };
     }
 }
 
@@ -184,3 +139,55 @@ MH_TESTID = "ERROR"
 
 MH_STARDISABLEDICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2_disabled.tga"
 MH_STARICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2.tga"
+
+--drop down menu stuff
+MH_Menu=
+{
+    {
+        text = "Open Window",
+        tooltipTitle =  "Open Window",
+        tooltipText =  "Opens the MorphHelper window",
+        func =  function() 
+            if (MH_DisplayList:IsShown()) then 
+                MH_DisplayList:Hide() 
+            else 
+                MH_DisplayList:Show() 
+            end 
+        end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Reset Window",
+        tooltipTitle = "Reset Window",
+        tooltipText = "Resets the MorphHelper window's position",
+        func =  function() MH_DisplayList_ResetPos() end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Presets",
+        tooltipTitle =  "Presets",
+        tooltipText =  "Apply one of the saved presets...",
+        value=2,
+        hasArrow=true
+    },
+    {
+        text = "Reset All",
+        tooltipTitle = "Reset All",
+        tooltipText = "Resets the MorphHelper window's position",
+        func =  function() MH_ResetAll() end,
+        value=nil,
+        hasArrow=false
+    }
+}
+
+MH_CloseButton = 
+{
+    text = "Close Menu",
+    'textR', 0,
+    'textG', 1,
+    'textB', 1,
+    func =  function() MH_Dewdrop:Close() end,
+    'notCheckable', true
+}

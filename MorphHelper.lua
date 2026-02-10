@@ -29,11 +29,17 @@ v1.4:
 Added creature and race lists for Vanilla, Wallcraft, and TurtleWoW.
 Refined mount list for vanilla, don't have mount list for custom servers.
 Tweaked UI, added a button to swap IDs in the IDSwap textboxes
+v1.5
+Presets usable from Minimap Button
 ]]--
+--MorphHelper_Icon = nil
+local libIcon = LibStub("LibDBIcon-1.0");
+local libData = LibStub("LibDataBroker-1.1");
+local MH_Dewdrop = AceLibrary("Dewdrop-2.0");
+local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
-MH_MinimapButtonFunc = {}
 --event handler and init
 function MH_VariablesLoaded()
     if (event=="PLAYER_TARGET_CHANGED" or event=="PARTY_MEMBERS_CHANGED") then
@@ -41,15 +47,14 @@ function MH_VariablesLoaded()
             MH_DisplayList_UpdateButtons()
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
+        firstrun = 0
         if (not MH_Vars) then
             MH_Vars = {
                 Presets=MH_DEFAULT_PRESETS,
                 Favorites = {},
                 FavoritesLen = 0,
-                MinimapButtonPos = MH_DEFAULTMINIMAPPOS;
             };
-        elseif not MH_Vars.MinimapButtonPos then
-            MH_Vars.MinimapButtonPos = MH_DEFAULTMINIMAPPOS
+            firstrun = 1
         end
         --initialize display lists
         r = GetRealmName()
@@ -95,6 +100,11 @@ function MH_VariablesLoaded()
                         len=MH_Vars.FavoritesLen
                     }
                 }
+                if firstrun == 1 then
+                    for i,j in pairs(MH_TW_PRESETS) do
+                        table.insert(MH_Vars.Presets,j)
+                    end
+                end
                 DEFAULT_CHAT_FRAME:AddMessage(MH_S_VWOW)
             end
         else --Wallcraft
@@ -116,6 +126,11 @@ function MH_VariablesLoaded()
                     len=MH_Vars.FavoritesLen
                 },
             }
+            if firstrun == 1 then
+                for i,j in pairs(MH_WC_PRESETS) do
+                    table.insert(MH_Vars.Presets,j)
+                end
+            end
             DEFAULT_CHAT_FRAME:AddMessage(MH_S_WC)
         end
 
@@ -149,20 +164,133 @@ function MH_VariablesLoaded()
                 },
             }
         }
-        MH_MinimapButtonFunc = {
-            {
-                tip = "Open window",
-                func = function() MH_DisplayList:Show(); end
-            },
-            {
-                tip = "Reset window",
-                func = function () MH_DisplayList_ResetPos(); end
+        if MorphHelper_Icon == nil then
+            MorphHelper_Icon = {
+                hide = false
             };
-        }
-        MH_MinimapButton_UpdatePosition();
+        end
+        MH_MinimapIconRegister()
+        MH_DewdropRegister()
+        MH_Presets_DewdropRegister()
         DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
     end
 end
+
+--Dropdown Menu Code
+function MH_PresetsDewDropGen(minimapBtn)
+
+    for i,j in ipairs(MH_Vars.Presets) do
+        chk = false
+        if i == MH_CurrentPresetIndex then
+            chk=true;
+        end
+        if minimapBtn then
+            MH_Dewdrop:AddLine(
+                'text', j.Name,
+                'textR', 1,
+                'textG', 0.82,
+                'textB', 0,
+                'func', MH_ApplyPreset,
+                'arg1', i,
+                'notCheckable', false,
+                'checked', chk
+            )
+        else
+            MH_Dewdrop:AddLine(
+                'text', j.Name,
+                'textR', 1,
+                'textG', 0.82,
+                'textB', 0,
+                'func', MH_SetPreset,
+                'arg1', i,
+                'notCheckable', false,
+                'checked', chk
+            )
+        end
+    end
+
+    MH_Dewdrop:AddLine(
+        'text' , "Close Menu",
+        'textR', 0,
+        'textG', 1,
+        'textB', 1,
+        'func' , function() MH_Dewdrop:Close() end,
+        'notCheckable', true
+    )
+end
+
+function MH_Presets_DewdropRegister()
+    MH_Presets_Dewdrop:Register(MH_DisplayList_PresetsButton, --Bound Frame
+		'point', function(parent) --Point
+			return "TOP", "BOTTOM"
+		end,
+		'children', function(level, value) --Children
+			if level == 1 then
+                MH_PresetsDewDropGen(false)
+            end
+		end,
+		'dontHook', true
+	)
+end
+
+function MH_DewdropRegister()
+	MH_Dewdrop:Register(libIcon:GetMinimapButton("MorphHelper icon"), --Bound Frame
+		'point', function(parent) --Point
+			return "TOP", "BOTTOM"
+		end,
+		'children', function(level, value) --Children
+			if level == 1 then
+                for i,j in ipairs(MH_Menu) do
+                        MH_Dewdrop:AddLine(
+                            'text', j.text,
+                            'tooltipTitle', j.tooltipTitle,
+                            'tooltipText', j.tooltipText,  
+                            'textR', 1,
+                            'textG', 0.82,
+                            'textB', 0,
+                            'func', j.func,
+                            'hasArrow', j.hasArrow,
+                            'value', j.value,
+                            'notCheckable', true
+                        )
+                end
+
+				--Close button
+				MH_Dewdrop:AddLine(
+                    'text' , "Close Menu",
+                    'textR', 0,
+                    'textG', 1,
+                    'textB', 1,
+                    'func' , function() MH_Dewdrop:Close() end,
+                    'notCheckable', true
+                )
+			elseif level == 2 then
+                MH_PresetsDewDropGen(true)
+            end
+		end,
+		'dontHook', true
+	)
+end
+
+--Minimap Button Setup
+function MH_MinimapIconRegister()
+    local iconData = libData:NewDataObject("MorphHelper icon data", {
+        OnClick = function()
+            if MH_Dewdrop:IsOpen() then
+                MH_Dewdrop:Close();
+            else
+                MH_Dewdrop:Open(this);
+            end
+        end,
+        OnTooltipShow = function(tooltip)
+            tooltip:SetText(MH_NAMEVERSION);
+        end,
+        icon = "Interface\\Icons\\INV_Wand_02"
+    });
+
+    libIcon:Register("MorphHelper icon", iconData, MorphHelper_Icon);
+end
+
 
 -- slashcommands
 SLASH_MORPHHELPER1 = '/MorphHelper'
@@ -180,12 +308,15 @@ MH_OPT9 = "show"
 MH_OPT10 = "resetWindow"
 MH_OPT11 = "genderSwap"
 MH_OPT12 = "secretCowPowers"
+MH_OPT13 = "resetAll"
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. " .|r\n"
 MH_SLASHHELP9 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT9 ..
 "|r - Shows the morph helper window.\n"
 MH_SLASHHELP10 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT10 ..
 "|r - Resets the morph helper window position (center screen).\n"
+MH_SLASHHELP13 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT13 ..
+"|r - Resets all morphs, won't undo swaps\n"
 
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
@@ -204,7 +335,7 @@ MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot displayID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
@@ -400,6 +531,42 @@ MH_UnitTokensLen = getn(MH_UnitTokens)
 
 MH_CurrentPreset = ""
 MH_CurrentPresetIndex= 0
+
+--Utility Functions
+
+function MH_ResetAll()
+    for i=1,MH_UnitTokensLen do
+        u = MH_UnitTokens[i]
+        MH_CurrentMorphs.Morphs[i].ID = -1
+        MH_CurrentMorphs.Morphs[i].MID = -1
+        if MH_DisplayList:IsShown() then
+            getglobal(MH_MorphButtons[i]):SetChecked(0)
+            getglobal(MH_MorphMountButtons[i]):SetChecked(0)
+        end
+        if (UnitExists(u) and not MH_PRESETMODE) then
+            SetUnitDisplayID(u, 13) 
+            SetUnitDisplayID(u, 0)
+            SetUnitMountDisplayID(u, 0)
+        end
+    end
+    MH_CurrentMorphs.Dirty = false
+    MH_DisplayList_UpdateButtons()
+end
+
+function MH_SetPreset(PresetIndex)
+    MH_CurrentPresetIndex = PresetIndex
+    MH_CurrentPreset = MH_Vars.Presets[PresetIndex].Name
+    MH_Presets_Dewdrop:Close()
+    MH_DisplayList_UpdateButtons()
+end
+
+function MH_ApplyPreset(PresetIndex)
+    MH_CurrentPresetIndex = PresetIndex
+    MH_CurrentPreset = MH_Vars.Presets[PresetIndex].Name
+    MH_ApplyPresetButton_OnClick()
+    MH_Dewdrop:Close()
+end
+
 
 --DisplayList Functions
 function MH_DisplayList_ResetPos()
@@ -826,7 +993,12 @@ end
 
 function MH_PresetDropDownButton_OnClick()
     PlaySound("igCharacterInfoOpen");
-	ToggleDropDownMenu(1, nil, MH_DisplayList_PresetsButton, MH_DisplayList_PresetsButton, 0, 0);
+	--ToggleDropDownMenu(1, nil, MH_DisplayList_PresetsButton, MH_DisplayList_PresetsButton, 0, 0);
+    if MH_Dewdrop:IsOpen() then
+        MH_Dewdrop:Close();
+    else
+        MH_Dewdrop:Open(this);
+    end
 end
 
 function MH_AddPresetButton_OnClick()
@@ -949,7 +1121,9 @@ function MH_ApplyPresetButton_OnClick()
             end
         end
     end
-    MH_DisplayList_UpdateButtons()
+    if MH_DisplayList:IsShown() then
+        MH_DisplayList_UpdateButtons()
+    end
 end
 
 --Swap Functions
@@ -987,50 +1161,4 @@ function MH_DisplayList_SwapFrame_SwapIDsButton_OnClick()
 
     MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
     MH_DisplayList_SwapFrame_OldIDEditBox:ClearFocus()
-end
-
-
-
---Minimap button
-function MH_MinimapButton_UpdatePosition()
-	MH_MinimapButtonFrame:SetPoint(
-		"TOPLEFT",
-		"Minimap",
-		"TOPLEFT",
-		52 - (80 * cos(MH_Vars.MinimapButtonPos )),
-		(80 * sin(MH_Vars.MinimapButtonPos )) - 52
-	);
-end
-
-function MH_MinimapButton_OnClick()
-    local StartX, StartY = GetCursorPosition()
-
-    local EndX, EndY
-    if arg1 == 'LeftButton' then
-        ToggleDropDownMenu(1, nil, 
-        MH_MiniMapDownMenu, MH_MinimapButtonFrame,-100, 0);
-    elseif arg1 == 'RightButton' then
-        MH_MinimapButtonFrame:SetScript('OnUpdate', function(self)
-            EndX, EndY = GetCursorPosition()
-            --DEFAULT_CHAT_FRAME:AddMessage(format("%s", EndX-StartX))
-            MH_Vars.MinimapButtonPos = MH_Vars.MinimapButtonPos -(EndX-StartX)
-            MH_MinimapButton_UpdatePosition()
-            StartX, StartY = GetCursorPosition()
-        end)
-    end
-end
-
-function MH_MinimapButton_OnClickUp()
-    MH_MinimapButtonFrame:SetScript('OnUpdate', nil)
-end
-
-
-function MH_MinimapDrop_OnLoad()
-	for i=1, getn(MH_MinimapButtonFunc) do
-		info = {};
-		info.text       = MH_MinimapButtonFunc[i].tip
-		info.value      = i;
-		info.func =  MH_MinimapButtonFunc[i].func
-		UIDropDownMenu_AddButton(info);
-	end
 end
