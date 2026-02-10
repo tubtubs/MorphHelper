@@ -186,7 +186,7 @@ function MH_PresetsDewDropGen(minimapBtn)
         end
         if minimapBtn then
             MH_Dewdrop:AddLine(
-                'text', j.Name,
+                'text', i .. ". " ..  j.Name,
                 'textR', 1,
                 'textG', 0.82,
                 'textB', 0,
@@ -197,7 +197,7 @@ function MH_PresetsDewDropGen(minimapBtn)
             )
         else
             MH_Dewdrop:AddLine(
-                'text', j.Name,
+                'text', i .. ". " .. j.Name,
                 'textR', 1,
                 'textG', 0.82,
                 'textB', 0,
@@ -309,6 +309,9 @@ MH_OPT10 = "resetWindow"
 MH_OPT11 = "genderSwap"
 MH_OPT12 = "secretCowPowers"
 MH_OPT13 = "resetAll"
+MH_OPT14 = "applyPreset"
+MH_OPT15 = "listPresets"
+
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. " .|r\n"
 MH_SLASHHELP9 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT9 ..
@@ -317,6 +320,10 @@ MH_SLASHHELP10 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT10 ..
 "|r - Resets the morph helper window position (center screen).\n"
 MH_SLASHHELP13 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT13 ..
 "|r - Resets all morphs, won't undo swaps\n"
+MH_SLASHHELP14 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT14 ..
+"|cFF00FF00 presetIndex |r - Applies a preset, at specified index.\n"
+MH_SLASHHELP15 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT15 ..
+"|r - Lists saved presets, and their index.\n"
 
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
@@ -335,7 +342,7 @@ MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot displayID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
@@ -379,6 +386,14 @@ local function MH_SecretCowPowers()
     DEFAULT_CHAT_FRAME:AddMessage("Secret cow powers engaged!")
 end
 
+function MH_ListPresets()
+    DEFAULT_CHAT_FRAME:AddMessage(MH_NAME .. " " .. MH_PRESETS .. ":")
+    for i,j in pairs(MH_Vars.Presets) do
+        DEFAULT_CHAT_FRAME:AddMessage(i .. ". " .. j.Name)
+    end
+
+end
+
 local function doCommand(parsed_args)
     l = getn(parsed_args)
     if (l==1) then
@@ -390,6 +405,8 @@ local function doCommand(parsed_args)
             MH_GenderFlipMode()
         elseif parsed_args[1]==string.lower(MH_OPT12) then
             MH_SecretCowPowers()
+        elseif parsed_args[1]==string.lower(MH_OPT15) then
+            MH_ListPresets()
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -398,10 +415,12 @@ local function doCommand(parsed_args)
             displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("DisplayID: %s nativeDisplayID: %s mountDisplayID: %s",
              displayID, nativeDisplayID, mountDisplayID))
-        elseif parsed_args[1] ==string.lower(MH_OPT7)then
+        elseif parsed_args[1] == string.lower(MH_OPT7) then
             itemDisplayID = GetItemDisplayID(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("ItemID: %s DisplayID: %s",
              parsed_args[2], itemDisplayID))
+        elseif parsed_args[1] == string.lower(MH_OPT14) then
+            MH_ApplyPreset(tonumber(parsed_args[2]))
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -448,7 +467,9 @@ end
 -- chat inputs
 local function TextMenu(arg)
 	if arg == nil or arg == "" then
-		DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHHELP,1,1,1)
+        for w in string.gfind(MH_SLASHHELP, "([^\r\n]+)") do
+            DEFAULT_CHAT_FRAME:AddMessage(w,1,1,1)
+        end
 	else
         parseArgs(arg)
 	end
@@ -971,29 +992,8 @@ end
 
 --presets
 
-function MH_PresetDropDown_OnShow()
-	for i=1, getn(MH_Vars.Presets) do
-		info = {};
-		info.text       = MH_Vars.Presets[i].Name;
-		info.value      = i;
-        if (i == MH_CurrentPresetIndex) then
-			info.checked =true;
-		else
-			info.checked=false;
-		end
-		info.func =  function()
-            PlaySound("igCharacterInfoOpen"); 
-            MH_CurrentPresetIndex = this.value
-            MH_CurrentPreset = this.text
-            MH_DisplayList_UpdateButtons()
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
 function MH_PresetDropDownButton_OnClick()
     PlaySound("igCharacterInfoOpen");
-	--ToggleDropDownMenu(1, nil, MH_DisplayList_PresetsButton, MH_DisplayList_PresetsButton, 0, 0);
     if MH_Dewdrop:IsOpen() then
         MH_Dewdrop:Close();
     else
