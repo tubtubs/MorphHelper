@@ -480,7 +480,7 @@ local function doCommand(parsed_args)
         end
     elseif (l==4) then -- item morph commands
         if parsed_args[1] == string.lower(MH_OPT8) then
-            SetUnitVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
+            SetUnitVisibleItemID(parsed_args[2], tonumber(parsed_args[3]),tonumber(parsed_args[4]))
         elseif parsed_args[1] == string.lower(MH_OPT5) then 
             RemapVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
         else
