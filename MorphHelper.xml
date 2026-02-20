@@ -1,5 +1,23 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Include file="MorphHelper.lua" />
+    <GameTooltip name="MH_Tooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+		this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+    <Frame name="MH_Timer">
+		<Scripts>
+			<OnLoad>
+            this.events={};
+            this.events.n=0;
+			</OnLoad>
+			<OnUpdate>
+            MH_Timer_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
     <Frame name="MH_Listener" hidden="true">
         <Scripts>
             <OnLoad>

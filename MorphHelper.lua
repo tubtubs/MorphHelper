@@ -8,7 +8,8 @@ Requires VanillaHelpers, be sure to install that mod before using this addon.
 https://github.com/isfir/VanillaHelpers
 
 TODO:
-Add Profiles Dropdown to Minimap Button
+Add Profiles Dropdown to Minimap 
+-Checked status is odd, if selected from window and not dropdown. Need two trackers.
 Investigate Items
 
 ChangeLog
@@ -223,10 +224,11 @@ function MH_PresetsDewDropGen(minimapBtn)
 
     for i,j in ipairs(MH_Vars.Presets) do
         chk = false
-        if i == MH_CurrentPresetIndex then
-            chk=true;
-        end
+
         if minimapBtn then
+            if i == MH_AppliedPresetIndex then
+                chk=true;
+            end
             MH_Dewdrop:AddLine(
                 'text', i .. ". " ..  j.Name,
                 'textR', 1,
@@ -238,6 +240,9 @@ function MH_PresetsDewDropGen(minimapBtn)
                 'checked', chk
             )
         else
+            if i == MH_CurrentPresetIndex then
+                chk=true;
+            end
             MH_Dewdrop:AddLine(
                 'text', i .. ". " .. j.Name,
                 'textR', 1,
@@ -333,7 +338,6 @@ function MH_MinimapIconRegister()
     libIcon:Register("MorphHelper icon", iconData, MorphHelper_Icon);
 end
 
-
 -- slashcommands
 SLASH_MORPHHELPER1 = '/MorphHelper'
 SLASH_MORPHHELPER2 = '/Morph'
@@ -388,7 +392,7 @@ MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP1
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
-local function MH_GenderFlipMode()
+function MH_GenderFlipMode()
     p = {
         {49,50}, --human
         {51,52}, --orc
@@ -407,7 +411,7 @@ local function MH_GenderFlipMode()
     DEFAULT_CHAT_FRAME:AddMessage("Secret gender swap mode engaged!")
 end
 
-local function MH_SecretCowPowers()
+function MH_SecretCowPowers()
     t_w = 60
     t_m = 59
     p = {
@@ -447,6 +451,8 @@ local function doCommand(parsed_args)
             MH_GenderFlipMode()
         elseif parsed_args[1]==string.lower(MH_OPT12) then
             MH_SecretCowPowers()
+        elseif parsed_args[1]==string.lower(MH_OPT13) then
+            MH_ResetAll()
         elseif parsed_args[1]==string.lower(MH_OPT15) then
             MH_ListPresets()
         else
@@ -518,6 +524,108 @@ local function TextMenu(arg)
 end
 
 SlashCmdList['MORPHHELPER'] = TextMenu
+
+-- Mounting Morph Commands
+-- Not accessible through slash commands, need to /run them for now.
+function MH_CheckBuff(buffName)
+    local buff=strlower(buffName);
+    local tooltip=MH_Tooltip;
+    local textleft1=getglobal(tooltip:GetName().."TextLeft1");
+    for i=1, 16 do
+        tooltip:SetOwner(UIParent, "ANCHOR_NONE");
+        tooltip:SetUnitBuff("player", i);
+        b = textleft1:GetText();
+        tooltip:Hide();
+        if ( b and strfind(strlower(b), buff) ) then
+            return true
+        elseif ( b==nil ) then
+            return false
+        end
+    end
+end
+
+function MH_Timer_OnUpdate()
+    local t=this.events;
+	if ( getn(t)==0 ) then
+		MH_Timer:Hide();
+	end
+	for k,v in t do
+		if ( k~='n' and k<=GetTime() ) then
+			v.cmd()
+            t[k]=nil;
+            t.n=t.n-1;
+		end
+	end
+end
+
+function MH_MountCallBack(buffName, displayID)
+    if MH_CheckBuff(buffName) then --if the cast succeeded
+        SetUnitMountDisplayID("player", displayID)
+    end
+end
+
+function MH_MountSpell(spellName, buffName, displayID)     
+    if MH_CheckBuff(buffName)  then
+        --use item
+        CastSpellByName(spellName)
+        --remove morph
+        SetUnitMountDisplayID("player", 0)
+    else
+        --use item
+        CastSpellByName(spellName)
+        --wait, check buff again, then morph
+        --local timer_id = UnitXP("timer", "arm", 3000, 0, "MH_Mount_Back");
+        local t=MH_Timer.events;
+        s=GetTime()+3.1;
+        t[s]={};
+        t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
+        t[s].sec=seconds;
+        t[s].rep="";
+        t.n=t.n+1;
+        MH_Timer:Show();
+    end
+end
+
+function MH_MountItem(itemName, buffName, displayID)
+    local f_slot = -1
+    local f_bag = -1
+    for slot=0, 4 do
+		for index=1, GetContainerNumSlots(slot) do
+			if(GetContainerItemLink(slot, index)) then
+				local _, _, itemID = string.find(GetContainerItemLink(slot,index), "item:(%d+):%d+:%d+:%d+")
+                local name, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemID)
+                if itemName == name then
+                    f_slot = index
+                    f_bag = slot
+                    break
+                end
+            end
+        end
+    end
+
+    if f_bag ~= -1 and f_slot ~= -1 then
+        if MH_CheckBuff(buffName) then
+            --use item
+            UseContainerItem(f_bag, f_slot)
+            --remove morph
+            SetUnitMountDisplayID("player", 0)
+        else
+            --use item
+            UseContainerItem(f_bag, f_slot)
+            --wait, check buff again, then morph
+           	local t=MH_Timer.events;
+            s=GetTime()+3.2;
+            t[s]={};
+            t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
+            t[s].sec=seconds;
+            t[s].rep="";
+            t.n=t.n+1;
+            MH_Timer:Show();
+        end
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("Mount item not found.")
+    end
+end
 
 -- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8
@@ -593,7 +701,9 @@ MH_UnitTokens = {
 MH_UnitTokensLen = getn(MH_UnitTokens)
 
 MH_CurrentPreset = ""
-MH_CurrentPresetIndex= 0
+MH_AppliedPreset = ""
+MH_AppliedPresetIndex = 0
+MH_CurrentPresetIndex = 0
 
 --Utility Functions
 
@@ -904,13 +1014,12 @@ function MH_DisplayList_MorphMountReset_OnClick()
 end
 
 function MH_DisplayList_MorphInfo_OnClick()
-    --get info about that unit, and then use that info?
+    --get info about that unit, and then use that info
     --get unitToken
     local k = this:GetID()
     local u = MH_UnitTokens[k]
     displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(u)
-    --Find DisplayID in the big list?
-    --DEFAULT_CHAT_FRAME:AddMessage(format("Found nativeDisplayID: %s",nativeDisplayID))
+    --Find DisplayID in the big list
     if (MH_NEWIDFOCUS) then 
         MH_DisplayList_SwapFrame_NewIDEditBox:SetText(displayID)
         MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
@@ -926,12 +1035,12 @@ function MH_DisplayList_MorphInfo_OnClick()
 end
 
 function MH_DisplayList_MountInfo_OnClick()
-    --get info about that unit, and then use that info?
+    --get info about that unit, and then use that info
     --get unitToken
     local k = this:GetID()
     local u = MH_UnitTokens[k]
     displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(u)
-    --Find DisplayID in the big list?
+    --Find DisplayID in the big list
     if mountDisplayID == 0  then 
         DEFAULT_CHAT_FRAME:AddMessage(format("Unit isn't mounted"))
     else
@@ -975,21 +1084,21 @@ function MH_DisplayList_IDEditBox_OnEnter()
     MH_DisplayList_UpdateButtons()
 end
 
+--favorites buttons
 local function sort_ids(a,b)
     return a.ID < b.ID
 end
 
---favorites buttons
 function MH_DisplayListFave_OnClick()
     local manualID = MH_DisplayList_IDEditBox:GetText()
-    index =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
-    displays = MH_DISPLAY_LISTS[MH_CurrentList].list
-    temp = {
+    local index =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
+    local displays = MH_DISPLAY_LISTS[MH_CurrentList].list
+    local temp = {
         ID = displays[index].ID,
         ModelName= displays[index].ModelName,
         TextureVariation1 = displays[index].TextureVariation1;
     }
-    found = 0
+    local found = 0
     for i=1, MH_Vars.FavoritesLen do
         a = MH_Vars.Favorites[i].ID
         if a == displays[index].ID then
@@ -1026,7 +1135,7 @@ end
 
 --Category Change
 function MH_ChangeCategory()
-    cat = this:GetID()
+    local cat = this:GetID()
     MH_CurrentList = cat
     MH_DisplayList.selectedIcon  = 0
     MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll(0)
@@ -1052,12 +1161,13 @@ function MH_AddPresetButton_OnClick()
         local newPreset = editBox:GetText();
         --decided to let presets have duplicate names. Why not?
         --Need to duplicate the morphs table.
-        b = {}
+        local b = {}
+        local c = {}
         for i=1, MH_UnitTokensLen do
             c = {ID=MH_CurrentMorphs.Morphs[i].ID, MID=MH_CurrentMorphs.Morphs[i].MID}
             table.insert(b,c)
         end
-        a = {
+        local a = {
             Name=newPreset, 
             Morphs = b
         }
@@ -1087,7 +1197,9 @@ end
 function MH_DisplayList_ApplyPresetButton_Tooltip()
     GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
     --generate display info for current morphs
-    tooltip = MH_APPLYPRESETTOOLTIP .. "\nPreset Morphs:\n"
+    local tooltip = MH_APPLYPRESETTOOLTIP .. "\nPreset Morphs:\n"
+    local id = -1
+    local mid = -1
     for i=1, MH_UnitTokensLen do
         id = MH_Vars.Presets[MH_CurrentPresetIndex].Morphs[i].ID
         mid = MH_Vars.Presets[MH_CurrentPresetIndex].Morphs[i].MID
@@ -1105,7 +1217,9 @@ end
 function MH_DisplayList_AddPresetButton_Tooltip()
     GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
     --generate display info for current morphs
-    tooltip = MH_ADDPRESETSTOOLTIP .. "\nCurrent Morphs:\n"
+    local tooltip = MH_ADDPRESETSTOOLTIP .. "\nCurrent Morphs:\n"
+    local id = -1
+    local mid = -1
     for i=1, MH_UnitTokensLen do
         id = MH_CurrentMorphs.Morphs[i].ID
         mid = MH_CurrentMorphs.Morphs[i].MID
@@ -1143,6 +1257,11 @@ function MH_DeletePresetButton_OnClick()
 end
 
 function MH_ApplyPresetButton_OnClick()
+    MH_AppliedPresetIndex = MH_CurrentPresetIndex
+    MH_AppliedPreset = MH_Vars.Presets[MH_CurrentPresetIndex].Name
+    local id = -1
+    local mid = -1
+    local u = ""
     for i=1, MH_UnitTokensLen do
         u = MH_UnitTokens[i]
         id = MH_Vars.Presets[MH_CurrentPresetIndex].Morphs[i].ID
@@ -1188,20 +1307,20 @@ function MH_DisplayList_SwapFrame_OldIDEditBox_OnEnter()
 end
 
 function MH_DisplayList_IDSwapsButton_OnClick()
-    newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
-    oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+    local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
+    local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     RemapDisplayID(oldID, newID)
 end
 
 function MH_DisplayList_MountIDSwapsButton_OnClick()
-    newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
-    oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+    local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
+    local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     RemapMountDisplayID(oldID, newID)
 end
 
 function MH_DisplayList_SwapFrame_SwapIDsButton_OnClick()
-    newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
-    oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+    local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
+    local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
 
     MH_DisplayList_SwapFrame_NewIDEditBox:SetText(oldID)
     MH_DisplayList_SwapFrame_OldIDEditBox:SetText(newID)
