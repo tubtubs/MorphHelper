@@ -460,7 +460,7 @@ local function doCommand(parsed_args)
         end
     elseif (l==2) then --info commands
         if parsed_args[1] == string.lower(MH_OPT6) then 
-            displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
+            local displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("DisplayID: %s nativeDisplayID: %s mountDisplayID: %s",
              displayID, nativeDisplayID, mountDisplayID))
         elseif parsed_args[1] == string.lower(MH_OPT7) then
@@ -1018,7 +1018,7 @@ function MH_DisplayList_MorphInfo_OnClick()
     --get unitToken
     local k = this:GetID()
     local u = MH_UnitTokens[k]
-    displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(u)
+    local displayID, _, _ = UnitDisplayInfo(u)
     --Find DisplayID in the big list
     if (MH_NEWIDFOCUS) then 
         MH_DisplayList_SwapFrame_NewIDEditBox:SetText(displayID)
@@ -1039,7 +1039,7 @@ function MH_DisplayList_MountInfo_OnClick()
     --get unitToken
     local k = this:GetID()
     local u = MH_UnitTokens[k]
-    displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(u)
+    local _, _, mountDisplayID = UnitDisplayInfo(u)
     --Find DisplayID in the big list
     if mountDisplayID == 0  then 
         DEFAULT_CHAT_FRAME:AddMessage(format("Unit isn't mounted"))
@@ -1100,7 +1100,7 @@ function MH_DisplayListFave_OnClick()
     }
     local found = 0
     for i=1, MH_Vars.FavoritesLen do
-        a = MH_Vars.Favorites[i].ID
+        local a = MH_Vars.Favorites[i].ID
         if a == displays[index].ID then
             found = i
             break
