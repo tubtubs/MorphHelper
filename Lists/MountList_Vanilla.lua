@@ -1,3 +1,9 @@
+--[[
+select unique creature_template.display_id1
+from spell_template
+join creature_template on creature_template.entry = spell_template.effectMiscValue1 
+where spell_template.effectApplyAuraName1 = 78
+]]--
 MH_MountList_V = {
   {
     ID = 207,
