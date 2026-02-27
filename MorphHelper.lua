@@ -371,6 +371,9 @@ MH_SLASHHELP14 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT14 ..
 MH_SLASHHELP15 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT15 ..
 "|r - Lists saved presets, and their index.\n"
 
+MH_SLASHHELP99 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)]] .. "\n"
+MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)]] .. "\n"
+
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
 MH_SLASHHELP2 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT2 ..
@@ -389,7 +392,7 @@ MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot displayID|r - Morphs a unit's item.\n"
 
 MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
-                 MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7
+                 MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 .. MH_SLASHHELP98 .. MH_SLASHHELP99
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
 function MH_GenderFlipMode()
