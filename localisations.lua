@@ -1,6 +1,6 @@
 -- addon info
 MH_NAME		= "MorphHelper";
-MH_VERSION	= "1.4";
+MH_VERSION	= "1.5";
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
 MH_AUTHOR = "Tubtubs"
 

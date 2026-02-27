@@ -24,6 +24,9 @@
                 this:RegisterEvent("PLAYER_LOGIN");
                 this:RegisterEvent("PLAYER_TARGET_CHANGED");
                 this:RegisterEvent("PARTY_MEMBERS_CHANGED");
+                this:RegisterEvent("PLAYER_AURAS_CHANGED");
+                this:RegisterEvent("PLAYER_CONTROL_LOST");
+                this:RegisterEvent("PLAYER_CONTROL_GAINED");
             </OnLoad>
             <OnEvent>
                 MH_VariablesLoaded()
@@ -309,7 +312,7 @@
             </Shadow>
         </DisabledFont>
     </Button>
-    <Frame name="MH_DisplayList" frameStrat="HIGH" movable="true" enableMouse="true" hidden="true">
+    <Frame name="MH_DisplayList" frameStrat="DIALOG" movable="true" enableMouse="true" hidden="true">
         <Anchors>
             <Anchor point="CENTER" relativeTo="UIParent">
                 <Offset>

@@ -32,12 +32,18 @@ Refined mount list for vanilla, don't have mount list for custom servers.
 Tweaked UI, added a button to swap IDs in the IDSwap textboxes
 v1.5
 Presets usable from Minimap Button
+/run MH_MountItem and MH_MountSpell commands
+FlightPath morph slash commands
+--mount morphs seem to clear FP mounts too
 ]]--
 --MorphHelper_Icon = nil
 local libIcon = LibStub("LibDBIcon-1.0");
 local libData = LibStub("LibDataBroker-1.1");
 local MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
+local mountMorphBuff  = ""
+local mountMorphed = false;
+local FPMorphed = false;
 
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
@@ -54,8 +60,11 @@ function MH_VariablesLoaded()
                 Presets=MH_DEFAULT_PRESETS,
                 Favorites = {},
                 FavoritesLen = 0,
+                FPMorph = -1,
             };
             firstrun = 1
+        elseif (not MH_Vars.FPMorph) then
+            MH_Vars.FPMorph = -1;
         end
         --initialize display lists
         r = GetRealmName()
@@ -183,6 +192,17 @@ function MH_VariablesLoaded()
         MH_DewdropRegister()
         MH_Presets_DewdropRegister()
         DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
+    elseif event=="PLAYER_AURAS_CHANGED" then --if mount buff is removed without using spell or item
+        if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
+            SetUnitMountDisplayID("player", 0)
+            mountMorphed = false
+        end
+    elseif (MH_Vars.FPMorph ~= -1 and event == "PLAYER_CONTROL_LOST" and UnitOnTaxi("player")) then
+        SetUnitMountDisplayID("player", MH_Vars.FPMorph)
+        FPMorphed = true
+    elseif (FPMorphed and event == "PLAYER_CONTROL_GAINED") then
+        SetUnitMountDisplayID("player", 0)
+        FPMorphed = false
     end
 end
 
@@ -199,7 +219,6 @@ function MH_UpdateWoWInitPresets()
                 table.remove(WI_EXAMPLES[2],v)
             end
         end
-
 
         --Presets Menu Re-Add
         for i,j in pairs(MH_Vars.Presets) do
@@ -357,6 +376,7 @@ MH_OPT12 = "secretCowPowers"
 MH_OPT13 = "resetAll"
 MH_OPT14 = "applyPreset"
 MH_OPT15 = "listPresets"
+MH_OPT16 = "FPMorph"
 
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. " .|r\n"
@@ -370,6 +390,8 @@ MH_SLASHHELP14 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT14 ..
 "|cFF00FF00 presetIndex |r - Applies a preset, at specified index.\n"
 MH_SLASHHELP15 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT15 ..
 "|r - Lists saved presets, and their index.\n"
+MH_SLASHHELP16 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT16 ..
+"|cFF00FF00 displayID|r - On taxis morph mount to displayID. Set to -1 to disable.\n"
 
 MH_SLASHHELP99 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)]] .. "\n"
 MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)]] .. "\n"
@@ -383,15 +405,15 @@ MH_SLASHHELP3 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT3 ..
 MH_SLASHHELP4 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT4 ..
 "|cFF00FF00 oldDisplayID displayID|r - Swap a mount displayID.\n"
 MH_SLASHHELP5 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT5 ..
-"|cFF00FF00 itemID inventoryslot displayID|r - Morphs a itemID at a slot.\n"
+"|cFF00FF00 itemID inventoryslot itemID|r - Morphs a itemID at a slot.\n"
 MH_SLASHHELP6 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT6 ..
 "|cFF00FF00 unitToken|r - Displays a unit's display info in chat.\n"
 MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 "|cFF00FF00 itemID|r - Displays an item's display info in chat.\n"
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
-"|cFF00FF00 unitToken inventorySlot displayID|r - Morphs a unit's item.\n"
+"|cFF00FF00 unitToken inventorySlot itemID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 .. MH_SLASHHELP98 .. MH_SLASHHELP99
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
@@ -470,6 +492,8 @@ local function doCommand(parsed_args)
             itemDisplayID = GetItemDisplayID(parsed_args[2])
             DEFAULT_CHAT_FRAME:AddMessage(format("ItemID: %s DisplayID: %s",
              parsed_args[2], itemDisplayID))
+        elseif parsed_args[1] == string.lower(MH_OPT16) then
+            MH_Vars.FPMorph = tonumber(parsed_args[2])
         elseif parsed_args[1] == string.lower(MH_OPT14) then
             MH_ApplyPreset(tonumber(parsed_args[2]))
         else
@@ -564,22 +588,17 @@ end
 function MH_MountCallBack(buffName, displayID)
     if MH_CheckBuff(buffName) then --if the cast succeeded
         SetUnitMountDisplayID("player", displayID)
+        mountMorphed = true
+        mountMorphBuff = buffName
     end
 end
 
-function MH_MountSpell(spellName, buffName, displayID)     
-    if MH_CheckBuff(buffName)  then
-        --use item
-        CastSpellByName(spellName)
-        --remove morph
-        SetUnitMountDisplayID("player", 0)
-    else
-        --use item
-        CastSpellByName(spellName)
+function MH_MountSpell(spellName, buffName, displayID)   
+    CastSpellByName(spellName)
+    if not MH_CheckBuff(buffName)  then
         --wait, check buff again, then morph
-        --local timer_id = UnitXP("timer", "arm", 3000, 0, "MH_Mount_Back");
         local t=MH_Timer.events;
-        s=GetTime()+3.1;
+        s=GetTime()+3.2;
         t[s]={};
         t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
         t[s].sec=seconds;
@@ -607,14 +626,8 @@ function MH_MountItem(itemName, buffName, displayID)
     end
 
     if f_bag ~= -1 and f_slot ~= -1 then
-        if MH_CheckBuff(buffName) then
-            --use item
-            UseContainerItem(f_bag, f_slot)
-            --remove morph
-            SetUnitMountDisplayID("player", 0)
-        else
-            --use item
-            UseContainerItem(f_bag, f_slot)
+        UseContainerItem(f_bag, f_slot)
+        if not MH_CheckBuff(buffName) then
             --wait, check buff again, then morph
            	local t=MH_Timer.events;
             s=GetTime()+3.2;
