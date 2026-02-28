@@ -5,6 +5,7 @@ Slash commands, and morph window avaiable. Type /mh show to display the window o
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
 
 *NOTE*: Requires [VanillaHelpers](https://github.com/isfir/VanillaHelpers) be sure to installed first.
+
 Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
 ![WoWInitscreenshot](https://i.imgur.com/KDg8bIC.png)
