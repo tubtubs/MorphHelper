@@ -1,4 +1,4 @@
-### Morph Helper
+# Morph Helper
 ![screenshot](https://i.imgur.com/tgfTBiu.png)
 Assists in using the morph lua commands provided by VanillaHelpers.
 Slash commands, and morph window avaiable. Type /mh show to display the window or /mh to learn more.
@@ -6,6 +6,7 @@ Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. Howeve
 
 *NOTE*: Requires [VanillaHelpers](https://github.com/isfir/VanillaHelpers) be sure to installed first.
 Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
+
 ![WoWInitscreenshot](https://i.imgur.com/KDg8bIC.png)
 
 ## Installation:
@@ -17,15 +18,6 @@ Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples comman
 You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsManager) to install this addon.
 
 -If there are any further issues with installation, ensure that *MorphHelper.toc* is in the root folder. There should be no subdirectories. Eg: *C:\Games\WoW\Interface\Addons\MorphHelper\MorphHelper.toc*
-
-## KNOWN ISSUES:
-# Preset indexs can be messy if you delete them
-* Already planning on reworking this system
-# Can't morph *x* NPC
-* Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
-# Can't morph *x* item
-* I'm still testing out item morphing viability. 
-* Limited functionality, ItemIDs must be cached so something you can link from Atlasloot
 
 ## Commands:
 * /MorphHelper /Morph /MH.
@@ -45,3 +37,13 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * /MH getItem itemID - Displays an item's display info in chat.
 * /run MH_MountItem("ItemName","BuffName",displayID)
 * /run MH_MountSpell("SpellName","BuffName",displayID)
+
+
+## Known Issues:
+Preset indexs can be messy if you delete them
+* Already planning on reworking this system
+Can't morph *x* NPC
+* Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
+Can't morph *x* item
+* I'm still testing out item morphing viability. 
+* Limited functionality, ItemIDs must be cached so something you can link from Atlasloot
