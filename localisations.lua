@@ -148,11 +148,8 @@ MH_Menu=
         tooltipTitle =  "Open Window",
         tooltipText =  "Opens the MorphHelper window",
         func =  function() 
-            if (MH_DisplayList:IsShown()) then 
-                MH_DisplayList:Hide() 
-            else 
-                MH_DisplayList:Show() 
-            end 
+            MH_DisplayList:Show() 
+            MH_Dewdrop:Close()
         end,
         value=nil,
         hasArrow=false
@@ -161,7 +158,7 @@ MH_Menu=
         text = "Reset Window",
         tooltipTitle = "Reset Window",
         tooltipText = "Resets the MorphHelper window's position",
-        func =  function() MH_DisplayList_ResetPos() end,
+        func =  function() MH_DisplayList_ResetPos() MH_Dewdrop:Close() end,
         value=nil,
         hasArrow=false
     },
@@ -175,8 +172,16 @@ MH_Menu=
     {
         text = "Reset All",
         tooltipTitle = "Reset All",
-        tooltipText = "Resets the MorphHelper window's position",
-        func =  function() MH_ResetAll() end,
+        tooltipText = "Resets all morphs",
+        func =  function() MH_ResetAll() MH_Dewdrop:Close() end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "ReloadUI",
+        tooltipTitle = "ReloadUI",
+        tooltipText = "Resets all morphs, even if soft reset fails.\n\nIf this fails, you'll need to relog.",
+        func =  function() MH_ResetAll() MH_Dewdrop:Close() end,
         value=nil,
         hasArrow=false
     }

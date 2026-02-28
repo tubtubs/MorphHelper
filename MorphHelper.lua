@@ -6,40 +6,16 @@ Slash commands, and morph window avaiable. Type /mh show to display the window  
 
 Requires VanillaHelpers, be sure to install that mod before using this addon.
 https://github.com/isfir/VanillaHelpers
+Supports WoWInit (https://github.com/tubtubs/wowinit), includes example commands.
+Great for setting morphs up on login
 
 TODO:
-Add Profiles Dropdown to Minimap 
--Checked status is odd, if selected from window and not dropdown. Need two trackers.
 Investigate Items
-
-ChangeLog
-v1.1:
-Added UI (/mh show)
--/mh resetwindow to reset the window
--Presets supported
--Dynamicly disabled buttons
-v1.2:
-DisplayID swaps
-Preset mode implemented (checkbox beside apply preset button)
-Fixed issue with preset saving
-Fixed issue with dynamic morph buttons (reset shouldn't require ID selection)
--Added morph status to dynamic morph buttons
-v1.3:
-Minimap Button Added
-v1.4:
-Added creature and race lists for Vanilla, Wallcraft, and TurtleWoW.
-Refined mount list for vanilla, don't have mount list for custom servers.
-Tweaked UI, added a button to swap IDs in the IDSwap textboxes
-v1.5
-Presets usable from Minimap Button
-/run MH_MountItem and MH_MountSpell commands
-FlightPath morph slash commands
---mount morphs seem to clear FP mounts too
 ]]--
 --MorphHelper_Icon = nil
 local libIcon = LibStub("LibDBIcon-1.0");
 local libData = LibStub("LibDataBroker-1.1");
-local MH_Dewdrop = AceLibrary("Dewdrop-2.0");
+MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 local mountMorphBuff  = ""
 local mountMorphed = false;
@@ -54,156 +30,165 @@ function MH_VariablesLoaded()
             MH_DisplayList_UpdateButtons()
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
-        firstrun = 0
-        if (not MH_Vars) then
-            MH_Vars = {
-                Presets=MH_DEFAULT_PRESETS,
-                Favorites = {},
-                FavoritesLen = 0,
-                FPMorph = -1,
-            };
-            firstrun = 1
-        elseif (not MH_Vars.FPMorph) then
-            MH_Vars.FPMorph = -1;
-        end
-        --initialize display lists
-        r = GetRealmName()
-        find = 0
-        find = string.find(r,"Wallcraft")
-        if find==nil then --Standard, or Turtle?
-            if (TWMinimapShopFrame~=nil or TWMiniMapBattlefieldFrame~=nil or LFT_Minimap~=nil) then --turtle
-                MH_DISPLAY_LISTS = {
-                    {
-                        list=MH_CreatureList_TW,
-                        len=MH_CreatureList_TWLen
-                    },
-                    {
-                        list=MH_RaceList_TW,
-                        len=MH_RaceList_TWLen
-                    },
-                    {
-                        list=MH_MountList_TW,
-                        len=MH_MountList_TWLen
-                    },
-                    {
-                        list=MH_Vars.Favorites,
-                        len=MH_Vars.FavoritesLen
-                    }
-                }
-                DEFAULT_CHAT_FRAME:AddMessage(MH_S_TWOW)
-            else --standard vanilla
-                MH_DISPLAY_LISTS = {
-                    {
-                        list=MH_CreatureList_V,
-                        len=MH_CreatureList_VLen
-                    },
-                    {
-                        list=MH_RaceList_V,
-                        len=MH_RaceList_VLen
-                    },
-                    {
-                        list=MH_MountList_V,
-                        len=MH_MountList_VLen
-                    },
-                    {
-                        list=MH_Vars.Favorites,
-                        len=MH_Vars.FavoritesLen
-                    }
-                }
-                if firstrun == 1 then
-                    for i,j in pairs(MH_TW_PRESETS) do
-                        table.insert(MH_Vars.Presets,j)
-                    end
-                end
-                DEFAULT_CHAT_FRAME:AddMessage(MH_S_VWOW)
-            end
-        else --Wallcraft
-            MH_DISPLAY_LISTS = {
-                {
-                    list=MH_CreatureList_WC,
-                    len=MH_CreatureList_WCLen
-                },
-                {
-                    list=MH_RaceList_WC,
-                    len=MH_RaceList_WCLen
-                },
-                {
-                    list=MH_MountList_WC,
-                    len=MH_MountList_WCLen
-                },
-                {
-                    list=MH_Vars.Favorites,
-                    len=MH_Vars.FavoritesLen
-                },
-            }
-            if firstrun == 1 then
-                for i,j in pairs(MH_WC_PRESETS) do
-                    table.insert(MH_Vars.Presets,j)
-                end
-            end
-            DEFAULT_CHAT_FRAME:AddMessage(MH_S_WC)
-        end
-        --Initialize WoWInit's list of presets
-        if (WI_Vars) then 
-            --Example Morph and Presets Menu Stub
-            for i,j in pairs(MH_WI_Examples) do
-                table.insert(WI_EXAMPLES[1], j)
-            end
-
-            --Presets Menu
-            MH_UpdateWoWInitPresets()
-        end
-        --Initialize empty tables
-        MH_CurrentMorphs = {
-            Dirty=false,
-            Morphs = {  
-                { --player
-                    ID = -1,
-                    MID = -1;
-                },
-                { --target
-                    ID = -1,
-                    MID = -1;
-                },
-                { --party1
-                    ID = -1,
-                    MID = -1;
-                },
-                { --party2
-                    ID = -1,
-                    MID = -1;
-                },
-                { --party3
-                    ID = -1,
-                    MID = -1;
-                },
-                { --party4
-                    ID = -1,
-                    MID = -1;
-                },
-            }
-        }
-        if MorphHelper_Icon == nil then
-            MorphHelper_Icon = {
-                hide = false
-            };
-        end
-        MH_MinimapIconRegister()
-        MH_DewdropRegister()
-        MH_Presets_DewdropRegister()
-        DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
+        MH_Init()
     elseif event=="PLAYER_AURAS_CHANGED" then --if mount buff is removed without using spell or item
         if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
             SetUnitMountDisplayID("player", 0)
             mountMorphed = false
         end
-    elseif (MH_Vars.FPMorph ~= -1 and event == "PLAYER_CONTROL_LOST" and UnitOnTaxi("player")) then
-        SetUnitMountDisplayID("player", MH_Vars.FPMorph)
-        FPMorphed = true
-    elseif (FPMorphed and event == "PLAYER_CONTROL_GAINED") then
-        SetUnitMountDisplayID("player", 0)
-        FPMorphed = false
+    elseif (event == "UNIT_FLAGS") then
+        DEFAULT_CHAT_FRAME:AddMessage("GAIN1")
+        if (FPMorphed) then 
+            DEFAULT_CHAT_FRAME:AddMessage("GAIN2")
+            SetUnitMountDisplayID("player", 0)
+            FPMorphed = false
+        elseif (MH_Vars.FPMorph ~= -1 and UnitOnTaxi("player")) then
+            DEFAULT_CHAT_FRAME:AddMessage("GAIN3")
+            SetUnitMountDisplayID("player", MH_Vars.FPMorph)
+            FPMorphed = true
+        end
     end
+end
+
+function MH_Init()
+    local firstrun = 0
+    if (not MH_Vars) then
+        MH_Vars = {
+            Presets=MH_DEFAULT_PRESETS,
+            Favorites = {},
+            FavoritesLen = 0,
+            FPMorph = -1,
+        };
+        firstrun = 1
+    elseif (not MH_Vars.FPMorph) then
+        MH_Vars.FPMorph = -1;
+    end
+    --initialize display lists
+    r = GetRealmName()
+    find = 0
+    find = string.find(r,"Wallcraft")
+    if find==nil then --Standard, or Turtle?
+        if (TWMinimapShopFrame~=nil or TWMiniMapBattlefieldFrame~=nil or LFT_Minimap~=nil) then --turtle
+            MH_DISPLAY_LISTS = {
+                {
+                    list=MH_CreatureList_TW,
+                    len=MH_CreatureList_TWLen
+                },
+                {
+                    list=MH_RaceList_TW,
+                    len=MH_RaceList_TWLen
+                },
+                {
+                    list=MH_MountList_TW,
+                    len=MH_MountList_TWLen
+                },
+                {
+                    list=MH_Vars.Favorites,
+                    len=MH_Vars.FavoritesLen
+                }
+            }
+            DEFAULT_CHAT_FRAME:AddMessage(MH_S_TWOW)
+        else --standard vanilla
+            MH_DISPLAY_LISTS = {
+                {
+                    list=MH_CreatureList_V,
+                    len=MH_CreatureList_VLen
+                },
+                {
+                    list=MH_RaceList_V,
+                    len=MH_RaceList_VLen
+                },
+                {
+                    list=MH_MountList_V,
+                    len=MH_MountList_VLen
+                },
+                {
+                    list=MH_Vars.Favorites,
+                    len=MH_Vars.FavoritesLen
+                }
+            }
+            if firstrun == 1 then
+                for i,j in pairs(MH_TW_PRESETS) do
+                    table.insert(MH_Vars.Presets,j)
+                end
+            end
+            DEFAULT_CHAT_FRAME:AddMessage(MH_S_VWOW)
+        end
+    else --Wallcraft
+        MH_DISPLAY_LISTS = {
+            {
+                list=MH_CreatureList_WC,
+                len=MH_CreatureList_WCLen
+            },
+            {
+                list=MH_RaceList_WC,
+                len=MH_RaceList_WCLen
+            },
+            {
+                list=MH_MountList_WC,
+                len=MH_MountList_WCLen
+            },
+            {
+                list=MH_Vars.Favorites,
+                len=MH_Vars.FavoritesLen
+            },
+        }
+        if firstrun == 1 then
+            for i,j in pairs(MH_WC_PRESETS) do
+                table.insert(MH_Vars.Presets,j)
+            end
+        end
+        DEFAULT_CHAT_FRAME:AddMessage(MH_S_WC)
+    end
+    --Initialize WoWInit's list of presets
+    if (WI_Vars) then 
+        --Example Morph and Presets Menu Stub
+        for i,j in pairs(MH_WI_Examples) do
+            table.insert(WI_EXAMPLES[1], j)
+        end
+
+        --Presets Menu
+        MH_UpdateWoWInitPresets()
+    end
+    --Initialize empty tables
+    MH_CurrentMorphs = {
+        Dirty=false,
+        Morphs = {  
+            { --player
+                ID = -1,
+                MID = -1;
+            },
+            { --target
+                ID = -1,
+                MID = -1;
+            },
+            { --party1
+                ID = -1,
+                MID = -1;
+            },
+            { --party2
+                ID = -1,
+                MID = -1;
+            },
+            { --party3
+                ID = -1,
+                MID = -1;
+            },
+            { --party4
+                ID = -1,
+                MID = -1;
+            },
+        }
+    }
+    if MorphHelper_Icon == nil then
+        MorphHelper_Icon = {
+            hide = false
+        };
+    end
+    MH_MinimapIconRegister()
+    MH_DewdropRegister()
+    MH_Presets_DewdropRegister()
+    DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
 end
 
 function MH_UpdateWoWInitPresets()
@@ -214,7 +199,7 @@ function MH_UpdateWoWInitPresets()
             v = l + 1 - i
             j = {}
             j = WI_EXAMPLES[2][v]
-            DEFAULT_CHAT_FRAME:AddMessage(j.name)
+            --DEFAULT_CHAT_FRAME:AddMessage(j.name)
             if j.value == "MH_Presets" then
                 table.remove(WI_EXAMPLES[2],v)
             end
@@ -379,13 +364,13 @@ MH_OPT15 = "listPresets"
 MH_OPT16 = "FPMorph"
 
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
-                    SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. " .|r\n"
+                    SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. ".|r\n"
 MH_SLASHHELP9 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT9 ..
 "|r - Shows the morph helper window.\n"
 MH_SLASHHELP10 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT10 ..
 "|r - Resets the morph helper window position (center screen).\n"
 MH_SLASHHELP13 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT13 ..
-"|r - Resets all morphs, won't undo swaps\n"
+"|r - Resets all morphs, won't undo swaps. ReloadUI if this fails.\n"
 MH_SLASHHELP14 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT14 ..
 "|cFF00FF00 presetIndex |r - Applies a preset, at specified index.\n"
 MH_SLASHHELP15 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT15 ..
@@ -393,8 +378,9 @@ MH_SLASHHELP15 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT15 ..
 MH_SLASHHELP16 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT16 ..
 "|cFF00FF00 displayID|r - On taxis morph mount to displayID. Set to -1 to disable.\n"
 
-MH_SLASHHELP99 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)]] .. "\n"
-MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)]] .. "\n"
+MH_SLASHHELP99 = [[Mount Morph Helper Functions:]] .. "\n"
+MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)|r]] .. "\n"
+MH_SLASHHELP97 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)|r]] .. "\n"
 
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
@@ -414,7 +400,7 @@ MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot itemID|r - Morphs a unit's item.\n"
 
 MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
-                 MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 .. MH_SLASHHELP98 .. MH_SLASHHELP99
+                 MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 .. MH_SLASHHELP99 .. MH_SLASHHELP97 .. MH_SLASHHELP98 
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
 function MH_GenderFlipMode()

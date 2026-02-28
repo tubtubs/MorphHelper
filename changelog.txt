@@ -1,0 +1,22 @@
+v1.5
+Presets usable from Minimap Button
+/run MH_MountItem and MH_MountSpell commands
+FlightPath morph slash commands
+WoWInit support
+v1.4:
+Added creature and race lists for Vanilla, Wallcraft, and TurtleWoW.
+Refined mount list for vanilla, don't have mount list for custom servers.
+Tweaked UI, added a button to swap IDs in the IDSwap textboxes
+v1.3:
+Minimap Button Added
+v1.2:
+DisplayID swaps
+Preset mode implemented (checkbox beside apply preset button)
+Fixed issue with preset saving
+Fixed issue with dynamic morph buttons (reset shouldn't require ID selection)
+-Added morph status to dynamic morph buttons
+v1.1:
+Added UI (/mh show)
+-/mh resetwindow to reset the window
+-Presets supported
+-Dynamicly disabled buttons
