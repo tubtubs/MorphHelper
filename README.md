@@ -42,8 +42,12 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 ## Known Issues:
 Preset indexs can be messy if you delete them
 * Already planning on reworking this system
+
 Can't morph *x* NPC
+
 * Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
+
 Can't morph *x* item
+
 * I'm still testing out item morphing viability. 
 * Limited functionality, ItemIDs must be cached so something you can link from Atlasloot
