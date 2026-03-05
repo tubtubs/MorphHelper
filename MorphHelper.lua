@@ -37,13 +37,13 @@ function MH_VariablesLoaded()
             mountMorphed = false
         end
     elseif (event == "UNIT_FLAGS") then
-        DEFAULT_CHAT_FRAME:AddMessage("GAIN1")
+        --DEFAULT_CHAT_FRAME:AddMessage("GAIN1")
         if (FPMorphed) then 
-            DEFAULT_CHAT_FRAME:AddMessage("GAIN2")
+        --    DEFAULT_CHAT_FRAME:AddMessage("GAIN2")
             SetUnitMountDisplayID("player", 0)
             FPMorphed = false
         elseif (MH_Vars.FPMorph ~= -1 and UnitOnTaxi("player")) then
-            DEFAULT_CHAT_FRAME:AddMessage("GAIN3")
+        --    DEFAULT_CHAT_FRAME:AddMessage("GAIN3")
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
             FPMorphed = true
         end
