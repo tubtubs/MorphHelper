@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: MorphHelper
 ## Author: |ccf3CE13Ftubtubs 
-## Version: 1.5
+## Version: 1.51
 ## Notes: Slash command hooks, and a window for morphs. /mh for more info
 ## Requires VanillaHelpers. Most of the limits on morphing are imposed by the mod.
 ## DefaultState: Enabled
