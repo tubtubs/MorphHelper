@@ -19,6 +19,7 @@ MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 local mountMorphBuff  = ""
 local mountMorphed = false;
+local mountDisplayID = 0;
 local FPMorphed = false;
 
 MH_DISPLAY_LISTS ={}
@@ -31,10 +32,13 @@ function MH_VariablesLoaded()
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
         MH_Init()
-    elseif event=="PLAYER_AURAS_CHANGED" then --if mount buff is removed without using spell or item
+    elseif event=="PLAYER_AURAS_CHANGED" then --if mount buff is removed without using spell or item 
         if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
             SetUnitMountDisplayID("player", 0)
             mountMorphed = false
+        elseif mountMorphed==false and MH_CheckBuff(mountMorphBuff) then
+            SetUnitMountDisplayID("player", mountDisplayID)
+            mountMorphed = true
         end
     elseif (event == "UNIT_FLAGS") then
         --DEFAULT_CHAT_FRAME:AddMessage("GAIN1")
@@ -581,6 +585,8 @@ end
 
 function MH_MountSpell(spellName, buffName, displayID)   
     CastSpellByName(spellName)
+    mountDisplayID = displayID
+    mountMorphBuff = buffName
     if not MH_CheckBuff(buffName)  then
         --wait, check buff again, then morph
         local t=MH_Timer.events;
@@ -613,17 +619,19 @@ function MH_MountItem(itemName, buffName, displayID)
 
     if f_bag ~= -1 and f_slot ~= -1 then
         UseContainerItem(f_bag, f_slot)
-        if not MH_CheckBuff(buffName) then
+        mountDisplayID = displayID
+        mountMorphBuff = buffName
+        --if not MH_CheckBuff(buffName) then
             --wait, check buff again, then morph
-           	local t=MH_Timer.events;
-            s=GetTime()+3.2;
-            t[s]={};
-            t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
-            t[s].sec=seconds;
-            t[s].rep="";
-            t.n=t.n+1;
-            MH_Timer:Show();
-        end
+           	--local t=MH_Timer.events;
+            --s=GetTime()+3.2;
+            --t[s]={};
+            --t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
+            --t[s].sec=seconds;
+            --t[s].rep="";
+            --t.n=t.n+1;
+            --MH_Timer:Show();
+        --end
     else
         DEFAULT_CHAT_FRAME:AddMessage("Mount item not found.")
     end
