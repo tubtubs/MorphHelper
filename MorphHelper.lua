@@ -973,6 +973,7 @@ function MH_GetDisplayID()
 end
 
 function MH_DisplayList_Morph_OnClick()
+    this:SetChecked(1)
     --get getDisplayID
     local displayID = MH_GetDisplayID()
     --get unitToken
@@ -987,6 +988,7 @@ function MH_DisplayList_Morph_OnClick()
 end
 
 function MH_DisplayList_MorphMount_OnClick()
+    this:SetChecked(1)
     --get getDisplayID
     local displayID = MH_GetDisplayID()
     --get unitToken
