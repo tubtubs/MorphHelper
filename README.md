@@ -39,7 +39,6 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * /run MH_MountItem("ItemName","BuffName",displayID)
 * /run MH_MountSpell("SpellName","BuffName",displayID)
 
-
 ## Known Issues:
 Preset indexs can be messy if you delete them
 * Already planning on reworking this system
@@ -51,4 +50,9 @@ Can't morph *x* NPC
 Can't morph *x* item
 
 * I'm still testing out item morphing viability. 
-* Limited functionality, ItemIDs must be cached so something you can link from Atlasloot
+* Limited functionality, ItemIDs must be cached so something you can link from Atlasloot.
+
+T-Posing during FlightPaths, no Gryphons
+
+* If you morph your mount at all, then flight paths are likely to break. Use /mh FPMorph to set a displayID to fly on regularly.
+* I recommend `/mh FPMorph 15293`, for the chromatic mount.

@@ -6,7 +6,7 @@
 ## Requires VanillaHelpers. Most of the limits on morphing are imposed by the mod.
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: MH_Vars, MorphHelper_Icon
+## SavedVariablesPerCharacter: MH_Vars, MorphHelper_Icon
 libs\AceLibrary.lua
 libs\Dewdrop-2.0.lua
 libs\LibStub.lua
