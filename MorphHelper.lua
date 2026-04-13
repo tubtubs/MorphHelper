@@ -34,20 +34,22 @@ function MH_VariablesLoaded()
         MH_Init()
     elseif event=="PLAYER_AURAS_CHANGED" then --if mount buff is removed without using spell or item 
         if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
+            --DEFAULT_CHAT_FRAME:AddMessage("GAIN4")
             SetUnitMountDisplayID("player", 0)
             mountMorphed = false
-        elseif mountMorphed==false and MH_CheckBuff(mountMorphBuff) then
+        elseif mountMorphed==false and mountMorphBuff ~= "" and MH_CheckBuff(mountMorphBuff) then
+            --DEFAULT_CHAT_FRAME:AddMessage("GAIN5")
             SetUnitMountDisplayID("player", mountDisplayID)
             mountMorphed = true
         end
     elseif (event == "UNIT_FLAGS") then
         --DEFAULT_CHAT_FRAME:AddMessage("GAIN1")
         if (FPMorphed) then 
-        --    DEFAULT_CHAT_FRAME:AddMessage("GAIN2")
+            --DEFAULT_CHAT_FRAME:AddMessage("GAIN2")
             SetUnitMountDisplayID("player", 0)
             FPMorphed = false
         elseif (MH_Vars.FPMorph ~= -1 and UnitOnTaxi("player")) then
-        --    DEFAULT_CHAT_FRAME:AddMessage("GAIN3")
+            --DEFAULT_CHAT_FRAME:AddMessage("GAIN3")
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
             FPMorphed = true
         end
@@ -484,6 +486,11 @@ local function doCommand(parsed_args)
              parsed_args[2], itemDisplayID))
         elseif parsed_args[1] == string.lower(MH_OPT16) then
             MH_Vars.FPMorph = tonumber(parsed_args[2])
+            if (MH_Vars.FPMorph ~= -1) then
+                DEFAULT_CHAT_FRAME:AddMessage(format("Set Flight Path Morph to: %s", MH_Vars.FPMorph))
+            else
+                DEFAULT_CHAT_FRAME:AddMessage("Disabled Flight Path Morph")
+            end
         elseif parsed_args[1] == string.lower(MH_OPT14) then
             MH_ApplyPreset(tonumber(parsed_args[2]))
         else
