@@ -216,9 +216,9 @@ function MH_UpdateWoWInitPresets()
             t = {}
             t =         
             {
-                name = i .. ". " .. j.Name,
+                name = j.ID .. ". " .. j.Name,
                 tooltip = "",
-                example = "\n/mh applyPreset " .. i,
+                example = "\n/mh applyPreset " .. j.ID,
                 value = "MH_Presets",
                 check = function() 
                     return true
@@ -236,30 +236,30 @@ function MH_PresetsDewDropGen(minimapBtn)
         chk = false
 
         if minimapBtn then
-            if i == MH_AppliedPresetIndex then
+            if j.ID == MH_AppliedPresetID then
                 chk=true;
             end
             MH_Dewdrop:AddLine(
-                'text', i .. ". " ..  j.Name,
+                'text', j.ID .. ". " ..  j.Name,
                 'textR', 1,
                 'textG', 0.82,
                 'textB', 0,
-                'func', MH_ApplyPreset,
-                'arg1', i,
+                'func', MH_ApplyPresetID,
+                'arg1', j.ID,
                 'notCheckable', false,
                 'checked', chk
             )
         else
-            if i == MH_CurrentPresetIndex then
+            if j.ID == MH_CurrentPresetID then
                 chk=true;
             end
             MH_Dewdrop:AddLine(
-                'text', i .. ". " .. j.Name,
+                'text', j.ID .. ". " .. j.Name,
                 'textR', 1,
                 'textG', 0.82,
                 'textB', 0,
-                'func', MH_SetPreset,
-                'arg1', i,
+                'func', MH_SetCurrentPresetID,
+                'arg1', j.ID,
                 'notCheckable', false,
                 'checked', chk
             )
@@ -452,7 +452,7 @@ end
 function MH_ListPresets()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAME .. " " .. MH_PRESETS .. ":")
     for i,j in pairs(MH_Vars.Presets) do
-        DEFAULT_CHAT_FRAME:AddMessage(i .. ". " .. j.Name)
+        DEFAULT_CHAT_FRAME:AddMessage(j.ID .. ". " .. j.Name)
     end
 
 end
@@ -492,7 +492,7 @@ local function doCommand(parsed_args)
                 DEFAULT_CHAT_FRAME:AddMessage("Disabled Flight Path Morph")
             end
         elseif parsed_args[1] == string.lower(MH_OPT14) then
-            MH_ApplyPreset(tonumber(parsed_args[2]))
+            MH_ApplyPresetID(tonumber(parsed_args[2]))
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -722,6 +722,9 @@ MH_AppliedPreset = ""
 MH_AppliedPresetIndex = 0
 MH_CurrentPresetIndex = 0
 
+MH_AppliedPresetID = 0
+MH_CurrentPresetID = 0 
+
 --Utility Functions
 
 function MH_ResetAll()
@@ -745,20 +748,31 @@ function MH_ResetAll()
     end
 end
 
-function MH_SetPreset(PresetIndex)
-    MH_CurrentPresetIndex = PresetIndex
-    MH_CurrentPreset = MH_Vars.Presets[PresetIndex].Name
+function MH_SetCurrentPresetID(PresetID)
+    MH_CurrentPresetID = PresetID
     MH_Presets_Dewdrop:Close()
     MH_DisplayList_UpdateButtons()
 end
 
-function MH_ApplyPreset(PresetIndex)
-    MH_CurrentPresetIndex = PresetIndex
-    MH_CurrentPreset = MH_Vars.Presets[PresetIndex].Name
-    MH_ApplyPresetButton_OnClick()
+
+function MH_ApplyPresetID(PresetID)
+    found = -1
+    for i=1, getn(MH_Vars.Presets) do
+        if MH_Vars.Presets[i].ID == PresetID then
+            found = i
+        end
+    end
+    if found ~= -1 then
+        --MH_CurrentPresetIndex = found
+        MH_CurrentPreset = MH_Vars.Presets[found].Name
+        --MH_AppliedPresetID = MH_Vars.Presets[found].ID
+        MH_CurrentPresetID = MH_Vars.Presets[found].ID
+        MH_ApplyPresetButton_OnClick()
+    else
+        DEFAULT_CHAT_FRAME:AddMessage(format("PresetID: %s not found.", PresetID))
+    end
     MH_Dewdrop:Close()
 end
-
 
 --DisplayList Functions
 function MH_DisplayList_ResetPos()
@@ -1184,8 +1198,14 @@ function MH_AddPresetButton_OnClick()
             c = {ID=MH_CurrentMorphs.Morphs[i].ID, MID=MH_CurrentMorphs.Morphs[i].MID}
             table.insert(b,c)
         end
+        if getn(MH_Vars.Presets) > 0 then
+            tid = MH_Vars.Presets[getn(MH_Vars.Presets)].ID + 1
+        else
+            tid = 1
+        end
         local a = {
             Name=newPreset, 
+            ID = tid,
             Morphs = b
         }
         table.insert(MH_Vars.Presets,a)
@@ -1274,8 +1294,16 @@ function MH_DeletePresetButton_OnClick()
 end
 
 function MH_ApplyPresetButton_OnClick()
-    MH_AppliedPresetIndex = MH_CurrentPresetIndex
-    MH_AppliedPreset = MH_Vars.Presets[MH_CurrentPresetIndex].Name
+    --MH_AppliedPresetIndex = MH_CurrentPresetIndex
+    --MH_AppliedPreset = MH_Vars.Presets[MH_CurrentPresetIndex].Name
+    found = -1
+    for i=1, getn(MH_Vars.Presets) do
+        if MH_Vars.Presets[i].ID == MH_CurrentPresetID then
+            found = i
+        end
+    end
+    MH_AppliedPresetID = MH_CurrentPresetID
+    MH_CurrentPresetIndex = found
     local id = -1
     local mid = -1
     local u = ""

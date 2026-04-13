@@ -66,6 +66,7 @@ MH_MINIMAPTOOLTIP = "MorphHelper\nClick to open options\nRight click and drag to
 MH_WC_PRESETS = {
     {
         Name="Gnomish Motorcycle Gang",
+        ID=1,
         Morphs = {
             { --player
                 ID = 1563,
@@ -105,6 +106,7 @@ MH_TW_PRESETS = {
 MH_DEFAULT_PRESETS = {
     {
         Name="Full Orc Male",
+        ID=2,
         Morphs = {
             { --player
                 ID = 51,
@@ -201,7 +203,7 @@ MH_WI_Examples =
 {
     {
         name = "MorphHelper Example",
-        tooltip = "Morphs the player into a murloc",
+        tooltip = "Morphs the player into a murloc\nType /mh for more commands",
         example = "\n/mh morph player 31",
         check = function() return true end,
     },
