@@ -1,3 +1,8 @@
+v1.51
+Per character settings
+Presets now static ID based instead of index based
+Fixed issue with morph buttons unchecking
+Option to hide minimap button
 v1.5
 Presets usable from Minimap Button
 /run MH_MountItem and MH_MountSpell commands

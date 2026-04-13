@@ -23,6 +23,7 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 ## Commands:
 * /MorphHelper /Morph /MH.
 * /MH show - Shows the morph helper window.
+* /MH minimap {show/hide} - Show or hide the minimap button. 
 * /MH resetWindow - Resets the morph helper window position (center screen).
 * /MH resetAll - Resets all morphs, won't undo swaps
 * /MH listPresets - Lists saved presets, and their index.
@@ -40,9 +41,6 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * /run MH_MountSpell("SpellName","BuffName",displayID)
 
 ## Known Issues:
-Preset indexs can be messy if you delete them
-* Already planning on reworking this system
-
 Can't morph *x* NPC
 
 * Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
@@ -56,3 +54,7 @@ T-Posing during FlightPaths, no Gryphons
 
 * If you morph your mount at all, then flight paths are likely to break. Use /mh FPMorph to set a displayID to fly on regularly.
 * I recommend `/mh FPMorph 15293`, for the chromatic mount.
+
+My factions are all messed up?
+
+* Morphing might mess up your reputation standing. For example, becoming hated with alliance as an alliance player. Need to investigate more.

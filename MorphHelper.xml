@@ -376,9 +376,9 @@
                         <AbsDimension x="300" y="0" />
                     </Size>
                     <Anchors>
-                        <Anchor point="BOTTOMLEFT">
+                        <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="0" y="16" />
+                                <AbsDimension x="0" y="-16" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -1424,6 +1424,58 @@
 					</OnClick>
                 </Scripts>
             </Button>
+            <!-- Minimap Toggle Button -->
+            <CheckButton name="$parent_MinimapToggleButton" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size>
+                    <AbsDimension x="22" y="22" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent_CategoryAllButton">
+                        <Offset>
+                            <AbsDimension x="138" y="-22"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                <Layer level="BACKGROUND">
+                    <FontString name="$parentTitle" font="GameFontNormal" text="MH_MINIMAPTOGGLETOOLTIP">
+                        <Size>
+                            <AbsDimension x="150" y="0" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-12" y="-4" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <FontHeight>
+                            <AbsValue val="14" />
+                        </FontHeight>
+                        <Color r="1" g="0.8196079" b="0" />
+                        <Shadow>
+                            <Color r="0" g="0" b="0" />
+                            <Offset>
+                                <AbsDimension x="1" y="-1" />
+                            </Offset>
+                        </Shadow>
+                    </FontString>
+                </Layer>
+                </Layers>
+                <Scripts>
+                    <OnClick>
+                        MH_DisplayList_MinimapToggleButton_OnClick()
+					</OnClick>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                        GameTooltip:SetText(MH_PRESETMODETOOLTIP);
+                        GameTooltip:Show();
+					</OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+					</OnLeave>
+                </Scripts>
+            </CheckButton>
             <!-- Close Button -->
             <Button name="$parent_Close" inherits="UIPanelCloseButton">
                 <Anchors>

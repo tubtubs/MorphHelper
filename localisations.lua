@@ -37,6 +37,7 @@ MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
 MH_PRESETMODETITLE = "Preset Mode:"
 MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually apply in this mode, unit's won't be checked."
 MH_RESETALLTOOLTIP = "Click to reset all available unit's morphs"
+MH_MINIMAPTOGGLETOOLTIP = "Show minimap icon"
 
 MH_TOOLTIPMORPH = "Click to morph %s"
 MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount"

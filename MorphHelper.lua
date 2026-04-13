@@ -291,61 +291,65 @@ function MH_Presets_DewdropRegister()
 end
 
 function MH_DewdropRegister()
-	MH_Dewdrop:Register(libIcon:GetMinimapButton("MorphHelper icon"), --Bound Frame
-		'point', function(parent) --Point
-			return "TOP", "BOTTOM"
-		end,
-		'children', function(level, value) --Children
-			if level == 1 then
-                for i,j in ipairs(MH_Menu) do
-                        MH_Dewdrop:AddLine(
-                            'text', j.text,
-                            'tooltipTitle', j.tooltipTitle,
-                            'tooltipText', j.tooltipText,  
-                            'textR', 1,
-                            'textG', 0.82,
-                            'textB', 0,
-                            'func', j.func,
-                            'hasArrow', j.hasArrow,
-                            'value', j.value,
-                            'notCheckable', true
-                        )
-                end
+    if not MorphHelper_Icon.hide then
+        MH_Dewdrop:Register(libIcon:GetMinimapButton("MorphHelper icon"), --Bound Frame
+            'point', function(parent) --Point
+                return "TOP", "BOTTOM"
+            end,
+            'children', function(level, value) --Children
+                if level == 1 then
+                    for i,j in ipairs(MH_Menu) do
+                            MH_Dewdrop:AddLine(
+                                'text', j.text,
+                                'tooltipTitle', j.tooltipTitle,
+                                'tooltipText', j.tooltipText,  
+                                'textR', 1,
+                                'textG', 0.82,
+                                'textB', 0,
+                                'func', j.func,
+                                'hasArrow', j.hasArrow,
+                                'value', j.value,
+                                'notCheckable', true
+                            )
+                    end
 
-				--Close button
-				MH_Dewdrop:AddLine(
-                    'text' , "Close Menu",
-                    'textR', 0,
-                    'textG', 1,
-                    'textB', 1,
-                    'func' , function() MH_Dewdrop:Close() end,
-                    'notCheckable', true
-                )
-			elseif level == 2 then
-                MH_PresetsDewDropGen(true)
-            end
-		end,
-		'dontHook', true
-	)
+                    --Close button
+                    MH_Dewdrop:AddLine(
+                        'text' , "Close Menu",
+                        'textR', 0,
+                        'textG', 1,
+                        'textB', 1,
+                        'func' , function() MH_Dewdrop:Close() end,
+                        'notCheckable', true
+                    )
+                elseif level == 2 then
+                    MH_PresetsDewDropGen(true)
+                end
+            end,
+            'dontHook', true
+        )
+    end
 end
 
 --Minimap Button Setup
 function MH_MinimapIconRegister()
-    local iconData = libData:NewDataObject("MorphHelper icon data", {
-        OnClick = function()
-            if MH_Dewdrop:IsOpen() then
-                MH_Dewdrop:Close();
-            else
-                MH_Dewdrop:Open(this);
-            end
-        end,
-        OnTooltipShow = function(tooltip)
-            tooltip:SetText(MH_NAMEVERSION);
-        end,
-        icon = "Interface\\Icons\\INV_Wand_02"
-    });
+    if not MorphHelper_Icon.hide then
+        local iconData = libData:NewDataObject("MorphHelper icon data", {
+            OnClick = function()
+                if MH_Dewdrop:IsOpen() then
+                    MH_Dewdrop:Close();
+                else
+                    MH_Dewdrop:Open(this);
+                end
+            end,
+            OnTooltipShow = function(tooltip)
+                tooltip:SetText(MH_NAMEVERSION);
+            end,
+            icon = "Interface\\Icons\\INV_Wand_02"
+        });
 
-    libIcon:Register("MorphHelper icon", iconData, MorphHelper_Icon);
+        libIcon:Register("MorphHelper icon", iconData, MorphHelper_Icon);
+    end
 end
 
 -- slashcommands
@@ -368,6 +372,7 @@ MH_OPT13 = "resetAll"
 MH_OPT14 = "applyPreset"
 MH_OPT15 = "listPresets"
 MH_OPT16 = "FPMorph"
+MH_OPT17 = "minimap"
 
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. ".|r\n"
@@ -383,6 +388,8 @@ MH_SLASHHELP15 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT15 ..
 "|r - Lists saved presets, and their index.\n"
 MH_SLASHHELP16 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT16 ..
 "|cFF00FF00 displayID|r - On taxis morph mount to displayID. Set to -1 to disable.\n"
+MH_SLASHHELP17 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT17 ..
+"|cFF00FF00 {hide/show}|r - Show or hide the minimap button\n"
 
 MH_SLASHHELP99 = [[Mount Morph Helper Functions:]] .. "\n"
 MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)|r]] .. "\n"
@@ -405,7 +412,7 @@ MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot itemID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP17 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 .. MH_SLASHHELP99 .. MH_SLASHHELP97 .. MH_SLASHHELP98 
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
@@ -457,6 +464,21 @@ function MH_ListPresets()
 
 end
 
+function MH_HideMinimap()
+    MorphHelper_Icon.hide = true
+    libIcon:Hide("MorphHelper icon")
+end
+
+function MH_ShowMinimap()
+	MorphHelper_Icon.hide = false
+	if (libIcon:GetMinimapButton("MorphHelper icon")) then
+		libIcon:Show("MorphHelper icon")
+	else
+        MH_MinimapIconRegister()
+        MH_DewdropRegister()
+	end
+end
+
 local function doCommand(parsed_args)
     l = getn(parsed_args)
     if (l==1) then
@@ -493,6 +515,12 @@ local function doCommand(parsed_args)
             end
         elseif parsed_args[1] == string.lower(MH_OPT14) then
             MH_ApplyPresetID(tonumber(parsed_args[2]))
+        elseif parsed_args[1] == string.lower(MH_OPT17) then
+            if parsed_args[2] == string.lower("hide") then
+                MH_HideMinimap()
+            elseif parsed_args[2] == string.lower("show") then
+                MH_ShowMinimap()
+            end
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -918,6 +946,19 @@ function MH_DisplayList_OnShow()
     end
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()
+    if MorphHelper_Icon.hide then
+        MH_DisplayList_MinimapToggleButton:SetChecked(0)
+    else
+        MH_DisplayList_MinimapToggleButton:SetChecked(1)
+    end
+end
+
+function MH_DisplayList_MinimapToggleButton_OnClick()
+    if MorphHelper_Icon.hide then
+        MH_ShowMinimap()
+    else
+        MH_HideMinimap()
+    end
 end
 
 --DisplayID List Scrolling Functions
