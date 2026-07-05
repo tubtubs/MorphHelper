@@ -25,6 +25,26 @@ local FPMorphed = false;
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
 --event handler and init
+
+TT_Total = ""
+function DeepPrint (e)
+    -- if e is a table, we should iterate over its elements
+    if type(e) == "table" then
+        for k,v in pairs(e) do -- for every element in the table
+            --DEFAULT_CHAT_FRAME:AddMessage(k)
+            if type (v == "table") then
+                TT_Total = TT_Total .. k .. ":"
+                DeepPrint(v)       -- recursively repeat the same procedure
+            else
+                TT_Total = TT_Total .. v .. ":" .. k .. "\n"
+            end
+        end
+    else -- if not, we can just print it
+        TT_Total = TT_Total .. e .. "\n"
+    end
+end
+
+
 function MH_VariablesLoaded()
     if (event=="PLAYER_TARGET_CHANGED" or event=="PARTY_MEMBERS_CHANGED") then
         if MH_DisplayList:IsShown() then
@@ -32,16 +52,50 @@ function MH_VariablesLoaded()
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
         MH_Init()
-    elseif event=="PLAYER_AURAS_CHANGED" then --if mount buff is removed without using spell or item 
-        if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
-            --DEFAULT_CHAT_FRAME:AddMessage("GAIN4")
-            SetUnitMountDisplayID("player", 0)
-            mountMorphed = false
-        elseif mountMorphed==false and mountMorphBuff ~= "" and MH_CheckBuff(mountMorphBuff) then
-            --DEFAULT_CHAT_FRAME:AddMessage("GAIN5")
-            SetUnitMountDisplayID("player", mountDisplayID)
-            mountMorphed = true
+    elseif event=="BUFF_ADDED_SELF" then 
+        --arg3 is spellID 
+        --DEFAULT_CHAT_FRAME:AddMessage(GetSpellRecField(arg3,"effectMechanic"))
+        local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        if spellEffectName[1] == 78 then
+            --Morph me...
+            DEFAULT_CHAT_FRAME:AddMessage("Test")
+            local d = MH_CurrentMorphs.Morphs[1].MID 
+            DEFAULT_CHAT_FRAME:AddMessage(d)
+            if d == -1 then -- manually morph mount to account for bug...
+                local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
+                DEFAULT_CHAT_FRAME:AddMessage("Test: " .. spellEffectUnit[1])
+                C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
+                local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
+                DEFAULT_CHAT_FRAME:AddMessage(cinfo.displayID)
+                SetUnitMountDisplayID("player", cinfo.displayID)
+            else
+                SetUnitMountDisplayID("player", d)
+            end
         end
+        --test = GetSpellRec(arg3)
+        --DeepPrint(test)
+        --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
+        --TT_TestFrame:Show()
+        --if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
+            --DEFAULT_CHAT_FRAME:AddMessage("GAIN4")
+        --    SetUnitMountDisplayID("player", 0)
+        --    mountMorphed = false
+        --elseif mountMorphed==false and mountMorphBuff ~= "" and MH_CheckBuff(mountMorphBuff) then
+            --DEFAULT_CHAT_FRAME:AddMessage("GAIN5")
+        --    SetUnitMountDisplayID("player", mountDisplayID)
+        --    mountMorphed = true
+        --end
+    elseif event=="BUFF_REMOVED_SELF" then
+        local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        if spellEffectName[1] == 78 then
+            --deMorph me...
+            DEFAULT_CHAT_FRAME:AddMessage("Test")
+            SetUnitMountDisplayID("player", 0)
+        end
+        --test = GetSpellRec(arg3)
+        --DeepPrint(test)
+        --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
+        --TT_TestFrame:Show()
     elseif (event == "UNIT_FLAGS") then
         if (FPMorphed and not UnitOnTaxi("player")) then 
             SetUnitMountDisplayID("player", 0)
