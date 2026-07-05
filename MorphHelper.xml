@@ -29,6 +29,7 @@
                 this:RegisterEvent("BUFF_ADDED_OTHER");
                 this:RegisterEvent("BUFF_REMOVED_OTHER");
                 this:RegisterEvent("UNIT_FLAGS");
+                this:RegisterEvent("CHAT_MSG_ADDON");
             </OnLoad>
             <OnEvent>
                 MH_VariablesLoaded()

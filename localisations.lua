@@ -1,6 +1,6 @@
 -- addon info
 MH_NAME		= "MorphHelper";
-MH_VERSION	= "1.51"; -- Should resolve issues with FPMorphs and /run mount morphs
+MH_VERSION	= "1.6";
 MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
 MH_AUTHOR = "Tubtubs"
 
@@ -23,6 +23,11 @@ MH_Party4 = "Party" .. "4"
 MH_TitleName = "Model"
 MH_TITLEMANUALID = "Manual ID Entry:"
 MH_DEFAULTMINIMAPPOS = 320
+
+-- Addon Messages
+MH_AMPREFIX = "MHE"
+MH_AMMORPHPLAYER = 0
+MH_AMMORPHMOUNT = 1
 
 MH_PRESETS = "Presets"
 MH_NEWPRESET = "New Preset"

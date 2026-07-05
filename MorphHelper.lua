@@ -135,6 +135,10 @@ function MH_VariablesLoaded()
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
             FPMorphed = true
         end
+    elseif event == "CHAT_MSG_ADDON" then
+        if arg4 ~= UnitName("PLAYER") and arg1==MH_AMPREFIX then
+            MH_AMHandler(arg2,arg3,arg4)
+        end
     end
 end
 
@@ -660,6 +664,7 @@ end
 SlashCmdList['MORPHHELPER'] = TextMenu
 
 -- Mounting Morph Commands
+-- Probably deprecated.
 -- Not accessible through slash commands, need to /run them for now.
 function MH_CheckBuff(buffName)
     local buff=strlower(buffName);
@@ -1114,6 +1119,7 @@ function MH_DisplayList_Morph_OnClick()
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
         SetUnitDisplayID(u, displayID)  
     end
 end
@@ -1129,6 +1135,7 @@ function MH_DisplayList_MorphMount_OnClick()
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
         SetUnitMountDisplayID(u, displayID)
     end
 end
@@ -1160,6 +1167,7 @@ function MH_DisplayList_MorphReset_OnClick()
     --Morphing to a creature after another race makes resetting possible
     --Resets native displayID or something
     if not MH_PRESETMODE then
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
         SetUnitDisplayID(u, 13) 
         SetUnitDisplayID(u, 0)
     end
@@ -1173,6 +1181,7 @@ function MH_DisplayList_MorphMountReset_OnClick()
     MH_CurrentDisplaysCheckDirty()
     getglobal(MH_MorphMountButtons[k]):SetChecked(0)
     if not MH_PRESETMODE then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
         SetUnitMountDisplayID(u, 0)
     end
 end
@@ -1505,4 +1514,63 @@ function MH_DisplayList_SwapFrame_SwapIDsButton_OnClick()
 
     MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
     MH_DisplayList_SwapFrame_OldIDEditBox:ClearFocus()
+end
+
+--AM Protocol: GUID:MOUNT/PLAYER:DISPALYID
+--EG: 1:0:2001 -- player morph
+--EG: 1:1:2001 -- mount morph
+function MH_AMSendMorph(token, m, id)
+    local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
+    SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
+end
+
+function MH_AMHandler(arg2, arg3, arg4)
+    DEFAULT_CHAT_FRAME:AddMessage(arg2)
+    local parsed_args = {}
+    local a = string.gfind(arg2, '([^:]+)') --parses info after :
+    for i in a do --need to translate it to a table, a is a function
+        table.insert(parsed_args,i)
+        --TubTalents_Out(i)
+    end 
+    local len = getn(parsed_args)
+    if len == 3 then
+        --find the unit token...
+        local token = nil
+        if GetUnitGUID("player") == parsed_args[1] then
+            token = "player"
+        else
+            for i=1, 4 do
+                if GetUnitGUID("party"..i) == parsed_args[1] then
+                    token = "party"..i
+                end
+            end
+        end
+        --store then morph
+        if token ~= nil then
+            local tindex
+            for k, v in pairs(MH_UnitTokens) do
+                if token == v then
+                    tindex = k
+                end
+            end
+            DEFAULT_CHAT_FRAME:AddMessage(parsed_args[2])
+            if tonumber(parsed_args[2]) == MH_AMMORPHPLAYER then
+                MH_CurrentMorphs.Morphs[tindex].ID = tonumber(parsed_args[3])
+                MH_CurrentMorphs.Dirty=true
+                if tonumber(parsed_args[3]) == -1 then
+                    SetUnitDisplayID(token, 0)
+                else
+                    SetUnitDisplayID(token, parsed_args[3])
+                end
+            elseif tonumber(parsed_args[2]) == MH_AMMORPHMOUNT then
+                MH_CurrentMorphs.Morphs[tindex].MID = tonumber(parsed_args[3])
+                MH_CurrentMorphs.Dirty=true
+                SetUnitMountDisplayID(token, parsed_args[3])
+            else
+                DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure2")
+            end
+        end
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure")
+    end
 end
