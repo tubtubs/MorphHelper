@@ -58,15 +58,11 @@ function MH_VariablesLoaded()
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             --Morph me...
-            DEFAULT_CHAT_FRAME:AddMessage("Test")
             local d = MH_CurrentMorphs.Morphs[1].MID 
-            DEFAULT_CHAT_FRAME:AddMessage(d)
             if d == -1 then -- manually morph mount to account for bug...
                 local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
-                DEFAULT_CHAT_FRAME:AddMessage("Test: " .. spellEffectUnit[1])
                 C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
                 local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
-                DEFAULT_CHAT_FRAME:AddMessage(cinfo.displayID)
                 SetUnitMountDisplayID("player", cinfo.displayID)
             else
                 SetUnitMountDisplayID("player", d)
@@ -96,6 +92,41 @@ function MH_VariablesLoaded()
         --DeepPrint(test)
         --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
         --TT_TestFrame:Show()
+    elseif event=="BUFF_ADDED_OTHER" then
+        --scan party for matching GUIDs
+        local token = nil
+        for i=1, 4 do
+            if GetUnitGUID("party"..i) == arg1 then
+                token = "party"..i
+            end
+        end
+        if token ~= nil then --found the player, find their morph...
+            DEFAULT_CHAT_FRAME:AddMessage("TEST")
+            SetUnitMountDisplayID(token, MH_GetMountMorph(token))
+        end
+    elseif event=="BUFF_REMOVED_OTHER" then
+        --scan party for matching GUIDs
+        local token = nil
+        for i=1, 4 do
+            if GetUnitGUID("party"..i) == arg1 then
+                token = "party"..i
+            end
+        end
+        if token ~= nil then --found the player, find their morph...
+            DEFAULT_CHAT_FRAME:AddMessage("TEST1")
+
+            local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+            if spellEffectName[1] == 78 then
+                --deMorph me...
+                SetUnitMountDisplayID(token, 0)
+            end
+        end
+        --local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        --if spellEffectName[1] == 78 then
+            --deMorph me...
+        --    DEFAULT_CHAT_FRAME:AddMessage("Test")
+        --    SetUnitMountDisplayID("player", 0)
+        --end
     elseif (event == "UNIT_FLAGS") then
         if (FPMorphed and not UnitOnTaxi("player")) then 
             SetUnitMountDisplayID("player", 0)
@@ -805,6 +836,14 @@ MH_AppliedPresetID = 0
 MH_CurrentPresetID = 0 
 
 --Utility Functions
+
+function MH_GetMountMorph(token)
+    for k, v in pairs(MH_UnitTokens) do
+        if token == v then
+            return MH_CurrentMorphs.Morphs[k].MID
+        end
+    end
+end
 
 function MH_ResetAll()
     for i=1,MH_UnitTokensLen do
