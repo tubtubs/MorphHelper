@@ -44,6 +44,12 @@ function DeepPrint (e)
     end
 end
 
+function MH_Test()
+    if UnitAffectingCombat("player") then
+        DEFAULT_CHAT_FRAME:AddMessage("TRUE")
+    end
+end
+
 
 function MH_VariablesLoaded()
     if (event=="PLAYER_TARGET_CHANGED" or event=="PARTY_MEMBERS_CHANGED") then
@@ -136,7 +142,7 @@ function MH_VariablesLoaded()
             FPMorphed = true
         end
     elseif event == "CHAT_MSG_ADDON" then
-        if arg4 ~= UnitName("PLAYER") and arg1==MH_AMPREFIX then
+        if MH_Vars.MsgRecv and arg4 ~= UnitName("PLAYER") and arg1==MH_AMPREFIX then
             MH_AMHandler(arg2,arg3,arg4)
         end
     end
@@ -150,10 +156,15 @@ function MH_Init()
             Favorites = {},
             FavoritesLen = 0,
             FPMorph = -1,
+            MsgSend = true,
+            MsgRecv = true,
         };
         firstrun = 1
     elseif (not MH_Vars.FPMorph) then
         MH_Vars.FPMorph = -1;
+    elseif not MH_Vars.MsgSend then
+        MH_Vars.MsgSend = true
+        MH_Vars.MsgRecv = true
     end
     --initialize display lists
     r = GetRealmName()
@@ -385,6 +396,22 @@ function MH_DewdropRegister()
             'children', function(level, value) --Children
                 if level == 1 then
                     for i,j in ipairs(MH_Menu) do
+                        if j.notCheckable ~= nil and not j.notCheckable then                            
+                            MH_Dewdrop:AddLine(
+                                'text', j.text,
+                                'tooltipTitle', j.tooltipTitle,
+                                'tooltipText', j.tooltipText,  
+                                'textR', 1,
+                                'textG', 0.82,
+                                'textB', 0,
+                                'func', j.func,
+                                'hasArrow', j.hasArrow,
+                                'checked', j.checked(),
+                                'value', j.value,
+                                'notCheckable', j.notCheckable
+                            )
+                        else
+
                             MH_Dewdrop:AddLine(
                                 'text', j.text,
                                 'tooltipTitle', j.tooltipTitle,
@@ -395,8 +422,9 @@ function MH_DewdropRegister()
                                 'func', j.func,
                                 'hasArrow', j.hasArrow,
                                 'value', j.value,
-                                'notCheckable', true
+                                'notCheckable', j.notCheckable
                             )
+                        end
                     end
 
                     --Close button
@@ -1520,6 +1548,7 @@ end
 --EG: 1:0:2001 -- player morph
 --EG: 1:1:2001 -- mount morph
 function MH_AMSendMorph(token, m, id)
+    if not MH_Vars.MsgSend then return end
     local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
     SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
 end

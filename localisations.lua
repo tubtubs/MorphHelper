@@ -171,6 +171,26 @@ MH_Menu=
         hasArrow=false
     },
     {
+        text = "Enable Morph Broadcast",
+        tooltipTitle = "Enable Morph Broadcast",
+        tooltipText = "When morphing it will share with your group",
+        checked = function() return MH_Vars.MsgSend  end, 
+        func =  function() MH_Vars.MsgSend = not MH_Vars.MsgSend end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Receiving Morph Broadcasts",
+        tooltipTitle = "Enable Receiving Morph Broadcast",
+        tooltipText = "Morphs from other party members will apply locally",
+        checked = function() return MH_Vars.MsgRecv  end, 
+        func =  function() MH_Vars.MsgRecv = not MH_Vars.MsgRecv end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
         text = "Presets",
         tooltipTitle =  "Presets",
         tooltipText =  "Apply one of the saved presets...",
