@@ -141,43 +141,48 @@ end
 
 function MH_Init()
     -- Classic API Check
+    local clientModLoaded = true
     if CLASSIC_API_VERSION ~= nil then
         if CLASSIC_API_VERSION < MH_V_CLASSICAPI then --out of date
             DEFAULT_CHAT_FRAME:AddMessage(MH_V_CLASSICAPI_O)
-            return
+            clientModLoaded = false
         end
     else -- not installed
         DEFAULT_CHAT_FRAME:AddMessage(MH_V_CLASSICAPI_M)
-        return
+        clientModLoaded = false
     end
     -- UnitXP3_SP3 check
     local xp3exist, xp3buildTime = pcall(UnitXP, "version", "coffTimeDateStamp");
     if xp3exist then
         if xp3buildTime < MH_V_UNITXP3 then --out of date
             DEFAULT_CHAT_FRAME:AddMessage(MH_V_UNITXP3_O)
-            return
+            clientModLoaded = false
         end
     else -- not installed
         DEFAULT_CHAT_FRAME:AddMessage(MH_V_UNITXP3_M)
-        return
+        clientModLoaded = false
     end
         
     -- Nampower check
     if GetNampowerVersion == nil then --not installed
         DEFAULT_CHAT_FRAME:AddMessage(MH_V_NAMPOWER_M)
-        return
+        clientModLoaded = false
     else
         local major, minor, patch=GetNampowerVersion();
         local namV = (major*100) + (minor*10) + patch
         if namV < MH_V_NAMPOWER then --out of date
             DEFAULT_CHAT_FRAME:AddMessage(MH_V_NAMPOWER_O)
-            return
+            clientModLoaded = false
         end
     end
 
     -- VanillaHelpers Check
     if SetUnitMountDisplayID == nil then
         DEFAULT_CHAT_FRAME:AddMessage(MH_V_VANILLAHELPERS_M)
+        clientModLoaded = false
+    end
+    
+    if not clientModLoaded then
         return
     end
 
