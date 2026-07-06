@@ -17,9 +17,6 @@ local libIcon = LibStub("LibDBIcon-1.0");
 local libData = LibStub("LibDataBroker-1.1");
 MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
-local mountMorphBuff  = ""
-local mountMorphed = false;
-local mountDisplayID = 0;
 local FPMorphed = false;
 
 MH_DISPLAY_LISTS ={}
@@ -108,8 +105,6 @@ function MH_VariablesLoaded()
             end
         end
         if token ~= nil then --found the player, find their morph...
-            DEFAULT_CHAT_FRAME:AddMessage("TEST1")
-
             local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
             if spellEffectName[1] == 78 then
                 --deMorph me...
@@ -119,9 +114,11 @@ function MH_VariablesLoaded()
     elseif (event == "UNIT_FLAGS") then
         if (FPMorphed and not UnitOnTaxi("player")) then 
             SetUnitMountDisplayID("player", 0)
+            MH_AMSendMorph("player",MH_AMFPMORPH,0)
             FPMorphed = false
         elseif (MH_Vars.FPMorph ~= -1 and UnitOnTaxi("player")) then
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
+            MH_AMSendMorph("player",MH_AMFPMORPH,MH_Vars.FPMorph)
             FPMorphed = true
         end
     elseif event == "CHAT_MSG_ADDON" then
@@ -834,6 +831,7 @@ function MH_DisplayList_Update()
 	local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame);
 	local index;
 	for i=1, MH_NUM_DISPLAYS_SHOWN do
+        MH_DisplayList_ListFPButton = getglobal("MH_DisplayList_ListFPButton"..i.."");
 		MH_DisplayList_ListFaveButton = getglobal("MH_DisplayList_ListFaveButton"..i.."");
 		MH_DisplayList_ListButtonName = getglobal("MH_DisplayList_ListButton"..i.."Name");
         MH_DisplayList_ListButtonID = getglobal("MH_DisplayList_ListButton"..i.."ID");
@@ -843,6 +841,7 @@ function MH_DisplayList_Update()
 		if ( index <= numDisplays) then
 			MH_DisplayList_ListButton:Show();
             MH_DisplayList_ListFaveButton:Show();
+            MH_DisplayList_ListFPButton:Show();
             MH_DisplayList_ListButtonName:SetText(displays[index].ModelName)
             MH_DisplayList_ListButtonID:SetText(displays[index].ID)
             MH_DisplayList_ListButtonTexture:SetText(displays[index].TextureVariation1)
@@ -856,14 +855,26 @@ function MH_DisplayList_Update()
             end
             if found ~= 0 then
                 MH_DisplayList_ListFaveButton:SetNormalTexture(MH_STARDISABLEDICO)
+                MH_DisplayList_ListFaveButton:SetHighlightTexture(MH_STARDISABLEDICO)
                 MH_DisplayList_ListFaveButton:SetScript("OnEnter",MH_DisplayList_FavoriteDeleteTooltip);
             else
                 MH_DisplayList_ListFaveButton:SetNormalTexture(MH_STARICO)
+                MH_DisplayList_ListFaveButton:SetHighlightTexture(MH_STARICO)
                 MH_DisplayList_ListFaveButton:SetScript("OnEnter",MH_DisplayList_FavoriteTooltip);
+            end
+            if MH_Vars.FPMorph == displays[index].ID then
+                MH_DisplayList_ListFPButton:SetNormalTexture(MH_FPDISABLEICO)
+                MH_DisplayList_ListFPButton:SetHighlightTexture(MH_FPDISABLEICO)
+                MH_DisplayList_ListFPButton:SetScript("OnEnter",MH_DisplayList_FPDeleteTooltip);
+            else
+                MH_DisplayList_ListFPButton:SetNormalTexture(MH_FPICO)
+                MH_DisplayList_ListFPButton:SetHighlightTexture(MH_FPICO)
+                MH_DisplayList_ListFPButton:SetScript("OnEnter",MH_DisplayList_FPTooltip);
             end
 		else
 			MH_DisplayList_ListButton:Hide();
             MH_DisplayList_ListFaveButton:Hide();
+            MH_DisplayList_ListFPButton:Hide();
 		end
 		if ( index == MH_DisplayList.selectedIcon  ) then
 			MH_DisplayList_ListButton:SetChecked(1);
@@ -1185,6 +1196,31 @@ local function sort_ids(a,b)
     return a.ID < b.ID
 end
 
+function MH_DisplayListFP_OnClick()
+    local index =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
+    local displays = MH_DISPLAY_LISTS[MH_CurrentList].list
+    if MH_Vars.FPMorph == displays[index].ID then
+        MH_Vars.FPMorph = -1 
+        MH_DisplayList_FPTooltip()
+    else
+        MH_Vars.FPMorph = displays[index].ID
+        MH_DisplayList_FPDeleteTooltip()
+    end
+    MH_DisplayList_Update()
+end
+
+function MH_DisplayList_FPTooltip()
+    GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetText(MH_TOOLTIPFPBTN);
+    GameTooltip:Show();
+end
+
+function MH_DisplayList_FPDeleteTooltip()
+    GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetText(MH_TOOLTIPFPBTNDELETE);
+    GameTooltip:Show();
+end
+
 function MH_DisplayListFave_OnClick()
     local manualID = MH_DisplayList_IDEditBox:GetText()
     local index =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
@@ -1208,13 +1244,14 @@ function MH_DisplayListFave_OnClick()
         MH_Vars.FavoritesLen = MH_Vars.FavoritesLen + 1;
         MH_DISPLAY_LISTS[4].len = MH_DISPLAY_LISTS[4].len+1
         MH_DisplayList_Update()
+        MH_DisplayList_FavoriteDeleteTooltip()
     else
         table.remove(MH_Vars.Favorites, found)
         MH_Vars.FavoritesLen = MH_Vars.FavoritesLen - 1;
         MH_DISPLAY_LISTS[4].len = MH_DISPLAY_LISTS[4].len-1
         MH_DisplayList_Update()
+        MH_DisplayList_FavoriteTooltip()
     end
-
 end
 
 function MH_DisplayList_FavoriteTooltip()
@@ -1451,6 +1488,7 @@ end
 -- 1 : mount morph
 -- 2 : id remap
 -- 3 : mid remap
+-- 4 : FP Morph
 function MH_AMSendMorph(token, m, id)
     if not MH_Vars.MsgSend then return end
     local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
@@ -1521,6 +1559,8 @@ function MH_AMHandler(arg2, arg3, arg4)
                 elseif tonumber(parsed_args[2]) == MH_AMMORPHMOUNT then
                     MH_CurrentMorphs.Morphs[tindex].MID = tonumber(parsed_args[3])
                     MH_CurrentMorphs.Dirty=true
+                    SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
+                elseif tonumber(parsed_args[2] == MH_AMFPMORPH) then
                     SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
                 else
                     DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure2")

@@ -102,6 +102,28 @@
             </OnLeave>
         </Scripts>
     </Button>
+    <Button name="MH_ListFPTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="16" y="16"/>
+        </Size>
+        <NormalTexture inherits="GlueScrollBarButton" file="Interface\TaxiFrame\UI-Taxi-Icon-Yellow"/>
+        <PushedTexture inherits="GlueScrollBarButton" file="Interface\TaxiFrame\UI-Taxi-Icon-Yellow"/>
+        <DisabledTexture inherits="GlueScrollBarButton" file="Interface\TaxiFrame\UI-Taxi-Icon-Gray"/>
+        <HighlightTexture inherits="GlueScrollBarButton" file="Interface\TaxiFrame\UI-Taxi-Icon-Yellow" alphaMode="ADD"/>
+        <Scripts>
+            <OnClick>
+                MH_DisplayListFP_OnClick();
+            </OnClick>
+            <OnEnter>
+                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                GameTooltip:SetText(MH_TOOLTIPFPBTN);
+                GameTooltip:Show();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Button>
     <CheckButton name="MH_MorphTemplate" virtual="true">
         <Size>
             <AbsDimension x="16" y="16"/>
@@ -644,6 +666,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton1" inherits="MH_ListFPTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton1" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton1" inherits="MH_ListFaveTemplate" id="1">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton1" relativePoint="LEFT">
@@ -653,6 +684,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton2" inherits="MH_ListTemplate" id="2">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton1">
@@ -662,6 +694,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton2" inherits="MH_ListFPTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton2" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton2" inherits="MH_ListFaveTemplate" id="2">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton2" relativePoint="LEFT">
@@ -671,6 +712,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton3" inherits="MH_ListTemplate" id="3">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton2">
@@ -680,6 +722,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton3" inherits="MH_ListFPTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton3" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton3" inherits="MH_ListFaveTemplate" id="3">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton3" relativePoint="LEFT">
@@ -689,6 +740,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton4" inherits="MH_ListTemplate" id="4">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton3">
@@ -698,6 +750,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton4" inherits="MH_ListFPTemplate" id="4">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton4" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton4" inherits="MH_ListFaveTemplate" id="4">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton4" relativePoint="LEFT">
@@ -707,6 +768,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton5" inherits="MH_ListTemplate" id="5">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton4">
@@ -716,6 +778,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton5" inherits="MH_ListFPTemplate" id="5">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton5" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton5" inherits="MH_ListFaveTemplate" id="5">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton5" relativePoint="LEFT">
@@ -725,6 +796,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton6" inherits="MH_ListTemplate" id="6">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton5">
@@ -734,6 +806,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton6" inherits="MH_ListFPTemplate" id="6">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton6" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton6" inherits="MH_ListFaveTemplate" id="6">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton6" relativePoint="LEFT">
@@ -743,6 +824,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton7" inherits="MH_ListTemplate" id="7">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton6">
@@ -752,6 +834,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton7" inherits="MH_ListFPTemplate" id="7">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton7" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton7" inherits="MH_ListFaveTemplate" id="7">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton7" relativePoint="LEFT">
@@ -761,6 +852,7 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
             <CheckButton name="$parent_ListButton8" inherits="MH_ListTemplate" id="8">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent_ListButton7">
@@ -770,6 +862,15 @@
                     </Anchor>
                 </Anchors>
             </CheckButton>
+            <Button name="$parent_ListFPButton8" inherits="MH_ListFPTemplate" id="8">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton8" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="435" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
             <Button name="$parent_ListFaveButton8" inherits="MH_ListFaveTemplate" id="8">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent_ListButton8" relativePoint="LEFT">

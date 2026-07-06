@@ -30,6 +30,7 @@ MH_AMMORPHPLAYER = 0
 MH_AMMORPHMOUNT = 1
 MH_AMSWAPID = 2
 MH_AMSWAPMID = 3
+MH_AMFPMORPH = 4
 
 MH_PRESETS = "Presets"
 MH_NEWPRESET = "New Preset"
@@ -55,6 +56,8 @@ MH_TOOLTIPMOUNTRESET = "Click to reset %s's mount morphs\nRelogging will clear m
 MH_TOOLTIPNOUNIT = "Unit not found"
 MH_TOOLTIPFAVORITES = "Click to add to favorites"
 MH_TOOLTIPFAVORITESDELETE = "Click to remove from favorites"
+MH_TOOLTIPFPBTN = "Click to morph your flight path to this\nClick again to disable, or use /mh FPMorph -1"
+MH_TOOLTIPFPBTNDELETE = "Click to disable flight path morphs"
 
 MH_CATEGORY_ALL = "All"
 MH_CATEGORY_RACES = "Races"
@@ -149,6 +152,9 @@ MH_TESTID = "ERROR"
 
 MH_STARDISABLEDICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2_disabled.tga"
 MH_STARICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2.tga"
+
+MH_FPICO = "Interface\\TaxiFrame\\UI-Taxi-Icon-Yellow"
+MH_FPDISABLEICO = "Interface\\TaxiFrame\\UI-Taxi-Icon-Green"
 
 --drop down menu stuff
 MH_Menu=
