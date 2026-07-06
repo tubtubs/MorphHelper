@@ -128,7 +128,61 @@ function MH_VariablesLoaded()
     end
 end
 
+function MH_Registers()
+    MH_Listener:RegisterEvent("PLAYER_TARGET_CHANGED");
+    MH_Listener:RegisterEvent("PARTY_MEMBERS_CHANGED");
+    MH_Listener:RegisterEvent("BUFF_ADDED_SELF");
+    MH_Listener:RegisterEvent("BUFF_REMOVED_SELF");
+    MH_Listener:RegisterEvent("BUFF_ADDED_OTHER");
+    MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
+    MH_Listener:RegisterEvent("UNIT_FLAGS");
+    MH_Listener:RegisterEvent("CHAT_MSG_ADDON");
+end
+
 function MH_Init()
+    -- Classic API Check
+    if CLASSIC_API_VERSION ~= nil then
+        if CLASSIC_API_VERSION < MH_V_CLASSICAPI then --out of date
+            DEFAULT_CHAT_FRAME:AddMessage(MH_V_CLASSICAPI_O)
+            return
+        end
+    else -- not installed
+        DEFAULT_CHAT_FRAME:AddMessage(MH_V_CLASSICAPI_M)
+        return
+    end
+    -- UnitXP3_SP3 check
+    local xp3exist, xp3buildTime = pcall(UnitXP, "version", "coffTimeDateStamp");
+    if xp3exist then
+        if xp3buildTime < MH_V_UNITXP3 then --out of date
+            DEFAULT_CHAT_FRAME:AddMessage(MH_V_UNITXP3_O)
+            return
+        end
+    else -- not installed
+        DEFAULT_CHAT_FRAME:AddMessage(MH_V_UNITXP3_M)
+        return
+    end
+        
+    -- Nampower check
+    if GetNampowerVersion == nil then --not installed
+        DEFAULT_CHAT_FRAME:AddMessage(MH_V_NAMPOWER_M)
+        return
+    else
+        local major, minor, patch=GetNampowerVersion();
+        local namV = (major*100) + (minor*10) + patch
+        if namV < MH_V_NAMPOWER then --out of date
+            DEFAULT_CHAT_FRAME:AddMessage(MH_V_NAMPOWER_O)
+            return
+        end
+    end
+
+    -- VanillaHelpers Check
+    if SetUnitMountDisplayID == nil then
+        DEFAULT_CHAT_FRAME:AddMessage(MH_V_VANILLAHELPERS_M)
+        return
+    end
+
+    MH_Registers()
+    SlashCmdList['MORPHHELPER'] = TextMenu
     local firstrun = 0
     if (not MH_Vars) then
         MH_Vars = {
@@ -676,8 +730,6 @@ local function TextMenu(arg)
         parseArgs(arg)
 	end
 end
-
-SlashCmdList['MORPHHELPER'] = TextMenu
 
 -- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8

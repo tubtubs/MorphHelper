@@ -11,6 +11,18 @@ MH_S_TWOW = MH_NAME .. ": Turtle Detected"
 MH_S_WC = MH_NAME .. ": Wallcraft Detected"
 MH_S_VWOW = MH_NAME .. ": Vanilla Detected"
 
+MH_V_CLASSICAPI = 10510
+MH_V_UNITXP3 = 1774797347
+MH_V_NAMPOWER = 460
+
+MH_V_CLASSICAPI_M = format("%s: Classic API not installed, loading failed.", MH_NAME)
+MH_V_CLASSICAPI_O = format("%s: Classic API out of date need %s or newer, loading failed.", MH_NAME, MH_V_CLASSICAPI)
+MH_V_UNITXP3_M = format("%s: UnitXP3_SP3 not installed, loading failed.", MH_NAME)
+MH_V_UNITXP3_O = format("%s: UnitXP3_SP3 out of date need %s or newer, loading failed.", MH_NAME, MH_V_UNITXP3)
+MH_V_NAMPOWER_M = format("%s: UnitXP3_SP3 not installed, loading failed.", MH_NAME)
+MH_V_NAMPOWER_O = format("%s: UnitXP3_SP3 out of date need %s or newer, loading failed.", MH_NAME, MH_V_NAMPOWER)
+MH_V_VANILLAHELPERS_M = format("%s: VanillaHelpers not installed, loading failed.", MH_NAME)
+
 MH_TitleID = "ID"
 MH_TitleTexture="Texture"
 
