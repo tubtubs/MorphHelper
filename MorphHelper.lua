@@ -25,25 +25,6 @@ local FPMorphed = false;
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
 --event handler and init
-
-TT_Total = ""
-function DeepPrint (e)
-    -- if e is a table, we should iterate over its elements
-    if type(e) == "table" then
-        for k,v in pairs(e) do -- for every element in the table
-            --DEFAULT_CHAT_FRAME:AddMessage(k)
-            if type (v == "table") then
-                TT_Total = TT_Total .. k .. ":"
-                DeepPrint(v)       -- recursively repeat the same procedure
-            else
-                TT_Total = TT_Total .. v .. ":" .. k .. "\n"
-            end
-        end
-    else -- if not, we can just print it
-        TT_Total = TT_Total .. e .. "\n"
-    end
-end
-
 function MH_Test()
     if UnitAffectingCombat("player") then
         DEFAULT_CHAT_FRAME:AddMessage("TRUE")
@@ -69,7 +50,15 @@ function MH_VariablesLoaded()
                 local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
                 C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
                 local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
-                SetUnitMountDisplayID("player", cinfo.displayID)
+                -- there's a chance this info isn't ready after first query?
+                -- just keep retrying a few more times, seems to always work...
+                if cinfo == nil or cinfo.displayID == nil then
+                    TT_QueuedMount = spellEffectUnit[1]
+                    TT_QueuedToken = "player"
+                    UnitXP("timer", "arm", 0, 125, "MH_MountMorphTimer")
+                else
+                    SetUnitMountDisplayID("player", cinfo.displayID)
+                end
             else
                 SetUnitMountDisplayID("player", d)
             end
@@ -78,15 +67,6 @@ function MH_VariablesLoaded()
         --DeepPrint(test)
         --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
         --TT_TestFrame:Show()
-        --if (mountMorphed and (not MH_CheckBuff(mountMorphBuff)) ) then
-            --DEFAULT_CHAT_FRAME:AddMessage("GAIN4")
-        --    SetUnitMountDisplayID("player", 0)
-        --    mountMorphed = false
-        --elseif mountMorphed==false and mountMorphBuff ~= "" and MH_CheckBuff(mountMorphBuff) then
-            --DEFAULT_CHAT_FRAME:AddMessage("GAIN5")
-        --    SetUnitMountDisplayID("player", mountDisplayID)
-        --    mountMorphed = true
-        --end
     elseif event=="BUFF_REMOVED_SELF" then
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
@@ -94,10 +74,6 @@ function MH_VariablesLoaded()
             DEFAULT_CHAT_FRAME:AddMessage("Test")
             SetUnitMountDisplayID("player", 0)
         end
-        --test = GetSpellRec(arg3)
-        --DeepPrint(test)
-        --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
-        --TT_TestFrame:Show()
     elseif event=="BUFF_ADDED_OTHER" then
         --scan party for matching GUIDs
         local token = nil
@@ -107,8 +83,21 @@ function MH_VariablesLoaded()
             end
         end
         if token ~= nil then --found the player, find their morph...
-            DEFAULT_CHAT_FRAME:AddMessage("TEST")
-            SetUnitMountDisplayID(token, MH_GetMountMorph(token))
+            local d = MH_GetMountMorph(token)
+            if d == -1 then -- manually morph mount to account for bug...
+                local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
+                C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
+                local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
+                -- there's a chance this info isn't ready after first query?
+                if cinfo == nil or cinfo.displayID == nil then
+                    TT_QueuedMount = spellEffectUnit[1]
+                    TT_QueuedToken = token
+                    UnitXP("timer", "arm", 0, 125, MH_MountMorphTimer)
+                end
+                SetUnitMountDisplayID(token, cinfo.displayID)
+            else
+                SetUnitMountDisplayID(token, d)
+            end
         end
     elseif event=="BUFF_REMOVED_OTHER" then
         --scan party for matching GUIDs
@@ -127,12 +116,6 @@ function MH_VariablesLoaded()
                 SetUnitMountDisplayID(token, 0)
             end
         end
-        --local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
-        --if spellEffectName[1] == 78 then
-            --deMorph me...
-        --    DEFAULT_CHAT_FRAME:AddMessage("Test")
-        --    SetUnitMountDisplayID("player", 0)
-        --end
     elseif (event == "UNIT_FLAGS") then
         if (FPMorphed and not UnitOnTaxi("player")) then 
             SetUnitMountDisplayID("player", 0)
@@ -543,6 +526,8 @@ function MH_GenderFlipMode()
     }
     l_p = getn(p)
     for i=1, l_p do
+        MH_AMSendSwap(MH_AMSWAPID, p[i][1],p[i][2])
+        MH_AMSendSwap(MH_AMSWAPID, p[i][2],p[i][1])
         RemapDisplayID(p[i][1],p[i][2])
         RemapDisplayID(p[i][2],p[i][1])
     end
@@ -564,6 +549,8 @@ function MH_SecretCowPowers()
     }
     l_p = getn(p)
     for i=1, l_p do
+        MH_AMSendSwap(MH_AMSWAPID, p[i][1],t_m)
+        MH_AMSendSwap(MH_AMSWAPID, p[i][2],t_w)
         RemapDisplayID(p[i][1],t_m)
         RemapDisplayID(p[i][2],t_w)
     end
@@ -640,12 +627,16 @@ local function doCommand(parsed_args)
         end
     elseif (l==3) then -- morph commands
         if parsed_args[1] == string.lower(MH_OPT1) then 
+            MH_AMSendMorph(parsed_args[2], MH_AMMORPHPLAYER, parsed_args[3])
             SetUnitDisplayID(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT2) then
+            MH_AMSendMorph(parsed_args[2], MH_AMMORPHMOUNT, parsed_args[3])
             SetUnitMountDisplayID(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT3) then
+            MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
             RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT4) then
+            MH_AMSendSwap(MH_AMSWAPMID, parsed_args[2], parsed_args[3])
             RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
@@ -690,102 +681,6 @@ local function TextMenu(arg)
 end
 
 SlashCmdList['MORPHHELPER'] = TextMenu
-
--- Mounting Morph Commands
--- Probably deprecated.
--- Not accessible through slash commands, need to /run them for now.
-function MH_CheckBuff(buffName)
-    local buff=strlower(buffName);
-    local tooltip=MH_Tooltip;
-    local textleft1=getglobal(tooltip:GetName().."TextLeft1");
-    for i=1, 16 do
-        tooltip:SetOwner(UIParent, "ANCHOR_NONE");
-        tooltip:SetUnitBuff("player", i);
-        b = textleft1:GetText();
-        tooltip:Hide();
-        if ( b and strfind(strlower(b), buff) ) then
-            return true
-        elseif ( b==nil ) then
-            return false
-        end
-    end
-end
-
-function MH_Timer_OnUpdate()
-    local t=this.events;
-	if ( getn(t)==0 ) then
-		MH_Timer:Hide();
-	end
-	for k,v in t do
-		if ( k~='n' and k<=GetTime() ) then
-			v.cmd()
-            t[k]=nil;
-            t.n=t.n-1;
-		end
-	end
-end
-
-function MH_MountCallBack(buffName, displayID)
-    if MH_CheckBuff(buffName) then --if the cast succeeded
-        SetUnitMountDisplayID("player", displayID)
-        mountMorphed = true
-        mountMorphBuff = buffName
-    end
-end
-
-function MH_MountSpell(spellName, buffName, displayID)   
-    CastSpellByName(spellName)
-    mountDisplayID = displayID
-    mountMorphBuff = buffName
-    if not MH_CheckBuff(buffName)  then
-        --wait, check buff again, then morph
-        local t=MH_Timer.events;
-        s=GetTime()+3.2;
-        t[s]={};
-        t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
-        t[s].sec=seconds;
-        t[s].rep="";
-        t.n=t.n+1;
-        MH_Timer:Show();
-    end
-end
-
-function MH_MountItem(itemName, buffName, displayID)
-    local f_slot = -1
-    local f_bag = -1
-    for slot=0, 4 do
-		for index=1, GetContainerNumSlots(slot) do
-			if(GetContainerItemLink(slot, index)) then
-				local _, _, itemID = string.find(GetContainerItemLink(slot,index), "item:(%d+):%d+:%d+:%d+")
-                local name, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemID)
-                if itemName == name then
-                    f_slot = index
-                    f_bag = slot
-                    break
-                end
-            end
-        end
-    end
-
-    if f_bag ~= -1 and f_slot ~= -1 then
-        UseContainerItem(f_bag, f_slot)
-        mountDisplayID = displayID
-        mountMorphBuff = buffName
-        --if not MH_CheckBuff(buffName) then
-            --wait, check buff again, then morph
-           	--local t=MH_Timer.events;
-            --s=GetTime()+3.2;
-            --t[s]={};
-            --t[s].cmd=function() MH_MountCallBack(buffName, displayID) end;
-            --t[s].sec=seconds;
-            --t[s].rep="";
-            --t.n=t.n+1;
-            --MH_Timer:Show();
-        --end
-    else
-        DEFAULT_CHAT_FRAME:AddMessage("Mount item not found.")
-    end
-end
 
 -- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8
@@ -1485,6 +1380,7 @@ function MH_ApplyPresetButton_OnClick()
             if id ~= -1 then
                 if not MH_PRESETMODE then
                     SetUnitDisplayID(u, id)
+                    MH_AMSendMorph(u, MH_AMMORPHPLAYER, id)
                     DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s to %s", u, id))
                 end
                 MH_CurrentMorphs.Morphs[i].ID = id
@@ -1494,6 +1390,7 @@ function MH_ApplyPresetButton_OnClick()
             if mid ~= -1 then
                 if not MH_PRESETMODE then
                     SetUnitMountDisplayID(u, mid)
+                    MH_AMSendMorph(u, MH_AMMORPHMOUNT, id)
                     DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s's mount to %s", u, mid))
                 end
                 MH_CurrentMorphs.Morphs[i].MID = mid
@@ -1524,12 +1421,14 @@ end
 function MH_DisplayList_IDSwapsButton_OnClick()
     local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+    MH_AMSendSwap(MH_AMSWAPID, oldID, newID)
     RemapDisplayID(oldID, newID)
 end
 
 function MH_DisplayList_MountIDSwapsButton_OnClick()
     local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
+    MH_AMSendSwap(MH_AMSWAPMID, oldID, newID)
     RemapMountDisplayID(oldID, newID)
 end
 
@@ -1547,10 +1446,33 @@ end
 --AM Protocol: GUID:MOUNT/PLAYER:DISPALYID
 --EG: 1:0:2001 -- player morph
 --EG: 1:1:2001 -- mount morph
+-- MODES: 
+-- 0 : player morph
+-- 1 : mount morph
+-- 2 : id remap
+-- 3 : mid remap
 function MH_AMSendMorph(token, m, id)
     if not MH_Vars.MsgSend then return end
     local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
     SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
+end
+
+-- oops two different protocols whatever
+-- mode:id1:id2
+function MH_AMSendSwap(m, id, sid)
+    if not MH_Vars.MsgSend then return end
+    local msg = format("%s:%s:%s", m, id, sid)
+    SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
+end
+
+TT_QueuedMount = 0
+TT_QueuedToken = ""
+function MH_MountMorphTimer(timer)
+    local cinfo = C_CreatureInfo.GetCreatureInfoByID(TT_QueuedMount)
+    if cinfo ~= nil then
+        SetUnitMountDisplayID(TT_QueuedToken, cinfo.displayID)
+        UnitXP("timer", "disarm", timer)
+    end
 end
 
 function MH_AMHandler(arg2, arg3, arg4)
@@ -1563,43 +1485,49 @@ function MH_AMHandler(arg2, arg3, arg4)
     end 
     local len = getn(parsed_args)
     if len == 3 then
-        --find the unit token...
-        local token = nil
-        if GetUnitGUID("player") == parsed_args[1] then
-            token = "player"
+        if tonumber(parsed_args[1]) == MH_AMSWAPID then
+            RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+        elseif tonumber(parsed_args[1]) == MH_AMSWAPMID then
+            RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
         else
-            for i=1, 4 do
-                if GetUnitGUID("party"..i) == parsed_args[1] then
-                    token = "party"..i
-                end
-            end
-        end
-        --store then morph
-        if token ~= nil then
-            local tindex
-            for k, v in pairs(MH_UnitTokens) do
-                if token == v then
-                    tindex = k
-                end
-            end
-            DEFAULT_CHAT_FRAME:AddMessage(parsed_args[2])
-            if tonumber(parsed_args[2]) == MH_AMMORPHPLAYER then
-                MH_CurrentMorphs.Morphs[tindex].ID = tonumber(parsed_args[3])
-                MH_CurrentMorphs.Dirty=true
-                if tonumber(parsed_args[3]) == -1 then
-                    SetUnitDisplayID(token, 0)
-                else
-                    SetUnitDisplayID(token, parsed_args[3])
-                end
-            elseif tonumber(parsed_args[2]) == MH_AMMORPHMOUNT then
-                MH_CurrentMorphs.Morphs[tindex].MID = tonumber(parsed_args[3])
-                MH_CurrentMorphs.Dirty=true
-                SetUnitMountDisplayID(token, parsed_args[3])
+            --find the unit token...
+            local token = nil
+            if GetUnitGUID("player") == parsed_args[1] then
+                token = "player"
             else
-                DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure2")
+                for i=1, 4 do
+                    if GetUnitGUID("party"..i) == parsed_args[1] then
+                        token = "party"..i
+                    end
+                end
+            end
+            --store then morph
+            if token ~= nil then
+                local tindex
+                for k, v in pairs(MH_UnitTokens) do
+                    if token == v then
+                        tindex = k
+                    end
+                end
+                DEFAULT_CHAT_FRAME:AddMessage(parsed_args[2])
+                if tonumber(parsed_args[2]) == MH_AMMORPHPLAYER then
+                    MH_CurrentMorphs.Morphs[tindex].ID = tonumber(parsed_args[3])
+                    MH_CurrentMorphs.Dirty=true
+                    if tonumber(parsed_args[3]) == -1 then
+                        SetUnitDisplayID(token, 0)
+                    else
+                        SetUnitDisplayID(token, tonumber(parsed_args[3]))
+                    end
+                elseif tonumber(parsed_args[2]) == MH_AMMORPHMOUNT then
+                    MH_CurrentMorphs.Morphs[tindex].MID = tonumber(parsed_args[3])
+                    MH_CurrentMorphs.Dirty=true
+                    SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
+                else
+                    DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure2")
+                end
             end
         end
     else
-        DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure")
+        DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure1")
     end
 end

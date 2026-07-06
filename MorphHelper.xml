@@ -7,17 +7,6 @@
 			</OnLoad>
 		</Scripts>
 	</GameTooltip>
-    <Frame name="MH_Timer">
-		<Scripts>
-			<OnLoad>
-            this.events={};
-            this.events.n=0;
-			</OnLoad>
-			<OnUpdate>
-            MH_Timer_OnUpdate();
-			</OnUpdate>
-		</Scripts>
-	</Frame>
     <Frame name="MH_Listener" hidden="true">
         <Scripts>
             <OnLoad>
