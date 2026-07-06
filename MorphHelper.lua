@@ -139,6 +139,106 @@ function MH_Registers()
     MH_Listener:RegisterEvent("CHAT_MSG_ADDON");
 end
 
+local function doCommand(parsed_args)
+    l = getn(parsed_args)
+    if (l==1) then
+        if parsed_args[1]==string.lower(MH_OPT9) then
+            MH_DisplayList:Show();
+        elseif parsed_args[1]==string.lower(MH_OPT10) then
+            MH_DisplayList_ResetPos()
+        elseif parsed_args[1]==string.lower(MH_OPT11) then
+            MH_GenderFlipMode()
+        elseif parsed_args[1]==string.lower(MH_OPT12) then
+            MH_SecretCowPowers()
+        elseif parsed_args[1]==string.lower(MH_OPT13) then
+            MH_ResetAll()
+        elseif parsed_args[1]==string.lower(MH_OPT15) then
+            MH_ListPresets()
+        else
+            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
+        end
+    elseif (l==2) then --info commands
+        if parsed_args[1] == string.lower(MH_OPT6) then 
+            local displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
+            DEFAULT_CHAT_FRAME:AddMessage(format("DisplayID: %s nativeDisplayID: %s mountDisplayID: %s",
+             displayID, nativeDisplayID, mountDisplayID))
+        elseif parsed_args[1] == string.lower(MH_OPT7) then
+            itemDisplayID = GetItemDisplayID(parsed_args[2])
+            DEFAULT_CHAT_FRAME:AddMessage(format("ItemID: %s DisplayID: %s",
+             parsed_args[2], itemDisplayID))
+        elseif parsed_args[1] == string.lower(MH_OPT16) then
+            MH_Vars.FPMorph = tonumber(parsed_args[2])
+            if (MH_Vars.FPMorph ~= -1) then
+                DEFAULT_CHAT_FRAME:AddMessage(format("Set Flight Path Morph to: %s", MH_Vars.FPMorph))
+            else
+                DEFAULT_CHAT_FRAME:AddMessage("Disabled Flight Path Morph")
+            end
+        elseif parsed_args[1] == string.lower(MH_OPT14) then
+            MH_ApplyPresetID(tonumber(parsed_args[2]))
+        elseif parsed_args[1] == string.lower(MH_OPT17) then
+            if parsed_args[2] == string.lower("hide") then
+                MH_HideMinimap()
+            elseif parsed_args[2] == string.lower("show") then
+                MH_ShowMinimap()
+            end
+        else
+            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
+        end
+    elseif (l==3) then -- morph commands
+        if parsed_args[1] == string.lower(MH_OPT1) then 
+            MH_AMSendMorph(parsed_args[2], MH_AMMORPHPLAYER, parsed_args[3])
+            SetUnitDisplayID(parsed_args[2], tonumber(parsed_args[3]))
+        elseif parsed_args[1] == string.lower(MH_OPT2) then
+            MH_AMSendMorph(parsed_args[2], MH_AMMORPHMOUNT, parsed_args[3])
+            SetUnitMountDisplayID(parsed_args[2], tonumber(parsed_args[3]))
+        elseif parsed_args[1] == string.lower(MH_OPT3) then
+            MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
+            RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+        elseif parsed_args[1] == string.lower(MH_OPT4) then
+            MH_AMSendSwap(MH_AMSWAPMID, parsed_args[2], parsed_args[3])
+            RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+        else
+            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
+        end
+    elseif (l==4) then -- item morph commands
+        if parsed_args[1] == string.lower(MH_OPT8) then
+            SetUnitVisibleItemID(parsed_args[2], tonumber(parsed_args[3]),tonumber(parsed_args[4]))
+        elseif parsed_args[1] == string.lower(MH_OPT5) then 
+            RemapVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
+        else
+            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
+        end
+    else
+        DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
+    end
+end
+
+local function parseArgs(args)
+    args = string.lower(args) --decided to make args case insensitive
+    a = string.gfind(args, '%S+')
+    parsed_args = {}
+    for i in a do
+        table.insert(parsed_args,i)
+    end
+    l = getn(parsed_args)
+    if (l > 0) then 
+        doCommand(parsed_args)
+    else
+        DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
+    end
+end
+
+
+local function TextMenu(arg)
+	if arg == nil or arg == "" then
+        for w in string.gfind(MH_SLASHHELP, "([^\r\n]+)") do
+            DEFAULT_CHAT_FRAME:AddMessage(w,1,1,1)
+        end
+	else
+        parseArgs(arg)
+	end
+end
+
 function MH_Init()
     -- Classic API Check
     local clientModLoaded = true
@@ -181,7 +281,7 @@ function MH_Init()
         DEFAULT_CHAT_FRAME:AddMessage(MH_V_VANILLAHELPERS_M)
         clientModLoaded = false
     end
-    
+
     if not clientModLoaded then
         return
     end
@@ -544,9 +644,9 @@ MH_SLASHHELP16 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT16 ..
 MH_SLASHHELP17 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT17 ..
 "|cFF00FF00 {hide/show}|r - Show or hide the minimap button\n"
 
-MH_SLASHHELP99 = [[Mount Morph Helper Functions:]] .. "\n"
-MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)|r]] .. "\n"
-MH_SLASHHELP97 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)|r]] .. "\n"
+--MH_SLASHHELP99 = [[Mount Morph Helper Functions:]] .. "\n"
+--MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)|r]] .. "\n"
+--MH_SLASHHELP97 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)|r]] .. "\n"
 
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
@@ -566,7 +666,7 @@ MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot itemID|r - Morphs a unit's item.\n"
 
 MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP17 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
-                 MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 .. MH_SLASHHELP99 .. MH_SLASHHELP97 .. MH_SLASHHELP98 
+                 MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
 function MH_GenderFlipMode()
@@ -636,105 +736,9 @@ function MH_ShowMinimap()
 	end
 end
 
-local function doCommand(parsed_args)
-    l = getn(parsed_args)
-    if (l==1) then
-        if parsed_args[1]==string.lower(MH_OPT9) then
-            MH_DisplayList:Show();
-        elseif parsed_args[1]==string.lower(MH_OPT10) then
-            MH_DisplayList_ResetPos()
-        elseif parsed_args[1]==string.lower(MH_OPT11) then
-            MH_GenderFlipMode()
-        elseif parsed_args[1]==string.lower(MH_OPT12) then
-            MH_SecretCowPowers()
-        elseif parsed_args[1]==string.lower(MH_OPT13) then
-            MH_ResetAll()
-        elseif parsed_args[1]==string.lower(MH_OPT15) then
-            MH_ListPresets()
-        else
-            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
-        end
-    elseif (l==2) then --info commands
-        if parsed_args[1] == string.lower(MH_OPT6) then 
-            local displayID, nativeDisplayID, mountDisplayID = UnitDisplayInfo(parsed_args[2])
-            DEFAULT_CHAT_FRAME:AddMessage(format("DisplayID: %s nativeDisplayID: %s mountDisplayID: %s",
-             displayID, nativeDisplayID, mountDisplayID))
-        elseif parsed_args[1] == string.lower(MH_OPT7) then
-            itemDisplayID = GetItemDisplayID(parsed_args[2])
-            DEFAULT_CHAT_FRAME:AddMessage(format("ItemID: %s DisplayID: %s",
-             parsed_args[2], itemDisplayID))
-        elseif parsed_args[1] == string.lower(MH_OPT16) then
-            MH_Vars.FPMorph = tonumber(parsed_args[2])
-            if (MH_Vars.FPMorph ~= -1) then
-                DEFAULT_CHAT_FRAME:AddMessage(format("Set Flight Path Morph to: %s", MH_Vars.FPMorph))
-            else
-                DEFAULT_CHAT_FRAME:AddMessage("Disabled Flight Path Morph")
-            end
-        elseif parsed_args[1] == string.lower(MH_OPT14) then
-            MH_ApplyPresetID(tonumber(parsed_args[2]))
-        elseif parsed_args[1] == string.lower(MH_OPT17) then
-            if parsed_args[2] == string.lower("hide") then
-                MH_HideMinimap()
-            elseif parsed_args[2] == string.lower("show") then
-                MH_ShowMinimap()
-            end
-        else
-            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
-        end
-    elseif (l==3) then -- morph commands
-        if parsed_args[1] == string.lower(MH_OPT1) then 
-            MH_AMSendMorph(parsed_args[2], MH_AMMORPHPLAYER, parsed_args[3])
-            SetUnitDisplayID(parsed_args[2], tonumber(parsed_args[3]))
-        elseif parsed_args[1] == string.lower(MH_OPT2) then
-            MH_AMSendMorph(parsed_args[2], MH_AMMORPHMOUNT, parsed_args[3])
-            SetUnitMountDisplayID(parsed_args[2], tonumber(parsed_args[3]))
-        elseif parsed_args[1] == string.lower(MH_OPT3) then
-            MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
-            RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
-        elseif parsed_args[1] == string.lower(MH_OPT4) then
-            MH_AMSendSwap(MH_AMSWAPMID, parsed_args[2], parsed_args[3])
-            RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
-        else
-            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
-        end
-    elseif (l==4) then -- item morph commands
-        if parsed_args[1] == string.lower(MH_OPT8) then
-            SetUnitVisibleItemID(parsed_args[2], tonumber(parsed_args[3]),tonumber(parsed_args[4]))
-        elseif parsed_args[1] == string.lower(MH_OPT5) then 
-            RemapVisibleItemID(tonumber(parsed_args[2]), tonumber(parsed_args[3]),tonumber(parsed_args[4]))
-        else
-            DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
-        end
-    else
-        DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
-    end
-end
-
-local function parseArgs(args)
-    args = string.lower(args) --decided to make args case insensitive
-    a = string.gfind(args, '%S+')
-    parsed_args = {}
-    for i in a do
-        table.insert(parsed_args,i)
-    end
-    l = getn(parsed_args)
-    if (l > 0) then 
-        doCommand(parsed_args)
-    else
-        DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
-    end
-end
 
 -- chat inputs
-local function TextMenu(arg)
-	if arg == nil or arg == "" then
-        for w in string.gfind(MH_SLASHHELP, "([^\r\n]+)") do
-            DEFAULT_CHAT_FRAME:AddMessage(w,1,1,1)
-        end
-	else
-        parseArgs(arg)
-	end
-end
+
 
 -- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8
