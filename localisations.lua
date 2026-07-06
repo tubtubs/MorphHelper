@@ -23,6 +23,9 @@ MH_V_NAMPOWER_M = format("%s: UnitXP3_SP3 not installed, loading failed.", MH_NA
 MH_V_NAMPOWER_O = format("%s: UnitXP3_SP3 out of date need %s or newer, loading failed.", MH_NAME, MH_V_NAMPOWER)
 MH_V_VANILLAHELPERS_M = format("%s: VanillaHelpers not installed, loading failed.", MH_NAME)
 
+MH_MAXGROUP = 4
+MH_MAXRAID = 39
+
 MH_TitleID = "ID"
 MH_TitleTexture="Texture"
 
@@ -91,27 +94,27 @@ MH_WC_PRESETS = {
         Name="Gnomish Motorcycle Gang",
         ID=1,
         Morphs = {
-            { --player
+            ["player"] = {
                 ID = 1563,
                 MID = 33086;
             },
-            { --target
+            ["target"] = {
                 ID = 1563,
                 MID = 33086;
             },
-            { --party1
+            ["party1"] = {
                 ID = 1563,
                 MID = 33086;
             },
-            { --party2
+            ["party2"] = {
                 ID = 1563,
                 MID = 33086;
             },
-            { --party3
+            ["party3"] = {
                 ID = 1563,
                 MID = 33086;
             },
-            { --party4
+            ["party4"] = {
                 ID = 1563,
                 MID = 33086;
             },
@@ -131,29 +134,23 @@ MH_DEFAULT_PRESETS = {
         Name="Full Orc Male",
         ID=2,
         Morphs = {
-            { --player
+            ["player"] = {
                 ID = 51,
-                MID = -1;
             },
-            { --target
+            ["target"] = {
                 ID = 51,
-                MID = -1;
             },
-            { --party1
+            ["party1"] = {
                 ID = 51,
-                MID = -1;
             },
-            { --party2
+            ["party2"] = {
                 ID = 51,
-                MID = -1;
             },
-            { --party3
+            ["party3"] = {
                 ID = 51,
-                MID = -1;
             },
-            { --party4
+            ["party4"] = {
                 ID = 51,
-                MID = -1;
             },
         };
     }
