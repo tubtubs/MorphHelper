@@ -6,6 +6,10 @@ MH_AUTHOR = "Tubtubs"
 
 MH_ABOUT = MH_NAMEVERSION .. " by " .. MH_AUTHOR
 
+MH_NOPARTY = 0
+MH_PARTY = 1
+MH_RAID = 2
+
 --on load splashes
 MH_S_TWOW = MH_NAME .. ": Turtle Detected"
 MH_S_WC = MH_NAME .. ": Wallcraft Detected"

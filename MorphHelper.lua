@@ -18,6 +18,7 @@ local libData = LibStub("LibDataBroker-1.1");
 MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 local FPMorphed = false;
+local MH_PartyStatus = 0
 
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
@@ -28,9 +29,63 @@ function MH_Test()
     end
 end
 
+function MH_UpdatePartyMorphUI()
+    local partyState = MH_GetPartyStatus()
+    if partyState ~= MH_PartyStatus then
+        if MH_PartyStatus == MH_NOPARTY  then
+            for i=3,MH_UnitTokensLen do
+                u = MH_UnitTokens[i]
+                getglobal(MH_MorphLabels[i]):Hide()
+                getglobal(MH_MorphButtons[i]):Hide()
+                getglobal(MH_MorphMountButtons[i]):Hide()
+                getglobal(MH_MorphInfoButtons[i]):Hide()
+                getglobal(MH_MountInfoButtons[i]):Hide()
+                getglobal(MH_MorphResetButtons[i]):Hide()
+                getglobal(MH_MorphMountResetButtons[i]):Hide()
+            end
+        elseif  MH_PartyStatus == MH_RAID then
+            DEFAULT_CHAT_FRAME:AddMessage("TODO")
+        end -- nothing to hide if you're alone ;-;
+        -- show new state's UI
+    end
+
+    MH_PartyStatus = partyState
+    DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
+    if MH_PartyStatus == MH_PARTY then
+        for i=3,MH_UnitTokensLen do
+            u = MH_UnitTokens[i]
+            if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
+                --disable morph buttons if no displayID is selected
+                getglobal(MH_MorphLabels[i]):Show()
+                getglobal(MH_MorphButtons[i]):Show()
+                getglobal(MH_MorphMountButtons[i]):Show()
+                getglobal(MH_MorphInfoButtons[i]):Show()
+                getglobal(MH_MountInfoButtons[i]):Show()
+                getglobal(MH_MorphResetButtons[i]):Show()
+                getglobal(MH_MorphMountResetButtons[i]):Show()
+            else
+                getglobal(MH_MorphLabels[i]):Hide()
+                getglobal(MH_MorphButtons[i]):Hide()
+                getglobal(MH_MorphMountButtons[i]):Hide()
+                getglobal(MH_MorphInfoButtons[i]):Hide()
+                getglobal(MH_MountInfoButtons[i]):Hide()
+                getglobal(MH_MorphResetButtons[i]):Hide()
+                getglobal(MH_MorphMountResetButtons[i]):Hide()
+            end
+        end
+    end
+end
 
 function MH_VariablesLoaded()
-    if (event=="PLAYER_TARGET_CHANGED" or event=="PARTY_MEMBERS_CHANGED") then
+    if (event=="PLAYER_TARGET_CHANGED") then
+        if MH_DisplayList:IsShown() then
+            MH_DisplayList_UpdateButtons()
+        end
+    elseif event=="PARTY_MEMBERS_CHANGED" then
+        --rework unit tokens...
+        --change morphUI if applicable...
+        --lastly update buttons for good measure...
+        MH_UpdatePartyMorphUI()
         if MH_DisplayList:IsShown() then
             MH_DisplayList_UpdateButtons()
         end
@@ -42,7 +97,12 @@ function MH_VariablesLoaded()
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             --Morph me...
-            local d = MH_CurrentMorphs.Morphs["player"].MID 
+            local d
+            if MH_CurrentMorphs.Morphs["player"] == nil then
+                d = nil
+            else
+                d = MH_CurrentMorphs.Morphs["player"].MID 
+            end
             if d == nil then -- manually morph mount to account for bug...
                 local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
                 C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
@@ -286,7 +346,6 @@ function MH_Init()
         return
     end
 
-    MH_Registers()
     SlashCmdList['MORPHHELPER'] = TextMenu
     local firstrun = 0
     if (not MH_Vars) then
@@ -406,7 +465,20 @@ function MH_Init()
     MH_MinimapIconRegister()
     MH_DewdropRegister()
     MH_Presets_DewdropRegister()
+    MH_UpdatePartyMorphUI()
+    --MH_PartyStatus = MH_GetPartyStatus()
+    MH_Registers()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
+end
+
+function MH_GetPartyStatus()
+    if UnitPlayerOrPetInRaid("player") then
+        return MH_RAID
+    elseif GetNumPartyMembers() > 0 then 
+        return MH_PARTY
+    else
+        return MH_NOPARTY
+    end
 end
 
 function MH_UpdateWoWInitPresets()
@@ -724,6 +796,15 @@ MH_OLDIDFOCUS = false
 MH_NEWIDFOCUS = false
 MH_PRESETMODE = false
 
+MH_MorphLabels = {
+    "MH_DisplayListPlayerTitle",
+    "MH_DisplayListTargetTitle",
+    "MH_DisplayListParty1Title",
+    "MH_DisplayListParty2Title",
+    "MH_DisplayListParty3Title",
+    "MH_DisplayListParty4Title"
+}
+
 MH_MorphButtons = {
     "MH_DisplayList_MorphPlayer",
     "MH_DisplayList_MorphTarget",
@@ -949,28 +1030,33 @@ end
 function MH_DisplayList_UpdateButtons()
     --Morph Buttons if no ID selected
     txtID = MH_DisplayList_IDEditBox:GetText()
-    for i=1,MH_UnitTokensLen do
-        u = MH_UnitTokens[i]
-        if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
-            --disable morph buttons if no displayID is selected
-            if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
-                getglobal(MH_MorphButtons[i]):Enable()
-                getglobal(MH_MorphMountButtons[i]):Enable()
+    -- party buttons
+    if UnitPlayerOrPetInRaid("player") then
+
+    elseif GetNumPartyMembers() > 0 then 
+        for i=1,MH_UnitTokensLen do
+            u = MH_UnitTokens[i]
+            if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
+                --disable morph buttons if no displayID is selected
+                if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
+                    getglobal(MH_MorphButtons[i]):Enable()
+                    getglobal(MH_MorphMountButtons[i]):Enable()
+                else
+                    getglobal(MH_MorphButtons[i]):Disable()
+                    getglobal(MH_MorphMountButtons[i]):Disable()
+                end
+                getglobal(MH_MorphResetButtons[i]):Enable()
+                getglobal(MH_MorphMountResetButtons[i]):Enable()
+                getglobal(MH_MorphInfoButtons[i]):Enable()
+                getglobal(MH_MountInfoButtons[i]):Enable()
             else
                 getglobal(MH_MorphButtons[i]):Disable()
                 getglobal(MH_MorphMountButtons[i]):Disable()
+                getglobal(MH_MorphResetButtons[i]):Disable()
+                getglobal(MH_MorphMountResetButtons[i]):Disable()
+                getglobal(MH_MorphInfoButtons[i]):Disable()
+                getglobal(MH_MountInfoButtons[i]):Disable()
             end
-            getglobal(MH_MorphResetButtons[i]):Enable()
-            getglobal(MH_MorphMountResetButtons[i]):Enable()
-            getglobal(MH_MorphInfoButtons[i]):Enable()
-            getglobal(MH_MountInfoButtons[i]):Enable()
-        else
-            getglobal(MH_MorphButtons[i]):Disable()
-            getglobal(MH_MorphMountButtons[i]):Disable()
-            getglobal(MH_MorphResetButtons[i]):Disable()
-            getglobal(MH_MorphMountResetButtons[i]):Disable()
-            getglobal(MH_MorphInfoButtons[i]):Disable()
-            getglobal(MH_MountInfoButtons[i]):Disable()
         end
     end
     --Preset Buttons
