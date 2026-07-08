@@ -960,8 +960,6 @@ function MH_DisplayList_RaidGroup_Update()
     local btn = "MH_DisplayList_RaidFrameSlot"
     local filledBtn = "MH_DisplayList_RaidFrameFilledSlot"
     local filledBtnName = filledBtn .. "Name"
-    local filledBtnLevel = filledBtn .. "Level"
-    local filledBtnClass = filledBtn .. "Class"
     groupMembers = {}
     for i=1, MH_MAXRAID do
         name, rank, subgroup, level, class, fileName, 
@@ -995,6 +993,7 @@ function MH_DisplayList_RaidGroup_Update()
         end
     end
     --DEFAULT_CHAT_FRAME:AddMessage(MH_DisplayList_RaidFrameScrollFrame:GetVerticalScroll())
+    MH_DisplayList_UpdateButtons()
     FauxScrollFrame_Update(MH_DisplayList_RaidFrameScrollFrame, 8 , 1, 32);
 end
 
@@ -1093,11 +1092,57 @@ end
 function MH_DisplayList_UpdateButtons()
     --Morph Buttons if no ID selected
     txtID = MH_DisplayList_IDEditBox:GetText()
-    -- party buttons
-    if UnitPlayerOrPetInRaid("player") then
-
-    elseif GetNumPartyMembers() > 0 then 
-        for i=1,MH_UnitTokensLen do
+    if UnitPlayerOrPetInRaid("player") then --raid buttons
+        local filledBtn = "MH_DisplayList_RaidFrameFilledSlot"
+        if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
+            for i=1, getn(groupMembers) do -- just need to worry about the visible party members
+                local BtnMorph = filledBtn .. i .. "_Morph"
+                local BtnMountMorph = filledBtn .. i .. "_MorphMount"
+                _G[BtnMorph]:Enable()
+                _G[BtnMountMorph]:Enable()
+                local t = groupMembers[i].token
+                if MH_CurrentMorphs.Morphs[t] ~= nil then
+                    if MH_CurrentMorphs.Morphs[t].ID ~= nil then
+                        _G[BtnMorph]:SetChecked(1)
+                    else
+                    _G[BtnMorph]:SetChecked(0)
+                    end
+                    if MH_CurrentMorphs.Morphs[t].MID ~= nil then
+                        _G[BtnMountMorph]:SetChecked(1)
+                    else
+                    _G[BtnMountMorph]:SetChecked(0)
+                    end
+                else
+                    _G[BtnMountMorph]:SetChecked(0)
+                    _G[BtnMorph]:SetChecked(0)
+                end
+            end
+        else
+            for i=1, getn(groupMembers) do -- just need to worry about the visible party members
+                local BtnMorph = filledBtn .. i .. "_Morph"
+                local BtnMountMorph = filledBtn .. i .. "_MorphMount"
+                _G[BtnMorph]:Disable()
+                _G[BtnMountMorph]:Disable()
+                local t = groupMembers[i].token
+                if MH_CurrentMorphs.Morphs[t] ~= nil then
+                    if MH_CurrentMorphs.Morphs[t].ID ~= nil then
+                        _G[BtnMorph]:SetChecked(1)
+                    else
+                        _G[BtnMorph]:SetChecked(0)
+                    end
+                    if MH_CurrentMorphs.Morphs[t].MID ~= nil then
+                        _G[BtnMountMorph]:SetChecked(1)
+                    else
+                        _G[BtnMountMorph]:SetChecked(0)
+                    end
+                else
+                    _G[BtnMountMorph]:SetChecked(0)
+                    _G[BtnMorph]:SetChecked(0)
+                end
+            end
+        end
+    elseif GetNumPartyMembers() > 0 then -- just party members...
+        for i=3,MH_UnitTokensLen do
             u = MH_UnitTokens[i]
             if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
                 --disable morph buttons if no displayID is selected
@@ -1112,16 +1157,49 @@ function MH_DisplayList_UpdateButtons()
                 getglobal(MH_MorphMountResetButtons[i]):Enable()
                 getglobal(MH_MorphInfoButtons[i]):Enable()
                 getglobal(MH_MountInfoButtons[i]):Enable()
+            end
+            if MH_CurrentMorphs.Morphs[u] ~= nil then
+                    if MH_CurrentMorphs.Morphs[u].ID ~= nil then
+                        _G[MH_MorphButtons]:SetChecked(1)
+                    else
+                        _G[MH_MorphButtons]:SetChecked(0)
+                    end
+                    if MH_CurrentMorphs.Morphs[u].MID ~= nil then
+                        _G[MH_MorphMountButtons]:SetChecked(1)
+                    else
+                        _G[MH_MorphMountButtons]:SetChecked(0)
+                    end
             else
-                getglobal(MH_MorphButtons[i]):Disable()
-                getglobal(MH_MorphMountButtons[i]):Disable()
-                getglobal(MH_MorphResetButtons[i]):Disable()
-                getglobal(MH_MorphMountResetButtons[i]):Disable()
-                getglobal(MH_MorphInfoButtons[i]):Disable()
-                getglobal(MH_MountInfoButtons[i]):Disable()
+                _G[MH_MorphMountButtons]:SetChecked(0)
+                _G[MH_MorphButtons]:SetChecked(0)
             end
         end
     end
+    for i=1, 2 do -- player/target
+        u = MH_UnitTokens[i]
+        if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
+            --disable morph buttons if no displayID is selected
+            if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
+                getglobal(MH_MorphButtons[i]):Enable()
+                getglobal(MH_MorphMountButtons[i]):Enable()
+            else
+                getglobal(MH_MorphButtons[i]):Disable()
+                getglobal(MH_MorphMountButtons[i]):Disable()
+            end
+            getglobal(MH_MorphResetButtons[i]):Enable()
+            getglobal(MH_MorphMountResetButtons[i]):Enable()
+            getglobal(MH_MorphInfoButtons[i]):Enable()
+            getglobal(MH_MountInfoButtons[i]):Enable()
+        else
+            getglobal(MH_MorphButtons[i]):Disable()
+            getglobal(MH_MorphMountButtons[i]):Disable()
+            getglobal(MH_MorphResetButtons[i]):Disable()
+            getglobal(MH_MorphMountResetButtons[i]):Disable()
+            getglobal(MH_MorphInfoButtons[i]):Disable()
+            getglobal(MH_MountInfoButtons[i]):Disable()
+        end
+    end
+
     --Preset Buttons
     if MH_CurrentMorphs.Dirty then --only offer to save if there's changes
         MH_DisplayList_AddPresetButton:Enable()
@@ -1235,6 +1313,104 @@ function MH_ScrollToDisplayID(displayID)
         MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll((floor((found-1)*8)))
         MH_DisplayList_Update()
     end
+end
+
+-- RAID UI Morph Functions
+
+function MH_DisplayList_RaidMorph_OnClick()
+    this:SetChecked(1)
+    --get getDisplayID
+    local displayID = MH_GetDisplayID()
+    --get unitToken
+    --local k = this:GetID();
+    --local u = MH_UnitTokens[k]
+    -- Get Parent, Get their ID, use this as index in current group members variable
+    local id = this:GetParent():GetID()
+    local u = groupMembers[id].token
+    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].ID = displayID
+    MH_CurrentMorphs.Dirty=true
+    MH_DisplayList_UpdateButtons()
+    if (not MH_PRESETMODE) then
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
+        SetUnitDisplayID(u, displayID)  
+    end
+end
+
+function MH_DisplayList_RaidMorphMount_OnClick()
+    this:SetChecked(1)
+    --get getDisplayID
+    local displayID = MH_GetDisplayID()
+    --get unitToken
+    local id = this:GetParent():GetID()
+    local u = groupMembers[id].token
+    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].MID = displayID
+    MH_CurrentMorphs.Dirty=true
+    MH_DisplayList_UpdateButtons()
+    if (not MH_PRESETMODE) then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
+        SetUnitMountDisplayID(u, displayID)
+    end
+end
+
+function MH_DisplayList_RaidMorphReset_OnClick()
+    --get unitToken
+    local id = this:GetParent():GetID()
+    local u = groupMembers[id].token
+    MH_CurrentMorphs.Morphs[u].ID = nil
+    if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    MH_CurrentDisplaysCheckDirty()
+    --getglobal(MH_MorphButtons[k]):SetChecked(0) TODO
+    local f = this:GetParent():GetName()
+    _G[f.."_Morph"]:SetChecked(0)
+    --Morphing to a creature after another race makes resetting possible
+    --Resets native displayID or something
+    if not MH_PRESETMODE then
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
+        SetUnitDisplayID(u, 13) 
+        SetUnitDisplayID(u, 0)
+    end
+end
+
+function MH_DisplayList_RaidMorphMountReset_OnClick()
+    --get unitToken
+    local id = this:GetParent():GetID()
+    local u = groupMembers[id].token
+    MH_CurrentMorphs.Morphs[u].MID = nil
+    if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    MH_CurrentDisplaysCheckDirty()
+    --getglobal(MH_MorphMountButtons[k]):SetChecked(0) TODO
+    local f = this:GetParent():GetName()
+    _G[f.."_MorphMount"]:SetChecked(0)
+    if not MH_PRESETMODE then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
+        SetUnitMountDisplayID(u, 0)
+    end
+end
+
+function MH_DisplayList_RaidMorphInfo_OnClick()
+    --get info about that unit, and then use that info
+    --get unitToken
+    local id = this:GetParent():GetID()
+    local u = groupMembers[id].token
+    local displayID, _, mountDisplayID = UnitDisplayInfo(u)
+    if IsAltKeyDown() then
+        displayID = mountDisplayID
+    end
+    --Find DisplayID in the big list
+    if (MH_NEWIDFOCUS) then 
+        MH_DisplayList_SwapFrame_NewIDEditBox:SetText(displayID)
+        MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
+        MH_NEWIDFOCUS = false
+        MH_DisplayList_UpdateButtons()
+    elseif (MH_OLDIDFOCUS) then
+        MH_DisplayList_SwapFrame_OldIDEditBox:SetText(displayID)
+        MH_DisplayList_SwapFrame_OldIDEditBox:ClearFocus()
+        MH_OLDIDFOCUS = false
+        MH_DisplayList_UpdateButtons()
+    end
+    MH_ScrollToDisplayID(displayID)
 end
 
 --UI Morph functions
@@ -1379,6 +1555,23 @@ end
 function MH_SetupTooltip(tip)
     local k = this:GetID()
     local u = MH_UnitTokens[k]
+    if (MH_PRESETMODE) then
+        name = GetUnitName(u)
+        tooltip = format(tip,u)
+    elseif (UnitExists(u)) then
+        name = GetUnitName(u)
+        tooltip = format(tip,name)
+    else
+        tooltip = MH_TOOLTIPNOUNIT
+    end
+    GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetText(tooltip);
+    GameTooltip:Show()
+end
+
+function MH_SetupRaidTooltip(tip)
+    local id = this:GetParent():GetID()
+    local u = groupMembers[id].token
     if (MH_PRESETMODE) then
         name = GetUnitName(u)
         tooltip = format(tip,u)

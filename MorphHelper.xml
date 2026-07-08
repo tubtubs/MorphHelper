@@ -323,30 +323,39 @@
     <CheckButton name="MH_RaidMorphTemplate" inherits="MH_MorphTemplate" virtual="true">
         <Scripts>
             <OnClick>
+                MH_DisplayList_RaidMorph_OnClick()
             </OnClick>
             <OnEnter>
+                MH_SetupRaidTooltip(MH_TOOLTIPMORPH)
             </OnEnter>
             <OnLeave>
+                GameTooltip:Hide();
             </OnLeave>
         </Scripts>
     </CheckButton>
     <CheckButton name="MH_RaidMorphMountTemplate" inherits="MH_MorphMountTemplate" virtual="true">
         <Scripts>
             <OnClick>
+                MH_DisplayList_RaidMorphMount_OnClick()
             </OnClick>
             <OnEnter>
+                MH_SetupRaidTooltip(MH_TOOLTIPMORPHMOUNT)
             </OnEnter>
             <OnLeave>
+                GameTooltip:Hide();
             </OnLeave>
         </Scripts>
     </CheckButton>
     <Button name="MH_RaidMorphResetTemplate" inherits="MH_MorphResetTemplate" virtual="true">
         <Scripts>
             <OnClick>
+                MH_DisplayList_RaidMorphReset_OnClick()
             </OnClick>
             <OnEnter>
+                MH_SetupRaidTooltip(MH_TOOLTIPMORPHRESET)
             </OnEnter>
             <OnLeave>
+                GameTooltip:Hide();
             </OnLeave>
         </Scripts>
     </Button>
@@ -354,10 +363,13 @@
     <Button name="MH_RaidMorphMountResetTemplate" inherits="MH_MorphMountResetTemplate" virtual="true">
         <Scripts>
             <OnClick>
+                MH_DisplayList_RaidMorphMountReset_OnClick()
             </OnClick>
             <OnEnter>
+                MH_SetupRaidTooltip(MH_TOOLTIPMOUNTRESET)
             </OnEnter>
             <OnLeave>
+                GameTooltip:Hide();
             </OnLeave>
         </Scripts>
     </Button>
@@ -365,10 +377,13 @@
     <Button name="MH_RaidMorphInfoTemplate" inherits="MH_MorphInfoTemplate" virtual="true">
         <Scripts>
             <OnClick>
+                MH_DisplayList_RaidMorphInfo_OnClick()
             </OnClick>
             <OnEnter>
+                MH_SetupRaidTooltip(MH_TOOLTIPRAIDMORPHINFO)
             </OnEnter>
             <OnLeave>
+                GameTooltip:Hide();
             </OnLeave>
         </Scripts>
     </Button>
@@ -407,34 +422,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentClass">
-				<Size>
-					<AbsDimension x="50" y="8"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="110" y="1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-				</Scripts>
-				<ButtonText>
-					<Size>
-						<AbsDimension x="50" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</ButtonText>
-				<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
-				<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
-			</Button>
             <CheckButton name="$parent_Morph" inherits="MH_RaidMorphTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT">
@@ -486,9 +473,7 @@
 		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
 			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
 		</NormalTexture>
-		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
-			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
-		</HighlightTexture>
+
 	</Button>
 	<Button name="MH_RaidGroupSlotTemplate" virtual="true">
 		<Size>
