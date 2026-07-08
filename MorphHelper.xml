@@ -116,6 +116,7 @@
             </OnLeave>
         </Scripts>
     </Button>
+
     <CheckButton name="MH_MorphTemplate" virtual="true">
         <Size>
             <AbsDimension x="16" y="16"/>
@@ -319,6 +320,59 @@
         </DisabledFont>
     </Button>
 
+    <CheckButton name="MH_RaidMorphTemplate" inherits="MH_MorphTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+            </OnClick>
+            <OnEnter>
+            </OnEnter>
+            <OnLeave>
+            </OnLeave>
+        </Scripts>
+    </CheckButton>
+    <CheckButton name="MH_RaidMorphMountTemplate" inherits="MH_MorphMountTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+            </OnClick>
+            <OnEnter>
+            </OnEnter>
+            <OnLeave>
+            </OnLeave>
+        </Scripts>
+    </CheckButton>
+    <Button name="MH_RaidMorphResetTemplate" inherits="MH_MorphResetTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+            </OnClick>
+            <OnEnter>
+            </OnEnter>
+            <OnLeave>
+            </OnLeave>
+        </Scripts>
+    </Button>
+
+    <Button name="MH_RaidMorphMountResetTemplate" inherits="MH_MorphMountResetTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+            </OnClick>
+            <OnEnter>
+            </OnEnter>
+            <OnLeave>
+            </OnLeave>
+        </Scripts>
+    </Button>
+
+    <Button name="MH_RaidMorphInfoTemplate" inherits="MH_MorphInfoTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+            </OnClick>
+            <OnEnter>
+            </OnEnter>
+            <OnLeave>
+            </OnLeave>
+        </Scripts>
+    </Button>
+
 
 	<Button name="MH_RaidGroupButtonTemplate" movable="true" clampedToScreen="true" virtual="true">
 		<Size>
@@ -365,15 +419,6 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						this:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						RaidPulloutButton_OnDragStart(RaidPullout_GenerateClassFrame(this:GetText(), this:GetParent().class));
-					</OnDragStart>
-					<OnDragStop>
-						RaidPulloutStopMoving();
-					</OnDragStop>
 				</Scripts>
 				<ButtonText>
 					<Size>
@@ -390,29 +435,53 @@
 				<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
 				<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
 			</Button>
+            <CheckButton name="$parent_Morph" inherits="MH_RaidMorphTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="48" y="1" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parent_MorphMount" inherits="MH_RaidMorphMountTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_Morph">
+                        <Offset>
+                            <AbsDimension x="20" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="$parent_MorphReset" inherits="MH_RaidMorphResetTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMount">
+                        <Offset>
+                            <AbsDimension x="19" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parent_MorphMountReset" inherits="MH_RaidMorphMountResetTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_MorphReset">
+                        <Offset>
+                            <AbsDimension x="19" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parent_MorphInfo" inherits="MH_RaidMorphInfoTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_MorphMountReset">
+                        <Offset>
+                            <AbsDimension x="19" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 2);
-				getglobal(this:GetName().."Class"):SetFrameLevel(this:GetFrameLevel() + 2);
-				this:RegisterForDrag("LeftButton");
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnClick>
-				RaidGroupButton_OnClick(arg1);
-			</OnClick>
-			<OnDragStart>
-				RaidGroupButton_OnDragStart();
-			</OnDragStart>
-			<OnDragStop>
-				RaidGroupButton_OnDragStop();
-			</OnDragStop>
-			<OnEnter>
-				RaidGroupButton_OnEnter();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
 			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
@@ -493,7 +562,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-            <Button name="$parentFilledSlot1" inherits="MH_RaidGroupButtonTemplate">
+            <Button name="$parentFilledSlot1" inherits="MH_RaidGroupButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -512,7 +581,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentFilledSlot2" inherits="MH_RaidGroupButtonTemplate">
+			<Button name="$parentFilledSlot2" inherits="MH_RaidGroupButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -531,7 +600,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentFilledSlot3" inherits="MH_RaidGroupButtonTemplate">
+			<Button name="$parentFilledSlot3" inherits="MH_RaidGroupButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -550,7 +619,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentFilledSlot4" inherits="MH_RaidGroupButtonTemplate">
+			<Button name="$parentFilledSlot4" inherits="MH_RaidGroupButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -569,7 +638,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="$parentFilledSlot5" inherits="MH_RaidGroupButtonTemplate">
+			<Button name="$parentFilledSlot5" inherits="MH_RaidGroupButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
 						<Offset>

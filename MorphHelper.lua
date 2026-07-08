@@ -951,6 +951,7 @@ end
 -- Raid Group functions
 MH_MAXRAIDGROUPS = 8
 MH_CurrentRaidGroup = 1
+local groupMembers = {}
 function MH_DisplayList_RaidGroup_Update()
     local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame);
     MH_DisplayList_RaidFrameLabel:SetText("Group" .. Offset+1)
@@ -961,16 +962,26 @@ function MH_DisplayList_RaidGroup_Update()
     local filledBtnName = filledBtn .. "Name"
     local filledBtnLevel = filledBtn .. "Level"
     local filledBtnClass = filledBtn .. "Class"
-    local groupMembers = {}
+    groupMembers = {}
     for i=1, MH_MAXRAID do
         name, rank, subgroup, level, class, fileName, 
         zone, online, isDead, role, isML = GetRaidRosterInfo(i);
         if name~= nil and subgroup == MH_CurrentRaidGroup then
-            table.insert(groupMembers, MH_RAID_CLASS_COLORS[fileName]..name.."|r")
+            table.insert(groupMembers, {
+                name = MH_RAID_CLASS_COLORS[fileName]..name.."|r",
+                class=class,
+                level=level,
+                token="raid"..i
+            })
         end
     end
     for i=1, 5 do
-        name = table.remove(groupMembers,1)
+        --name = table.remove(groupMembers,1)
+        if groupMembers[i] == nil then
+            name = nil 
+        else
+            name = groupMembers[i].name
+        end
         if name ~= nil then
             --DEFAULT_CHAT_FRAME:AddMessage(format("%s %s %s %s", i, name, level, class))
             _G[filledBtn..i]:Show()
