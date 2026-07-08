@@ -13,12 +13,14 @@ TODO:
 Investigate Items
 ]]--
 --MorphHelper_Icon = nil
+
+local _G = getfenv(0)
 local libIcon = LibStub("LibDBIcon-1.0");
 local libData = LibStub("LibDataBroker-1.1");
 MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 local FPMorphed = false;
-local MH_PartyStatus = 0
+local MH_PartyStatus = -1
 
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
@@ -31,8 +33,9 @@ end
 
 function MH_UpdatePartyMorphUI()
     local partyState = MH_GetPartyStatus()
+    DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
     if partyState ~= MH_PartyStatus then
-        if MH_PartyStatus == MH_NOPARTY  then
+        if MH_PartyStatus == MH_NOPARTY or MH_RAID then
             for i=3,MH_UnitTokensLen do
                 u = MH_UnitTokens[i]
                 getglobal(MH_MorphLabels[i]):Hide()
@@ -42,9 +45,9 @@ function MH_UpdatePartyMorphUI()
                 getglobal(MH_MountInfoButtons[i]):Hide()
                 getglobal(MH_MorphResetButtons[i]):Hide()
                 getglobal(MH_MorphMountResetButtons[i]):Hide()
+                getglobal("MH_DisplayList_RaidFrame"):Hide()
+                getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
             end
-        elseif  MH_PartyStatus == MH_RAID then
-            DEFAULT_CHAT_FRAME:AddMessage("TODO")
         end -- nothing to hide if you're alone ;-;
         -- show new state's UI
     end
@@ -73,6 +76,9 @@ function MH_UpdatePartyMorphUI()
                 getglobal(MH_MorphMountResetButtons[i]):Hide()
             end
         end
+    elseif MH_PartyStatus == MH_RAID then
+        getglobal("MH_DisplayList_RaidFrame"):Show()
+        getglobal("MH_DisplayList_RaidFrameScrollFrame"):Show()
     end
 end
 
@@ -81,13 +87,17 @@ function MH_VariablesLoaded()
         if MH_DisplayList:IsShown() then
             MH_DisplayList_UpdateButtons()
         end
-    elseif event=="PARTY_MEMBERS_CHANGED" then
+    elseif event=="PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" then
         --rework unit tokens...
         --change morphUI if applicable...
         --lastly update buttons for good measure...
         MH_UpdatePartyMorphUI()
         if MH_DisplayList:IsShown() then
-            MH_DisplayList_UpdateButtons()
+            if UnitPlayerOrPetInRaid("player") then
+                MH_DisplayList_RaidGroup_Update()
+            else
+                MH_DisplayList_UpdateButtons()
+            end
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
         MH_Init()
@@ -197,6 +207,7 @@ function MH_Registers()
     MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
     MH_Listener:RegisterEvent("UNIT_FLAGS");
     MH_Listener:RegisterEvent("CHAT_MSG_ADDON");
+    MH_Listener:RegisterEvent("RAID_ROSTER_UPDATE");
 end
 
 local function doCommand(parsed_args)
@@ -790,6 +801,7 @@ end
 
 -- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8
+MH_NUM_RAIDS_SHOWN = 1
 
 MH_CurrentList = 1
 MH_OLDIDFOCUS = false
@@ -936,7 +948,47 @@ function MH_ApplyPresetID(PresetID)
     MH_Dewdrop:Close()
 end
 
+-- Raid Group functions
+MH_MAXRAIDGROUPS = 8
+MH_CurrentRaidGroup = 1
+function MH_DisplayList_RaidGroup_Update()
+    local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame);
+    MH_DisplayList_RaidFrameLabel:SetText("Group" .. Offset+1)
+    MH_CurrentRaidGroup = Offset + 1
+    DEFAULT_CHAT_FRAME:AddMessage(MH_CurrentRaidGroup .. " " .. Offset*5 .. " " .. MH_CurrentRaidGroup*5)
+    local btn = "MH_DisplayList_RaidFrameSlot"
+    local filledBtn = "MH_DisplayList_RaidFrameFilledSlot"
+    local filledBtnName = filledBtn .. "Name"
+    local filledBtnLevel = filledBtn .. "Level"
+    local filledBtnClass = filledBtn .. "Class"
+    local groupMembers = {}
+    for i=1, MH_MAXRAID do
+        name, rank, subgroup, level, class, fileName, 
+        zone, online, isDead, role, isML = GetRaidRosterInfo(i);
+        if name~= nil and subgroup == MH_CurrentRaidGroup then
+            table.insert(groupMembers, MH_RAID_CLASS_COLORS[fileName]..name.."|r")
+        end
+    end
+    for i=1, 5 do
+        name = table.remove(groupMembers,1)
+        if name ~= nil then
+            --DEFAULT_CHAT_FRAME:AddMessage(format("%s %s %s %s", i, name, level, class))
+            _G[filledBtn..i]:Show()
+            _G[filledBtn..i.."Name"]:SetText(name)
+            --_G[filledBtn..i.."Level"]:SetText(level)
+            --_G[filledBtn..i.."Class"]:SetText(class)
+            _G[btn..i]:Hide()
+        else
+            _G[btn..i]:Show()
+            _G[filledBtn..i]:Hide()
+        end
+    end
+    --DEFAULT_CHAT_FRAME:AddMessage(MH_DisplayList_RaidFrameScrollFrame:GetVerticalScroll())
+    FauxScrollFrame_Update(MH_DisplayList_RaidFrameScrollFrame, 8 , 1, 32);
+end
+
 --DisplayList Functions
+
 function MH_DisplayList_ResetPos()
     MH_DisplayList:ClearAllPoints()
     MH_DisplayList:SetPoint("CENTER", UIParent ,"CENTER", 0, 0)
@@ -1097,6 +1149,7 @@ function MH_DisplayList_OnShow()
     else
         MH_DisplayList_PresetModeCheckButton:SetChecked(0)
     end
+    MH_DisplayList_RaidGroup_Update()
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()
     if MorphHelper_Icon.hide then
@@ -1112,6 +1165,25 @@ function MH_DisplayList_MinimapToggleButton_OnClick()
     else
         MH_HideMinimap()
     end
+end
+
+function MH_DisplayList_RaidFrame_OnMouseWheel()
+    s = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame)
+    if arg1 < 0 then 
+        s = s + 1 
+    else
+        s = s - 1
+    end
+    local max = MH_MAXRAIDGROUPS-1
+    if(max < 0) then
+        max = 0
+    end
+    if s < 0 then
+        s=0
+    elseif s > max then
+        s=max
+    end
+    MH_DisplayList_RaidFrameScrollFrame:SetVerticalScroll(s*32);
 end
 
 --DisplayID List Scrolling Functions

@@ -318,6 +318,276 @@
             </Shadow>
         </DisabledFont>
     </Button>
+
+
+	<Button name="MH_RaidGroupButtonTemplate" movable="true" clampedToScreen="true" virtual="true">
+		<Size>
+			<AbsDimension x="142" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="60" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="22" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentClass">
+				<Size>
+					<AbsDimension x="50" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="110" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						RaidPulloutButton_OnDragStart(RaidPullout_GenerateClassFrame(this:GetText(), this:GetParent().class));
+					</OnDragStart>
+					<OnDragStop>
+						RaidPulloutStopMoving();
+					</OnDragStop>
+				</Scripts>
+				<ButtonText>
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</ButtonText>
+				<NormalFont inherits="GameFontNormalSmall" justifyH="LEFT"/>
+				<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				getglobal(this:GetName().."Class"):SetFrameLevel(this:GetFrameLevel() + 2);
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				RaidGroupButton_OnClick(arg1);
+			</OnClick>
+			<OnDragStart>
+				RaidGroupButton_OnDragStart();
+			</OnDragStart>
+			<OnDragStop>
+				RaidGroupButton_OnDragStop();
+			</OnDragStop>
+			<OnEnter>
+				RaidGroupButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
+			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="MH_RaidGroupSlotTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="142" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontDarkGraySmall" text="EMPTY">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+		</HighlightTexture>
+	</Button>
+	<Frame name="MH_RaidGroupTemplate" virtual="true" enableMouseWheel="true">
+		<Size>
+			<AbsDimension x="148" y="80"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
+					<Size>
+						<AbsDimension x="148" y="80"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.6640625" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentLabel">
+				<Size>
+					<AbsDimension x="142" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+					</OnLoad>
+					<OnDragStart>
+					</OnDragStart>
+					<OnDragStop>
+					</OnDragStop>
+					<OnHide>
+					</OnHide>
+				</Scripts>
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontHighlightSmall"/>
+			</Button>
+			<Button name="$parentSlot1" inherits="MH_RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+            <Button name="$parentFilledSlot1" inherits="MH_RaidGroupButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentSlot2" inherits="MH_RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentFilledSlot2" inherits="MH_RaidGroupButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentSlot3" inherits="MH_RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentFilledSlot3" inherits="MH_RaidGroupButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentSlot4" inherits="MH_RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentFilledSlot4" inherits="MH_RaidGroupButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentSlot5" inherits="MH_RaidGroupSlotTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentFilledSlot5" inherits="MH_RaidGroupButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+		</Frames>
+		<Scripts>
+            <OnMouseWheel>
+                MH_DisplayList_RaidFrame_OnMouseWheel()
+            </OnMouseWheel>
+		</Scripts>
+	</Frame>
+
+
     <Frame name="MH_DisplayList" frameStrat="DIALOG" movable="true" enableMouse="true" hidden="true">
         <Anchors>
             <Anchor point="CENTER" relativeTo="UIParent">
@@ -631,7 +901,7 @@
                     </EdgeSize>
                 </Backdrop>
             </Frame>
-            <ScrollFrame name="$parent_DisplayListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+            <ScrollFrame name="$parent_DisplayListScrollFrame" inherits="FauxScrollFrameTemplate">
                 <Size>
                     <AbsDimension x="32" y="132"/>
                 </Size>
@@ -1266,6 +1536,35 @@
                     </Anchor>
                 </Anchors>
             </Button>
+
+
+            <Frame name="$parent_RaidFrame" inherits="MH_RaidGroupTemplate" id="1" hidden="false">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent_MountInfoTarget">
+                        <Offset>
+                            <AbsDimension x="-10" y="-35" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <ScrollFrame name="$parent_RaidFrameScrollFrame" inherits="FauxScrollFrameTemplate">
+                <Size>
+                    <AbsDimension x="32" y="82"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="620" y="-110"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnVerticalScroll>
+                        <!-- TODO: Create new update method-->
+                        FauxScrollFrame_OnVerticalScroll(32, MH_DisplayList_RaidGroup_Update);
+                    </OnVerticalScroll>
+                </Scripts>
+            </ScrollFrame>
             <!-- Presets Buttons -->
             <Button name="$parent_PresetsButton" text="MH_PRESETS" inherits="MH_ButtonTemplate">
                 <Size>

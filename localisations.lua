@@ -28,8 +28,18 @@ MH_V_NAMPOWER_O = format("%s: UnitXP3_SP3 out of date need %s or newer, loading 
 MH_V_VANILLAHELPERS_M = format("%s: VanillaHelpers not installed, loading failed.", MH_NAME)
 
 MH_MAXGROUP = 4
-MH_MAXRAID = 39
-
+MH_MAXRAID = 40
+MH_RAID_CLASS_COLORS = {
+    ["HUNTER"] = "|cFFABD473",
+    ["WARLOCK"] = "|cFF9482C9",
+    ["PRIEST"] = "|cFFFFFFFF",
+    ["PALADIN"] = "|cFFF58CBA",
+    ["MAGE"] = "|cFF69CCF0",
+    ["ROGUE"] = "|cFFFFF569",
+    ["DRUID"] = "|cFFFF7D0A",
+    ["SHAMAN"] = "|cFF0070DE",
+    ["WARRIOR"] = "|cFFC79C6E",
+}
 MH_TitleID = "ID"
 MH_TitleTexture="Texture"
 
