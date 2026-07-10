@@ -144,9 +144,17 @@ function MH_VariablesLoaded()
     elseif event=="BUFF_ADDED_OTHER" then
         --scan party for matching GUIDs
         local token = nil
-        for i=1, 4 do
-            if GetUnitGUID("party"..i) == arg1 then
-                token = "party"..i
+        if UnitPlayerOrPetInRaid("player") then
+            for i=1, GetNumRaidMembers() do
+                if GetUnitGUID("raid"..i) == arg1 then
+                    token = "raid"..i
+                end
+            end
+        elseif GetNumPartyMembers() > 0 then 
+            for i=1, GetNumPartyMembers() do
+                if GetUnitGUID("party"..i) == arg1 then
+                    token = "party"..i
+                end
             end
         end
         if token ~= nil then --found the player, find their morph...
@@ -157,11 +165,13 @@ function MH_VariablesLoaded()
                 local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
                 -- there's a chance this info isn't ready after first query?
                 if cinfo == nil or cinfo.displayID == nil then
-                    TT_QueuedMount = spellEffectUnit[1]
-                    TT_QueuedToken = token
-                    UnitXP("timer", "arm", 0, 125, MH_MountMorphTimer)
+                    --TT_QueuedMount = spellEffectUnit[1]
+                    --TT_QueuedToken = token
+                    TT_QueuedMounts[token] = spellEffectUnit[1]
+                    UnitXP("timer", "arm", 125, 125, MH_MountMorphTimer)
+                else
+                    SetUnitMountDisplayID(token, cinfo.displayID)
                 end
-                SetUnitMountDisplayID(token, cinfo.displayID)
             else
                 SetUnitMountDisplayID(token, d)
             end
@@ -169,9 +179,17 @@ function MH_VariablesLoaded()
     elseif event=="BUFF_REMOVED_OTHER" then
         --scan party for matching GUIDs
         local token = nil
-        for i=1, 4 do
-            if GetUnitGUID("party"..i) == arg1 then
-                token = "party"..i
+        if UnitPlayerOrPetInRaid("player") then
+            for i=1, GetNumRaidMembers() do
+                if GetUnitGUID("raid"..i) == arg1 then
+                    token = "raid"..i
+                end
+            end
+        elseif GetNumPartyMembers() > 0 then 
+            for i=1, GetNumPartyMembers() do
+                if GetUnitGUID("party"..i) == arg1 then
+                    token = "party"..i
+                end
             end
         end
         if token ~= nil then --found the player, find their morph...
@@ -1919,13 +1937,19 @@ function MH_AMSendSwap(m, id, sid)
     SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
 end
 
-TT_QueuedMount = 0
-TT_QueuedToken = ""
+--TT_QueuedMount = 0
+--TT_QueuedToken = ""
+TT_QueuedMounts = {}
 function MH_MountMorphTimer(timer)
-    local cinfo = C_CreatureInfo.GetCreatureInfoByID(TT_QueuedMount)
-    if cinfo ~= nil then
-        SetUnitMountDisplayID(TT_QueuedToken, cinfo.displayID)
-        UnitXP("timer", "disarm", timer)
+    for k,v in TT_QueuedMounts do     
+        local cinfo = C_CreatureInfo.GetCreatureInfoByID(v)
+        if cinfo ~= nil then
+            SetUnitMountDisplayID(k, cinfo.displayID)
+            TT_QueuedMounts[k] = nil
+        end
+    end
+    if next(TT_QueuedMounts) == nil then
+        UnitXP("timer", "disarm",timer)
     end
 end
 
