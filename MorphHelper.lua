@@ -895,6 +895,15 @@ MH_MorphLabels = {
     "MH_DisplayListParty4Title"
 }
 
+MH_MorphTitles = {
+    "MH_DisplayListPlayerTitle",
+    "MH_DisplayListTargetTitle",
+    "MH_DisplayListParty1Title",
+    "MH_DisplayListParty2Title",
+    "MH_DisplayListParty3Title",
+    "MH_DisplayListParty4Title",
+}
+
 MH_MorphButtons = {
     "MH_DisplayList_MorphPlayer",
     "MH_DisplayList_MorphTarget",
@@ -1231,6 +1240,7 @@ function MH_DisplayList_UpdateButtons()
                     getglobal(MH_MorphButtons[i]):Disable()
                     getglobal(MH_MorphMountButtons[i]):Disable()
                 end
+                getglobal(MH_MorphTitles[i]):SetText(GetUnitName(u))
                 getglobal(MH_MorphResetButtons[i]):Enable()
                 getglobal(MH_MorphMountResetButtons[i]):Enable()
                 getglobal(MH_MorphInfoButtons[i]):Enable()
