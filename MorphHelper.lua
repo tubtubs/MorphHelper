@@ -91,6 +91,8 @@ function MH_VariablesLoaded()
         --rework unit tokens...
         --change morphUI if applicable...
         --lastly update buttons for good measure...
+        -- redo unit tokens...?
+        MH_CheckMorphUnitTokens()
         MH_UpdatePartyMorphUI()
         if MH_DisplayList:IsShown() then
             if UnitPlayerOrPetInRaid("player") then
@@ -226,6 +228,64 @@ function MH_Registers()
     MH_Listener:RegisterEvent("UNIT_FLAGS");
     MH_Listener:RegisterEvent("CHAT_MSG_ADDON");
     MH_Listener:RegisterEvent("RAID_ROSTER_UPDATE");
+end
+
+function MH_FixTargetToken()
+    local found = 0 
+    local token = "TARGET"
+    local GUID = GetUnitGUID("target")
+    if UnitPlayerOrPetInRaid("player") then
+        for i=1, GetNumRaidMembers() do
+            if GetUnitGUID("raid"..i) == GUID then
+                token = "raid".. i
+                break
+            end
+        end
+    elseif GetNumPartyMembers() > 0 then 
+        for i=1, GetNumPartyMembers() do
+            if GetUnitGUID("party"..i) == GUID then
+                token = "party" .. i
+                break
+            end
+        end
+    end
+    return token
+end
+
+
+function MH_CheckMorphUnitTokens()
+    local t = {}
+    for k,v in MH_CurrentMorphs.Morphs do 
+        local GUID
+        if UnitPlayerOrPetInRaid("player") and string.find(k,"party") then
+            GUID = nil
+        else
+            GUID = GetUnitGUID(k) 
+        end        
+        if  GUID ~= v.GUID then
+            if GUID == GetUnitGUID("player") then
+                t["player"] = v
+            elseif UnitPlayerOrPetInRaid("player") then
+                for i=1, GetNumRaidMembers() do
+                    if GetUnitGUID("raid"..i) == v.GUID then
+                        t["raid"..i] = v
+                        break
+                    end
+                end
+            elseif GetNumPartyMembers() > 0 then 
+                DEFAULT_CHAT_FRAME:AddMessage(GetNumPartyMembers())
+                for i=1, GetNumPartyMembers() do
+                    if GetUnitGUID("party"..i) == v.GUID then
+                        t["party"..i] = v
+                        break
+                    end
+                end
+            end
+        else
+            t[k] = v
+        end
+    end
+    MH_CurrentMorphs.Morphs = t
 end
 
 local function doCommand(parsed_args)
@@ -1178,18 +1238,18 @@ function MH_DisplayList_UpdateButtons()
             end
             if MH_CurrentMorphs.Morphs[u] ~= nil then
                     if MH_CurrentMorphs.Morphs[u].ID ~= nil then
-                        _G[MH_MorphButtons]:SetChecked(1)
+                        _G[MH_MorphButtons[i]]:SetChecked(1)
                     else
-                        _G[MH_MorphButtons]:SetChecked(0)
+                        _G[MH_MorphButtons[i]]:SetChecked(0)
                     end
                     if MH_CurrentMorphs.Morphs[u].MID ~= nil then
-                        _G[MH_MorphMountButtons]:SetChecked(1)
+                        _G[MH_MorphMountButtons[i]]:SetChecked(1)
                     else
-                        _G[MH_MorphMountButtons]:SetChecked(0)
+                        _G[MH_MorphMountButtons[i]]:SetChecked(0)
                     end
             else
-                _G[MH_MorphMountButtons]:SetChecked(0)
-                _G[MH_MorphButtons]:SetChecked(0)
+                _G[MH_MorphMountButtons[i]]:SetChecked(0)
+                _G[MH_MorphButtons[i]]:SetChecked(0)
             end
         end
     end
@@ -1345,7 +1405,12 @@ function MH_DisplayList_RaidMorph_OnClick()
     -- Get Parent, Get their ID, use this as index in current group members variable
     local id = this:GetParent():GetID()
     local u = groupMembers[id].token
+    if GetUnitGUID(u) == GetUnitGUID("player") then
+        u = "player"
+    end
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
+    DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
     MH_CurrentMorphs.Morphs[u].ID = displayID
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
@@ -1362,8 +1427,13 @@ function MH_DisplayList_RaidMorphMount_OnClick()
     --get unitToken
     local id = this:GetParent():GetID()
     local u = groupMembers[id].token
+    if GetUnitGUID(u) == GetUnitGUID("player") then
+        u = "player"
+    end
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].MID = displayID
+    DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
@@ -1376,8 +1446,13 @@ function MH_DisplayList_RaidMorphReset_OnClick()
     --get unitToken
     local id = this:GetParent():GetID()
     local u = groupMembers[id].token
-    MH_CurrentMorphs.Morphs[u].ID = nil
-    if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    if GetUnitGUID(u) == GetUnitGUID("player") then
+        u = "player"
+    end
+    if MH_CurrentMorphs.Morphs[u] ~= nil then 
+        MH_CurrentMorphs.Morphs[u].ID = nil
+        if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    end
     MH_CurrentDisplaysCheckDirty()
     --getglobal(MH_MorphButtons[k]):SetChecked(0) TODO
     local f = this:GetParent():GetName()
@@ -1395,8 +1470,13 @@ function MH_DisplayList_RaidMorphMountReset_OnClick()
     --get unitToken
     local id = this:GetParent():GetID()
     local u = groupMembers[id].token
-    MH_CurrentMorphs.Morphs[u].MID = nil
-    if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    if GetUnitGUID(u) == GetUnitGUID("player") then
+        u = "player"
+    end
+    if MH_CurrentMorphs.Morphs[u] ~= nil then 
+        MH_CurrentMorphs.Morphs[u].MID = nil
+        if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    end
     MH_CurrentDisplaysCheckDirty()
     --getglobal(MH_MorphMountButtons[k]):SetChecked(0) TODO
     local f = this:GetParent():GetName()
@@ -1450,8 +1530,16 @@ function MH_DisplayList_Morph_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
+    if u == "target" then 
+        u = MH_FixTargetToken() 
+        if u ~= "target" then 
+            getglobal(MH_MorphButtons[k]):SetChecked(0)
+        end
+    end
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
     MH_CurrentMorphs.Morphs[u].ID = displayID
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
+    DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
@@ -1467,8 +1555,15 @@ function MH_DisplayList_MorphMount_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
+    if u == "target" then 
+        u = MH_FixTargetToken() 
+        if u ~= "target" then 
+            getglobal(MH_MorphButtons[k]):SetChecked(0)
+        end
+    end
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
     MH_CurrentMorphs.Morphs[u].MID = displayID
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
@@ -1496,8 +1591,13 @@ function MH_DisplayList_MorphReset_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
-    MH_CurrentMorphs.Morphs[u].ID = nil
-    if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    if u == "target" then 
+        u = MH_FixTargetToken() 
+    end
+    if MH_CurrentMorphs.Morphs[u] ~= nil then 
+        MH_CurrentMorphs.Morphs[u].ID = nil
+        if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    end
     MH_CurrentDisplaysCheckDirty()
     getglobal(MH_MorphButtons[k]):SetChecked(0)
     --Morphing to a creature after another race makes resetting possible
@@ -1513,8 +1613,10 @@ function MH_DisplayList_MorphMountReset_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
-    MH_CurrentMorphs.Morphs[u].MID = nil
-    if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    if MH_CurrentMorphs.Morphs[u] ~= nil then 
+        MH_CurrentMorphs.Morphs[u].MID = nil
+        if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    end
     MH_CurrentDisplaysCheckDirty()
     getglobal(MH_MorphMountButtons[k]):SetChecked(0)
     if not MH_PRESETMODE then
@@ -1925,16 +2027,32 @@ end
 -- 4 : FP Morph
 function MH_AMSendMorph(token, m, id)
     if not MH_Vars.MsgSend then return end
+    if UnitPlayerOrPetInRaid("player") then
+        channel = "RAID"
+    elseif GetNumPartyMembers() > 0 then 
+        channel = "PARTY"
+    else
+        return
+    end
     local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
-    SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
+    SendAddonMessage(MH_AMPREFIX, msg, channel)
 end
 
 -- oops two different protocols whatever
 -- mode:id1:id2
 function MH_AMSendSwap(m, id, sid)
     if not MH_Vars.MsgSend then return end
+    local channel
+    if UnitPlayerOrPetInRaid("player") then
+        channel = "RAID"
+    elseif GetNumPartyMembers() > 0 then 
+        channel = "PARTY"
+    else
+        return
+    end
+
     local msg = format("%s:%s:%s", m, id, sid)
-    SendAddonMessage(MH_AMPREFIX, msg, "PARTY")
+    SendAddonMessage(MH_AMPREFIX, msg, channel)
 end
 
 --TT_QueuedMount = 0
@@ -1954,7 +2072,7 @@ function MH_MountMorphTimer(timer)
 end
 
 function MH_AMHandler(arg2, arg3, arg4)
-    DEFAULT_CHAT_FRAME:AddMessage(arg2)
+    --DEFAULT_CHAT_FRAME:AddMessage(arg2)
     local parsed_args = {}
     local a = string.gfind(arg2, '([^:]+)') --parses info after :
     for i in a do --need to translate it to a table, a is a function
