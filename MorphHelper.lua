@@ -34,27 +34,20 @@ end
 function MH_UpdatePartyMorphUI()
     local partyState = MH_GetPartyStatus()
     DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
-    if partyState ~= MH_PartyStatus then
-        if MH_PartyStatus == MH_NOPARTY or MH_RAID then
-            for i=3,MH_UnitTokensLen do
-                u = MH_UnitTokens[i]
-                getglobal(MH_MorphLabels[i]):Hide()
-                getglobal(MH_MorphButtons[i]):Hide()
-                getglobal(MH_MorphMountButtons[i]):Hide()
-                getglobal(MH_MorphInfoButtons[i]):Hide()
-                getglobal(MH_MountInfoButtons[i]):Hide()
-                getglobal(MH_MorphResetButtons[i]):Hide()
-                getglobal(MH_MorphMountResetButtons[i]):Hide()
-                getglobal("MH_DisplayList_RaidFrame"):Hide()
-                getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
-            end
-        end -- nothing to hide if you're alone ;-;
-        -- show new state's UI
-    end
-
-    MH_PartyStatus = partyState
-    DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
-    if MH_PartyStatus == MH_PARTY then
+    if UnitPlayerOrPetInRaid("player") then
+        getglobal("MH_DisplayList_RaidFrame"):Show()
+        getglobal("MH_DisplayList_RaidFrameScrollFrame"):Show()
+        for i=3,MH_UnitTokensLen do
+            u = MH_UnitTokens[i]
+            getglobal(MH_MorphLabels[i]):Hide()
+            getglobal(MH_MorphButtons[i]):Hide()
+            getglobal(MH_MorphMountButtons[i]):Hide()
+            getglobal(MH_MorphInfoButtons[i]):Hide()
+            getglobal(MH_MountInfoButtons[i]):Hide()
+            getglobal(MH_MorphResetButtons[i]):Hide()
+            getglobal(MH_MorphMountResetButtons[i]):Hide() 
+        end
+    elseif GetNumPartyMembers() > 0 then 
         for i=3,MH_UnitTokensLen do
             u = MH_UnitTokens[i]
             if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
@@ -76,10 +69,24 @@ function MH_UpdatePartyMorphUI()
                 getglobal(MH_MorphMountResetButtons[i]):Hide()
             end
         end
-    elseif MH_PartyStatus == MH_RAID then
-        getglobal("MH_DisplayList_RaidFrame"):Show()
-        getglobal("MH_DisplayList_RaidFrameScrollFrame"):Show()
+    elseif GetNumPartyMembers() == 0 then
+        for i=3,MH_UnitTokensLen do
+            u = MH_UnitTokens[i]
+            getglobal(MH_MorphLabels[i]):Hide()
+            getglobal(MH_MorphButtons[i]):Hide()
+            getglobal(MH_MorphMountButtons[i]):Hide()
+            getglobal(MH_MorphInfoButtons[i]):Hide()
+            getglobal(MH_MountInfoButtons[i]):Hide()
+            getglobal(MH_MorphResetButtons[i]):Hide()
+            getglobal(MH_MorphMountResetButtons[i]):Hide() 
+        end
+        getglobal("MH_DisplayList_RaidFrame"):Hide()
+        getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
+        DEFAULT_CHAT_FRAME:AddMessage("TEST23")
     end
+
+    MH_PartyStatus = partyState
+    DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
 end
 
 function MH_VariablesLoaded()
@@ -559,6 +566,8 @@ function MH_Init()
     MH_Registers()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
 end
+
+
 
 function MH_GetPartyStatus()
     if UnitPlayerOrPetInRaid("player") then
@@ -1041,6 +1050,11 @@ MH_CurrentRaidGroup = 1
 local groupMembers = {}
 function MH_DisplayList_RaidGroup_Update()
     local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame);
+    if Offset == nil then
+         DEFAULT_CHAT_FRAME:AddMessage("HELP") 
+        FauxScrollFrame_Update(MH_DisplayList_RaidFrameScrollFrame, 8 , 1, 32);
+        Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame); 
+    end
     MH_DisplayList_RaidFrameLabel:SetText("Group" .. Offset+1)
     MH_CurrentRaidGroup = Offset + 1
     DEFAULT_CHAT_FRAME:AddMessage(MH_CurrentRaidGroup .. " " .. Offset*5 .. " " .. MH_CurrentRaidGroup*5)
@@ -1326,6 +1340,7 @@ function MH_DisplayList_OnShow()
     else
         MH_DisplayList_PresetModeCheckButton:SetChecked(0)
     end
+    MH_UpdatePartyMorphUI()
     MH_DisplayList_RaidGroup_Update()
     MH_DisplayList_Update()
     MH_DisplayList_UpdateButtons()

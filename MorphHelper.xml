@@ -1601,7 +1601,7 @@
                     </Anchor>
                 </Anchors>
             </Frame>
-            <ScrollFrame name="$parent_RaidFrameScrollFrame" inherits="FauxScrollFrameTemplate">
+            <ScrollFrame name="$parent_RaidFrameScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
                 <Size>
                     <AbsDimension x="32" y="82"/>
                 </Size>
@@ -1617,6 +1617,11 @@
                         <!-- TODO: Create new update method-->
                         FauxScrollFrame_OnVerticalScroll(32, MH_DisplayList_RaidGroup_Update);
                     </OnVerticalScroll>
+                    <OnShow>
+                        if not UnitPlayerOrPetInRaid("player") then
+                            this:Hide()
+                        end
+                    </OnShow>
                 </Scripts>
             </ScrollFrame>
             <!-- Presets Buttons -->
