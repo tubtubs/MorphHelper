@@ -19,7 +19,7 @@
     </Frame>
     <CheckButton name="MH_ListTemplate" virtual="true" enableMouseWheel="true">
         <Size>
-            <AbsDimension x="425" y="16"/>
+            <AbsDimension x="420" y="16"/>
         </Size>
         <Layers>
             <Layer level="OVERLAY">

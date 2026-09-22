@@ -3,22 +3,27 @@
 Assists in using the morph lua commands provided by VanillaHelpers.
 Slash commands, and morph window available. Type /mh show to display the window or /mh to learn more.
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
+*V1.60* Now supports syncing morphs between party/raid members, improved UI, expanded mount/fp support
+Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
+![WoWInitscreenshot](https://i.imgur.com/KDg8bIC.png)
+
+## Client Mods
 *v1.60+ REQUIRES THESE CLIENT MODS:* 
 * [VanillaHelpers](https://github.com/isfir/VanillaHelpers)
 * [Nampower](https://github.com/brues-code/nampower) (events)
 * [UnitXP_SP3](https://codeberg.org/konaka/UnitXP_SP3) (timers)
 * [ClassicAPI](https://github.com/brues-code/ClassicAPI) (Spell info queries)
 
-Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
-![WoWInitscreenshot](https://i.imgur.com/KDg8bIC.png)
 
 ## Installation:
+0. Install the client mods listed above
 1. Click the Code button to the upper right hand corner and select download or click [here](https://github.com/tubtubs/MorphHelper/archive/refs/heads/master.zip).
 2. Unzip the download into your Interface/Addons folder in your WoW directory. Eg: *C:\Games\WoW\Interface\Addons*
-3. Rename the folder from *MorphHelper-master* to *MorphHelper*
-4. Restart WoW and enable the addon from the character selection screen. Ensure your addon memory cap is set to 0 (no limit) as well.
+    - Should have all 5 folders, MorphHelper, MorphHelper_Vanilla, MorphHelper_Turtle, MorphHelper_Wallcraft, MorphHelper_Mounts
+3. Restart WoW and enable the main addon (MorphHelper) from the character selection screen. Ensure your addon memory cap is set to a higher number or 0 (no limit) as well. 
+    - The other addons for displays lists (MorphHelper_X will be automatically loaded and enabled as needed on init)
 
 You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsManager) to install this addon.
 
@@ -43,6 +48,10 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * /MH getItem itemID - Displays an item's display info in chat.
 
 ## Known Issues:
+* Performance
+    - Reduced memory usage by moving display lists to seperate on demand loaded addons
+    - Improved mount support listens for buff changes, it may cause lag in raids or populated areas
+
 * Addon Messages don't share item morphs
     - Item morphs are still WIP, barely supported
 

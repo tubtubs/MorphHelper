@@ -19,8 +19,6 @@ local libIcon = LibStub("LibDBIcon-1.0");
 local libData = LibStub("LibDataBroker-1.1");
 MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
-local FPMorphed = false;
-local MH_PartyStatus = -1
 
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
@@ -202,14 +200,15 @@ function MH_VariablesLoaded()
             end
         end
     elseif (event == "UNIT_FLAGS") then
-        if (FPMorphed and not UnitOnTaxi("player")) then 
+        if MH_Vars.FPMorph == nil or MH_Vars.FPMorph == -1 then
+            return
+        end
+        if (not UnitOnTaxi("player")) then 
             SetUnitMountDisplayID("player", 0)
             MH_AMSendMorph("player",MH_AMFPMORPH,0)
-            FPMorphed = false
         elseif (MH_Vars.FPMorph ~= -1 and UnitOnTaxi("player")) then
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
             MH_AMSendMorph("player",MH_AMFPMORPH,MH_Vars.FPMorph)
-            FPMorphed = true
         end
     elseif event == "CHAT_MSG_ADDON" then
         if MH_Vars.MsgRecv and arg4 ~= UnitName("PLAYER") and arg1==MH_AMPREFIX then
@@ -252,7 +251,6 @@ function MH_FixTargetToken()
     return token
 end
 
-
 function MH_CheckMorphUnitTokens()
     local t = {}
     for k,v in MH_CurrentMorphs.Morphs do 
@@ -273,7 +271,7 @@ function MH_CheckMorphUnitTokens()
                     end
                 end
             elseif GetNumPartyMembers() > 0 then 
-                DEFAULT_CHAT_FRAME:AddMessage(GetNumPartyMembers())
+                --DEFAULT_CHAT_FRAME:AddMessage(GetNumPartyMembers())
                 for i=1, GetNumPartyMembers() do
                     if GetUnitGUID("party"..i) == v.GUID then
                         t["party"..i] = v
@@ -335,11 +333,9 @@ local function doCommand(parsed_args)
         end
     elseif (l==3) then -- morph commands
         if parsed_args[1] == string.lower(MH_OPT1) then 
-            MH_AMSendMorph(parsed_args[2], MH_AMMORPHPLAYER, parsed_args[3])
-            SetUnitDisplayID(parsed_args[2], tonumber(parsed_args[3]))
+            MH_Morph(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT2) then
-            MH_AMSendMorph(parsed_args[2], MH_AMMORPHMOUNT, parsed_args[3])
-            SetUnitMountDisplayID(parsed_args[2], tonumber(parsed_args[3]))
+            MH_MorphMount(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT3) then
             MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
             RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
@@ -376,7 +372,6 @@ local function parseArgs(args)
         DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
     end
 end
-
 
 local function TextMenu(arg)
 	if arg == nil or arg == "" then
@@ -591,12 +586,9 @@ function MH_Init()
     MH_DewdropRegister()
     MH_Presets_DewdropRegister()
     MH_UpdatePartyMorphUI()
-    --MH_PartyStatus = MH_GetPartyStatus()
     MH_Registers()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
 end
-
-
 
 function MH_GetPartyStatus()
     if UnitPlayerOrPetInRaid("player") then
@@ -1053,7 +1045,6 @@ function MH_SetCurrentPresetID(PresetID)
     MH_DisplayList_UpdateButtons()
 end
 
-
 function MH_ApplyPresetID(PresetID)
     found = -1
     for i=1, getn(MH_Vars.Presets) do
@@ -1073,6 +1064,32 @@ function MH_ApplyPresetID(PresetID)
     MH_Dewdrop:Close()
 end
 
+function MH_Morph(u, displayID)
+    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
+    --DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
+    MH_CurrentMorphs.Morphs[u].ID = displayID
+    MH_CurrentMorphs.Dirty=true
+    MH_DisplayList_UpdateButtons()
+    if (not MH_PRESETMODE) then
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
+        SetUnitDisplayID(u, displayID)  
+    end
+end
+
+function MH_MorphMount(u, displayID)
+    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
+    MH_CurrentMorphs.Morphs[u].MID = displayID
+    --DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
+    MH_CurrentMorphs.Dirty=true
+    MH_DisplayList_UpdateButtons()
+    if (not MH_PRESETMODE) then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
+        SetUnitMountDisplayID(u, displayID)
+    end
+end
+
 -- Raid Group functions
 MH_MAXRAIDGROUPS = 8
 MH_CurrentRaidGroup = 1
@@ -1080,13 +1097,12 @@ local groupMembers = {}
 function MH_DisplayList_RaidGroup_Update()
     local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame);
     if Offset == nil then
-         DEFAULT_CHAT_FRAME:AddMessage("HELP") 
         FauxScrollFrame_Update(MH_DisplayList_RaidFrameScrollFrame, 8 , 1, 32);
         Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame); 
     end
     MH_DisplayList_RaidFrameLabel:SetText("Group" .. Offset+1)
     MH_CurrentRaidGroup = Offset + 1
-    DEFAULT_CHAT_FRAME:AddMessage(MH_CurrentRaidGroup .. " " .. Offset*5 .. " " .. MH_CurrentRaidGroup*5)
+    --DEFAULT_CHAT_FRAME:AddMessage(MH_CurrentRaidGroup .. " " .. Offset*5 .. " " .. MH_CurrentRaidGroup*5)
     local btn = "MH_DisplayList_RaidFrameSlot"
     local filledBtn = "MH_DisplayList_RaidFrameFilledSlot"
     local filledBtnName = filledBtn .. "Name"
@@ -1462,16 +1478,7 @@ function MH_DisplayList_RaidMorph_OnClick()
     if GetUnitGUID(u) == GetUnitGUID("player") then
         u = "player"
     end
-    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
-    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
-    DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
-    MH_CurrentMorphs.Morphs[u].ID = displayID
-    MH_CurrentMorphs.Dirty=true
-    MH_DisplayList_UpdateButtons()
-    if (not MH_PRESETMODE) then
-        MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
-        SetUnitDisplayID(u, displayID)  
-    end
+    MH_Morph(u, displayID)
 end
 
 function MH_DisplayList_RaidMorphMount_OnClick()
@@ -1484,16 +1491,7 @@ function MH_DisplayList_RaidMorphMount_OnClick()
     if GetUnitGUID(u) == GetUnitGUID("player") then
         u = "player"
     end
-    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
-    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
-    MH_CurrentMorphs.Morphs[u].MID = displayID
-    DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
-    MH_CurrentMorphs.Dirty=true
-    MH_DisplayList_UpdateButtons()
-    if (not MH_PRESETMODE) then
-        MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
-        SetUnitMountDisplayID(u, displayID)
-    end
+    MH_MorphMount(u, displayID)
 end
 
 function MH_DisplayList_RaidMorphReset_OnClick()
@@ -1590,16 +1588,7 @@ function MH_DisplayList_Morph_OnClick()
             getglobal(MH_MorphButtons[k]):SetChecked(0)
         end
     end
-    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
-    MH_CurrentMorphs.Morphs[u].ID = displayID
-    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
-    DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
-    MH_CurrentMorphs.Dirty=true
-    MH_DisplayList_UpdateButtons()
-    if (not MH_PRESETMODE) then
-        MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
-        SetUnitDisplayID(u, displayID)  
-    end
+    MH_Morph(u, displayID)
 end
 
 function MH_DisplayList_MorphMount_OnClick()
@@ -1615,15 +1604,7 @@ function MH_DisplayList_MorphMount_OnClick()
             getglobal(MH_MorphButtons[k]):SetChecked(0)
         end
     end
-    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
-    MH_CurrentMorphs.Morphs[u].MID = displayID
-    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
-    MH_CurrentMorphs.Dirty=true
-    MH_DisplayList_UpdateButtons()
-    if (not MH_PRESETMODE) then
-        MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
-        SetUnitMountDisplayID(u, displayID)
-    end
+    MH_MorphMount(u, displayID)
 end
 
 function MH_CurrentDisplaysCheckDirty()
@@ -2167,7 +2148,7 @@ function MH_AMHandler(arg2, arg3, arg4)
                         tindex = k
                     end
                 end
-                DEFAULT_CHAT_FRAME:AddMessage(parsed_args[2])
+                --DEFAULT_CHAT_FRAME:AddMessage(parsed_args[2])
                 if tonumber(parsed_args[2]) == MH_AMMORPHPLAYER then
                     if tonumber(parsed_args[3]) == -1 then
                         MH_CurrentMorphs.Morphs[token].ID = nil
