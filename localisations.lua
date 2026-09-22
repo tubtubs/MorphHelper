@@ -14,6 +14,7 @@ MH_RAID = 2
 MH_S_TWOW = MH_NAME .. ": Turtle Detected"
 MH_S_WC = MH_NAME .. ": Wallcraft Detected"
 MH_S_VWOW = MH_NAME .. ": Vanilla Detected"
+MH_S_MISSING = MH_NAME .. ": Missing a MorphHelper_X addon. Be sure the display lists addons are properly installed.\n Addon will work, but displays lists in the UI will not load."
 
 MH_V_CLASSICAPI = 10510
 MH_V_UNITXP3 = 1774797347

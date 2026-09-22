@@ -15,13 +15,6 @@ libs\AceHook-3.0.lua
 libs\CallbackHandler-1.0.lua
 libs\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0.lua
-Lists\RaceList_Wallcraft.lua
-Lists\CreatureList_Wallcraft.lua
-Lists\RaceList_Turtle.lua
-Lists\CreatureList_Turtle.lua
-Lists\RaceList_Vanilla.lua
-Lists\CreatureList_Vanilla.lua
-Lists\MountList_Vanilla.lua
 localisations.lua
 MorphHelper.xml
 MorphHelper.lua

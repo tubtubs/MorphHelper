@@ -32,8 +32,6 @@ function MH_Test()
 end
 
 function MH_UpdatePartyMorphUI()
-    local partyState = MH_GetPartyStatus()
-    DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
     if UnitPlayerOrPetInRaid("player") then
         getglobal("MH_DisplayList_RaidFrame"):Show()
         getglobal("MH_DisplayList_RaidFrameScrollFrame"):Show()
@@ -83,9 +81,6 @@ function MH_UpdatePartyMorphUI()
         getglobal("MH_DisplayList_RaidFrame"):Hide()
         getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
     end
-
-    MH_PartyStatus = partyState
-    DEFAULT_CHAT_FRAME:AddMessage("PartyState: " .. MH_PartyStatus)
 end
 
 function MH_VariablesLoaded()
@@ -146,7 +141,6 @@ function MH_VariablesLoaded()
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             --deMorph me...
-            DEFAULT_CHAT_FRAME:AddMessage("Test")
             SetUnitMountDisplayID("player", 0)
         end
     elseif event=="BUFF_ADDED_OTHER" then --NamPower Event
@@ -465,6 +459,18 @@ function MH_Init()
     find = string.find(r,"Wallcraft")
     if find==nil then --Standard, or Turtle?
         if (TWMinimapShopFrame~=nil or TWMiniMapBattlefieldFrame~=nil or LFT_Minimap~=nil) then --turtle
+            EnableAddOn("MorphHelper_Turtle")
+            EnableAddOn("MorphHelper_Mounts")
+            loaded, reason = LoadAddOn("MorphHelper_Turtle")
+            if reason ~= nil then 
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            end
+            loaded, reason = LoadAddOn("MorphHelper_Mounts")
+            if reason ~= nil then 
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            end
+            DisableAddOn("MorphHelper_Vanilla")
+            DisableAddOn("MorphHelper_Wallcraft")
             MH_DISPLAY_LISTS = {
                 {
                     list=MH_CreatureList_TW,
@@ -485,6 +491,18 @@ function MH_Init()
             }
             DEFAULT_CHAT_FRAME:AddMessage(MH_S_TWOW)
         else --standard vanilla
+            EnableAddOn("MorphHelper_Vanilla")
+            EnableAddOn("MorphHelper_Mounts")
+            loaded, reason = LoadAddOn("MorphHelper_Vanilla")
+            if reason ~= nil then 
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            end
+            loaded, reason = LoadAddOn("MorphHelper_Mounts")
+            if reason ~= nil then 
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            end
+            DisableAddOn("MorphHelper_Turtle")
+            DisableAddOn("MorphHelper_Wallcraft")
             MH_DISPLAY_LISTS = {
                 {
                     list=MH_CreatureList_V,
@@ -511,6 +529,18 @@ function MH_Init()
             DEFAULT_CHAT_FRAME:AddMessage(MH_S_VWOW)
         end
     else --Wallcraft
+        EnableAddOn("MorphHelper_Wallcraft")
+        EnableAddOn("MorphHelper_Mounts")
+        loaded, reason = LoadAddOn("MorphHelper_Wallcraft")
+        if reason ~= nil then 
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+        end
+        loaded, reason = LoadAddOn("MorphHelper_Mounts")
+        if reason ~= nil then 
+                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+        end
+        DisableAddOn("MorphHelper_Turtle")
+        DisableAddOn("MorphHelper_Vanilla")
         MH_DISPLAY_LISTS = {
             {
                 list=MH_CreatureList_WC,
