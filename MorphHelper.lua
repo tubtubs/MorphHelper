@@ -332,12 +332,16 @@ local function doCommand(parsed_args)
             MH_Morph(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT2) then
             MH_MorphMount(parsed_args[2], tonumber(parsed_args[3]))
+        elseif parsed_args[1] == string.lower(MH_OPT21) then
+            MH_StageMount(parsed_args[2], tonumber(parsed_args[3]))
+        elseif parsed_args[1] == string.lower(MH_OPT22) then
+            MH_SafeMount(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT3) then
-            MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
             RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+            MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
         elseif parsed_args[1] == string.lower(MH_OPT4) then
-            MH_AMSendSwap(MH_AMSWAPMID, parsed_args[2], parsed_args[3])
             RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+            MH_AMSendSwap(MH_AMSWAPMID, parsed_args[2], parsed_args[3])
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -766,6 +770,8 @@ SLASH_MORPHHELPER2 = '/Morph'
 SLASH_MORPHHELPER3 = '/MH'
 MH_OPT1 = "morph"
 MH_OPT2 = "morphMount"
+MH_OPT21 = "stageMount"
+MH_OPT22 = "safeMount"
 MH_OPT3 = "remap"
 MH_OPT4 = "remapMount"
 MH_OPT5 = "remapItem"
@@ -803,6 +809,10 @@ MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
 MH_SLASHHELP2 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT2 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit's mount to a displayID.\n"
+MH_SLASHHELP21 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT21 ..
+"|cFF00FF00 unitToken displayID|r - Stages a unit's mount displayID but doesn't morph them.\n"
+MH_SLASHHELP22 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT22 ..
+"|cFF00FF00 unitToken displayID|r - Morphs if mounted, stages otherwise. Best for init\n"
 MH_SLASHHELP3 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT3 ..
 "|cFF00FF00 oldDisplayID displayID|r - Swap a unit displayID for a new one.\n"
 MH_SLASHHELP4 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT4 ..
@@ -816,7 +826,7 @@ MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot itemID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP17 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP17 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP21 .. MH_SLASHHELP22 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
@@ -987,6 +997,20 @@ MH_AppliedPresetID = 0
 MH_CurrentPresetID = 0 
 
 --Utility Functions
+function MH_MountCheck(u)
+    local i = 1
+    local _, _, spellID = UnitBuff(u,i)
+    while UnitBuff(u,i) do
+        local spellEffectName = GetSpellRecField(spellID,"effectApplyAuraName")
+        if spellEffectName[1] == 78 then
+            return true
+        end
+        local icon, idk, spellID = UnitBuff(u,i)
+        i = i+1
+    end
+    return false
+end
+
 local function sort_ids(a,b)
     return a.ID < b.ID
 end
@@ -1054,12 +1078,34 @@ function MH_Morph(u, displayID)
     end
 end
 
-function MH_MorphMount(u, displayID)
+-- mounts if mounted, stages otherwise
+function MH_SafeMount(u, displayID)
+    if not MH_MountCheck(u) then 
+        MH_StageMount(u, displayID)
+    else
+        MH_MorphMount(u, displayID)
+    end
+end
+
+function MH_StageMount(u, displayID)
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].MID = displayID
     MH_CurrentMorphs.Dirty=true
-    MH_DisplayList_UpdateButtons()
+    --MH_DisplayList_UpdateButtons()
+    MH_AMSendMorph(u, MH_AMSTAGEMOUNT, displayID)
+end
+--IsAltKeyDown()
+function MH_MorphMount(u, displayID)
+    if not MH_MountCheck(u) then 
+        MH_StageMount(u, displayID)
+        return
+    end
+    if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
+    MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
+    MH_CurrentMorphs.Morphs[u].MID = displayID
+    MH_CurrentMorphs.Dirty=true
+    --  MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
         MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
         SetUnitMountDisplayID(u, displayID)
@@ -1490,7 +1536,11 @@ function MH_DisplayList_RaidMorphMount_OnClick()
     if GetUnitGUID(u) == GetUnitGUID("player") then
         u = "player"
     end
-    MH_MorphMount(u, displayID)
+    if IsAltKeyDown() then
+        MH_MorphMount(u, displayID)
+    else
+        MH_SafeMount(u, displayID) 
+    end
 end
 
 function MH_DisplayList_RaidMorphReset_OnClick()
@@ -1585,7 +1635,11 @@ function MH_DisplayList_MorphMount_OnClick()
             getglobal(MH_MorphButtons[k]):SetChecked(0)
         end
     end
-    MH_MorphMount(u, displayID)
+    if IsAltKeyDown() then
+        MH_MorphMount(u, displayID)
+    else
+        MH_SafeMount(u, displayID) 
+    end
 end
 
 function MH_CurrentDisplaysCheckDirty()
@@ -2008,6 +2062,7 @@ end
 -- 2 : id remap
 -- 3 : mid remap
 -- 4 : FP Morph
+-- 5 : stage mount
 function MH_AMSendMorph(token, m, id)
     if not MH_Vars.MsgSend then return end
     if UnitPlayerOrPetInRaid("player") then
@@ -2108,6 +2163,7 @@ function MH_AMHandler(arg2, arg3, arg4)
                         MH_CurrentMorphs.Dirty=true
                         SetUnitDisplayID(token, tonumber(parsed_args[3]))
                     end
+                    MH_DisplayList_UpdateButtons()
                 elseif tonumber(parsed_args[2]) == MH_AMMORPHMOUNT then
                     if tonumber(parsed_args[3]) == -1 then
                         MH_CurrentMorphs.Morphs[token].MID = nil
@@ -2119,8 +2175,15 @@ function MH_AMHandler(arg2, arg3, arg4)
                         MH_CurrentMorphs.Dirty=true
                         SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
                     end
+                    MH_DisplayList_UpdateButtons()
                 elseif tonumber(parsed_args[2] == MH_AMFPMORPH) then
                     SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
+                elseif tonumber(parsed_args[2]) == MH_AMSTAGEMOUNT then
+                    if MH_CurrentMorphs.Morphs[token] == nil then MH_CurrentMorphs.Morphs[token] = {} end
+                    MH_CurrentMorphs.Morphs[token].GUID = GetUnitGUID(token)
+                    MH_CurrentMorphs.Morphs[token].MID = displayID
+                    MH_CurrentMorphs.Dirty=true
+                    MH_DisplayList_UpdateButtons()
                 else
                     DEFAULT_CHAT_FRAME:AddMessage("MH: Addon Message failure2")
                 end

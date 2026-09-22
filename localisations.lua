@@ -61,6 +61,7 @@ MH_AMMORPHMOUNT = 1
 MH_AMSWAPID = 2
 MH_AMSWAPMID = 3
 MH_AMFPMORPH = 4
+MH_AMSTAGEMOUNT = 5
 
 MH_PRESETS = "Presets"
 MH_NEWPRESET = "New Preset"
@@ -78,7 +79,7 @@ MH_RESETALLTOOLTIP = "Click to reset all available unit's morphs"
 MH_MINIMAPTOGGLETOOLTIP = "Show minimap icon"
 
 MH_TOOLTIPMORPH = "Click to morph %s"
-MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount"
+MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount.\nMorphs if mounted, stages otherwise.\nHold alt to force morph."
 MH_TOOLTIPMORPHRESET = "Click to reset %s's morphs\nRelogging will clear morphs if this fails"
 MH_TOOLTIPMORPHINFO = "Click to see %s's displayID"
 MH_TOOLTIPRAIDMORPHINFO = "Click to see %s's displayID\nHold Alt to see their mount displayID"
@@ -261,9 +262,15 @@ MH_CloseButton =
 MH_WI_Examples = 
 {
     {
-        name = "MorphHelper Example",
+        name = "MorphHelper Morph Example",
         tooltip = "Morphs the player into a murloc\nType /mh for more commands",
         example = "\n/mh morph player 31",
+        check = function() return true end,
+    },
+    {
+        name = "MorphHelper Safe Mount Example",
+        tooltip = "Morphs the players mount as a Reindeer.\nTakes effect the next time you mount or immediately if mounted.\nType /mh for more commands",
+        example = "\n/mh morph safemount player 1991",
         check = function() return true end,
     },
     {
