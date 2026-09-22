@@ -4,6 +4,7 @@ Assists in using the morph lua commands provided by VanillaHelpers.
 Slash commands, and morph window available. Type /mh show to display the window or /mh to learn more.
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
 *V1.60* Now supports syncing morphs between party/raid members, improved UI, expanded mount/fp support
+
 Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
 ![WoWInitscreenshot](https://i.imgur.com/KDg8bIC.png)

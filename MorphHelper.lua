@@ -131,10 +131,6 @@ function MH_VariablesLoaded()
                 SetUnitMountDisplayID("player", d)
             end
         end
-        --test = GetSpellRec(arg3)
-        --DeepPrint(test)
-        --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
-        --TT_TestFrame:Show()
     elseif event=="BUFF_REMOVED_SELF" then --NamPower Event
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
@@ -158,8 +154,7 @@ function MH_VariablesLoaded()
             end
         end
         if token ~= nil then --found the player, find their morph...
-            local d = MH_GetMountMorph(token)
-            if d == -1 then -- manually morph mount to account for bug... After morphing a mount, you'll need to re-apply all mounts afterward.
+            if MH_CurrentMorphs.Morphs[token] == nil or MH_CurrentMorphs.Morphs[token].MID == nil then -- manually morph mount to account for bug... After morphing a mount, you'll need to re-apply all mounts afterward.
                 local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
                 C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
                 local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
@@ -172,8 +167,8 @@ function MH_VariablesLoaded()
                 else
                     SetUnitMountDisplayID(token, cinfo.displayID)
                 end
-            else
-                SetUnitMountDisplayID(token, d)
+            elseif MH_CurrentMorphs.Morphs[token] ~= nil and MH_CurrentMorphs.Morphs[token].MID ~= nil then
+                SetUnitMountDisplayID(token, MH_CurrentMorphs.Morphs[token])
             end
         end
     elseif event=="BUFF_REMOVED_OTHER" then --NamPower Event
@@ -200,13 +195,13 @@ function MH_VariablesLoaded()
             end
         end
     elseif (event == "UNIT_FLAGS") then
-        if MH_Vars.FPMorph == nil or MH_Vars.FPMorph == -1 then
+        if MH_Vars.FPMorph == nil then
             return
         end
         if (not UnitOnTaxi("player")) then 
             SetUnitMountDisplayID("player", 0)
             MH_AMSendMorph("player",MH_AMFPMORPH,0)
-        elseif (MH_Vars.FPMorph ~= -1 and UnitOnTaxi("player")) then
+        elseif (UnitOnTaxi("player")) then
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
             MH_AMSendMorph("player",MH_AMFPMORPH,MH_Vars.FPMorph)
         end
@@ -251,6 +246,7 @@ function MH_FixTargetToken()
     return token
 end
 
+-- Redoes unit tokens for party changes
 function MH_CheckMorphUnitTokens()
     local t = {}
     for k,v in MH_CurrentMorphs.Morphs do 
@@ -427,7 +423,7 @@ function MH_Init()
     end
 
     if not clientModLoaded then
-        return
+        return --abort early if missing client mods
     end
 
     SlashCmdList['MORPHHELPER'] = TextMenu
@@ -442,9 +438,11 @@ function MH_Init()
             MsgRecv = true,
         };
         firstrun = 1
-    elseif (not MH_Vars.FPMorph) then
-        MH_Vars.FPMorph = -1;
-    elseif not MH_Vars.MsgSend then
+    end
+    if (not MH_Vars.FPMorph ~= nil and MH_Vars.FPMorph == -1) then
+        MH_Vars.FPMorph = nil;
+    end
+    if not MH_Vars.MsgSend then
         MH_Vars.MsgSend = true
         MH_Vars.MsgRecv = true
     end
@@ -562,7 +560,7 @@ function MH_Init()
         DEFAULT_CHAT_FRAME:AddMessage(MH_S_WC)
     end
     --Initialize WoWInit's list of presets
-    if (WI_Vars) then 
+    if (WI_Vars ~= nil) then 
         --Example Morph and Presets Menu Stub
         for i,j in pairs(MH_WI_Examples) do
             table.insert(WI_EXAMPLES[1], j)
@@ -588,16 +586,6 @@ function MH_Init()
     MH_UpdatePartyMorphUI()
     MH_Registers()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
-end
-
-function MH_GetPartyStatus()
-    if UnitPlayerOrPetInRaid("player") then
-        return MH_RAID
-    elseif GetNumPartyMembers() > 0 then 
-        return MH_PARTY
-    else
-        return MH_NOPARTY
-    end
 end
 
 function MH_UpdateWoWInitPresets()
@@ -811,10 +799,6 @@ MH_SLASHHELP16 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT16 ..
 MH_SLASHHELP17 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT17 ..
 "|cFF00FF00 {hide/show}|r - Show or hide the minimap button\n"
 
---MH_SLASHHELP99 = [[Mount Morph Helper Functions:]] .. "\n"
---MH_SLASHHELP98 = [[|cFFFFFF00 /run MH_MountSpell("SpellName","BuffName",displayID)|r]] .. "\n"
---MH_SLASHHELP97 = [[|cFFFFFF00 /run MH_MountItem("ItemName","BuffName",displayID)|r]] .. "\n"
-
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
 MH_SLASHHELP2 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT2 ..
@@ -885,7 +869,6 @@ function MH_ListPresets()
     for i,j in pairs(MH_Vars.Presets) do
         DEFAULT_CHAT_FRAME:AddMessage(j.ID .. ". " .. j.Name)
     end
-
 end
 
 function MH_HideMinimap()
@@ -902,10 +885,6 @@ function MH_ShowMinimap()
         MH_DewdropRegister()
 	end
 end
-
-
--- chat inputs
-
 
 -- UI CODE --
 MH_NUM_DISPLAYS_SHOWN = 8
@@ -1008,13 +987,8 @@ MH_AppliedPresetID = 0
 MH_CurrentPresetID = 0 
 
 --Utility Functions
-
-function MH_GetMountMorph(token)
-    if MH_CurrentMorphs.Morphs[token] ~= nil then
-        return MH_CurrentMorphs.Morphs[token].MID
-    else
-        return -1
-    end
+local function sort_ids(a,b)
+    return a.ID < b.ID
 end
 
 function MH_ResetAll()
@@ -1028,10 +1002,16 @@ function MH_ResetAll()
     MH_CurrentMorphs.Dirty = false
     for k, v in pairs(MH_CurrentMorphs.Morphs) do
         MH_CurrentMorphs.Morphs[k] = nil
-        if (UnitExists(k) and not MH_PRESETMODE) then
-            SetUnitDisplayID(k, 13) 
-            SetUnitDisplayID(k, 0)
-            SetUnitMountDisplayID(k, 0)
+    end
+    -- reset all party members...
+    if GetNumPartyMembers() > 0 then
+        for i=1, getn(groupMembers) do
+            u = groupMembers[i].token
+            MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
+            SetUnitDisplayID(u, 13) 
+            SetUnitDisplayID(u, 0)
+            MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
+            SetUnitMountDisplayID(u, 0)
         end
     end
     if (MH_DisplayList:IsShown()) then
@@ -1053,9 +1033,7 @@ function MH_ApplyPresetID(PresetID)
         end
     end
     if found ~= -1 then
-        --MH_CurrentPresetIndex = found
         MH_CurrentPreset = MH_Vars.Presets[found].Name
-        --MH_AppliedPresetID = MH_Vars.Presets[found].ID
         MH_CurrentPresetID = MH_Vars.Presets[found].ID
         MH_ApplyPresetButton_OnClick()
     else
@@ -1067,7 +1045,6 @@ end
 function MH_Morph(u, displayID)
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
-    --DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
     MH_CurrentMorphs.Morphs[u].ID = displayID
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
@@ -1081,7 +1058,6 @@ function MH_MorphMount(u, displayID)
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].MID = displayID
-    --DEFAULT_CHAT_FRAME:AddMessage("GUID" .. GetUnitGUID(u))
     MH_CurrentMorphs.Dirty=true
     MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
@@ -1090,10 +1066,36 @@ function MH_MorphMount(u, displayID)
     end
 end
 
+function MH_MorphReset(u)
+    if MH_CurrentMorphs.Morphs[u] ~= nil then 
+        MH_CurrentMorphs.Morphs[u].ID = nil
+        if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    end
+    --Morphing to a creature after another race makes resetting possible
+    --Resets native displayID or something
+    if not MH_PRESETMODE then
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
+        SetUnitDisplayID(u, 13) 
+        SetUnitDisplayID(u, 0)
+    end
+end
+
+function MH_MorphMountReset(u)
+    if MH_CurrentMorphs.Morphs[u] ~= nil then 
+        MH_CurrentMorphs.Morphs[u].MID = nil
+        if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
+    end
+    if not MH_PRESETMODE then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
+        SetUnitMountDisplayID(u, 0)
+    end
+end
+
 -- Raid Group functions
 MH_MAXRAIDGROUPS = 8
 MH_CurrentRaidGroup = 1
 local groupMembers = {}
+-- Draws and fills in the table full of raid groups
 function MH_DisplayList_RaidGroup_Update()
     local Offset = FauxScrollFrame_GetOffset(MH_DisplayList_RaidFrameScrollFrame);
     if Offset == nil then
@@ -1144,7 +1146,6 @@ function MH_DisplayList_RaidGroup_Update()
 end
 
 --DisplayList Functions
-
 function MH_DisplayList_ResetPos()
     MH_DisplayList:ClearAllPoints()
     MH_DisplayList:SetPoint("CENTER", UIParent ,"CENTER", 0, 0)
@@ -1203,7 +1204,7 @@ function MH_DisplayList_Update()
             MH_DisplayList_ListFaveButton:Hide();
             MH_DisplayList_ListFPButton:Hide();
 		end
-		if ( index == MH_DisplayList.selectedIcon  ) then
+		if ( index == MH_DisplayList.selectedIcon) then
 			MH_DisplayList_ListButton:SetChecked(1);
 		else
 			MH_DisplayList_ListButton:SetChecked(nil);
@@ -1468,10 +1469,8 @@ end
 function MH_DisplayList_RaidMorph_OnClick()
     this:SetChecked(1)
     --get getDisplayID
-    local displayID = MH_GetDisplayID()
+    local displayID = MH_GetManualDisplayID()
     --get unitToken
-    --local k = this:GetID();
-    --local u = MH_UnitTokens[k]
     -- Get Parent, Get their ID, use this as index in current group members variable
     local id = this:GetParent():GetID()
     local u = groupMembers[id].token
@@ -1484,7 +1483,7 @@ end
 function MH_DisplayList_RaidMorphMount_OnClick()
     this:SetChecked(1)
     --get getDisplayID
-    local displayID = MH_GetDisplayID()
+    local displayID = MH_GetManualDisplayID()
     --get unitToken
     local id = this:GetParent():GetID()
     local u = groupMembers[id].token
@@ -1501,21 +1500,10 @@ function MH_DisplayList_RaidMorphReset_OnClick()
     if GetUnitGUID(u) == GetUnitGUID("player") then
         u = "player"
     end
-    if MH_CurrentMorphs.Morphs[u] ~= nil then 
-        MH_CurrentMorphs.Morphs[u].ID = nil
-        if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
-    end
-    MH_CurrentDisplaysCheckDirty()
-    --getglobal(MH_MorphButtons[k]):SetChecked(0) TODO
     local f = this:GetParent():GetName()
     _G[f.."_Morph"]:SetChecked(0)
-    --Morphing to a creature after another race makes resetting possible
-    --Resets native displayID or something
-    if not MH_PRESETMODE then
-        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
-        SetUnitDisplayID(u, 13) 
-        SetUnitDisplayID(u, 0)
-    end
+    MH_MorphReset(u)
+    MH_CurrentDisplaysCheckDirty()
 end
 
 function MH_DisplayList_RaidMorphMountReset_OnClick()
@@ -1525,18 +1513,10 @@ function MH_DisplayList_RaidMorphMountReset_OnClick()
     if GetUnitGUID(u) == GetUnitGUID("player") then
         u = "player"
     end
-    if MH_CurrentMorphs.Morphs[u] ~= nil then 
-        MH_CurrentMorphs.Morphs[u].MID = nil
-        if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
-    end
-    MH_CurrentDisplaysCheckDirty()
-    --getglobal(MH_MorphMountButtons[k]):SetChecked(0) TODO
     local f = this:GetParent():GetName()
     _G[f.."_MorphMount"]:SetChecked(0)
-    if not MH_PRESETMODE then
-        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
-        SetUnitMountDisplayID(u, 0)
-    end
+    MH_MorphMountReset(u)
+    MH_CurrentDisplaysCheckDirty()
 end
 
 function MH_DisplayList_RaidMorphInfo_OnClick()
@@ -1548,7 +1528,7 @@ function MH_DisplayList_RaidMorphInfo_OnClick()
     if IsAltKeyDown() then
         displayID = mountDisplayID
     end
-    --Find DisplayID in the big list
+    -- Add gathered info to the swap text boxes if available
     if (MH_NEWIDFOCUS) then 
         MH_DisplayList_SwapFrame_NewIDEditBox:SetText(displayID)
         MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
@@ -1560,11 +1540,12 @@ function MH_DisplayList_RaidMorphInfo_OnClick()
         MH_OLDIDFOCUS = false
         MH_DisplayList_UpdateButtons()
     end
+    --Find DisplayID in the big list
     MH_ScrollToDisplayID(displayID)
 end
 
 --UI Morph functions
-function MH_GetDisplayID()
+function MH_GetManualDisplayID()
     local manualID = MH_DisplayList_IDEditBox:GetText()
     if manualID ~= nil and string.len(manualID) > 0 then
         return tonumber(manualID)
@@ -1578,7 +1559,7 @@ end
 function MH_DisplayList_Morph_OnClick()
     this:SetChecked(1)
     --get getDisplayID
-    local displayID = MH_GetDisplayID()
+    local displayID = MH_GetManualDisplayID()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
@@ -1594,7 +1575,7 @@ end
 function MH_DisplayList_MorphMount_OnClick()
     this:SetChecked(1)
     --get getDisplayID
-    local displayID = MH_GetDisplayID()
+    local displayID = MH_GetManualDisplayID()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
@@ -1629,35 +1610,18 @@ function MH_DisplayList_MorphReset_OnClick()
     if u == "target" then 
         u = MH_FixTargetToken() 
     end
-    if MH_CurrentMorphs.Morphs[u] ~= nil then 
-        MH_CurrentMorphs.Morphs[u].ID = nil
-        if MH_CurrentMorphs.Morphs[u].MID == nil then MH_CurrentMorphs.Morphs[u] = nil end
-    end
-    MH_CurrentDisplaysCheckDirty()
     getglobal(MH_MorphButtons[k]):SetChecked(0)
-    --Morphing to a creature after another race makes resetting possible
-    --Resets native displayID or something
-    if not MH_PRESETMODE then
-        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
-        SetUnitDisplayID(u, 13) 
-        SetUnitDisplayID(u, 0)
-    end
+    MH_MorphReset(u)
+    MH_CurrentDisplaysCheckDirty()
 end
 
 function MH_DisplayList_MorphMountReset_OnClick()
     --get unitToken
     local k = this:GetID();
     local u = MH_UnitTokens[k]
-    if MH_CurrentMorphs.Morphs[u] ~= nil then 
-        MH_CurrentMorphs.Morphs[u].MID = nil
-        if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
-    end
-    MH_CurrentDisplaysCheckDirty()
     getglobal(MH_MorphMountButtons[k]):SetChecked(0)
-    if not MH_PRESETMODE then
-        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
-        SetUnitMountDisplayID(u, 0)
-    end
+    MH_MorphMountReset(u)
+    MH_CurrentDisplaysCheckDirty()
 end
 
 function MH_DisplayList_MorphInfo_OnClick()
@@ -1666,7 +1630,7 @@ function MH_DisplayList_MorphInfo_OnClick()
     local k = this:GetID()
     local u = MH_UnitTokens[k]
     local displayID, _, _ = UnitDisplayInfo(u)
-    --Find DisplayID in the big list
+    -- Add gathered info to the swap text boxes if available
     if (MH_NEWIDFOCUS) then 
         MH_DisplayList_SwapFrame_NewIDEditBox:SetText(displayID)
         MH_DisplayList_SwapFrame_NewIDEditBox:ClearFocus()
@@ -1678,6 +1642,7 @@ function MH_DisplayList_MorphInfo_OnClick()
         MH_OLDIDFOCUS = false
         MH_DisplayList_UpdateButtons()
     end
+    --Find DisplayID in the big list
     MH_ScrollToDisplayID(displayID)
 end
 
@@ -1749,15 +1714,11 @@ function MH_DisplayList_IDEditBox_OnEnter()
 end
 
 --favorites buttons
-local function sort_ids(a,b)
-    return a.ID < b.ID
-end
-
 function MH_DisplayListFP_OnClick()
     local index =  this:GetID() + (FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame));
     local displays = MH_DISPLAY_LISTS[MH_CurrentList].list
     if MH_Vars.FPMorph == displays[index].ID then
-        MH_Vars.FPMorph = -1 
+        MH_Vars.FPMorph = nil 
         MH_DisplayList_FPTooltip()
     else
         MH_Vars.FPMorph = displays[index].ID
@@ -1901,9 +1862,6 @@ function MH_DisplayList_ApplyPresetButton_Tooltip()
     GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
     --generate display info for current morphs
     local tooltip = MH_APPLYPRESETTOOLTIP .. "\nPreset Morphs:\n"
-    --local id = -1
-    --local mid = -1
-    --for i=1, MH_UnitTokensLen do
     for k,v in pairs(MH_Vars.Presets[MH_CurrentPresetIndex].Morphs) do
         if v.ID ~= nil then
             tooltip = tooltip ..  k .. " ID: " .. v.ID .. "\n"
@@ -1920,12 +1878,7 @@ function MH_DisplayList_AddPresetButton_Tooltip()
     GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
     --generate display info for current morphs
     local tooltip = MH_ADDPRESETSTOOLTIP .. "\nCurrent Morphs:\n"
-    --local id = -1
-    --local mid = -1
-    --for i=1, MH_UnitTokensLen do
     for k,v in pairs(MH_CurrentMorphs.Morphs) do
-        --id = MH_CurrentMorphs.Morphs[i].ID
-        --mid = MH_CurrentMorphs.Morphs[i].MID
         if v.ID ~= nil then
             tooltip = tooltip .. k .. " ID: " .. v.ID .. "\n"
         end
@@ -1960,8 +1913,6 @@ function MH_DeletePresetButton_OnClick()
 end
 
 function MH_ApplyPresetButton_OnClick()
-    --MH_AppliedPresetIndex = MH_CurrentPresetIndex
-    --MH_AppliedPreset = MH_Vars.Presets[MH_CurrentPresetIndex].Name
     found = -1
     for i=1, getn(MH_Vars.Presets) do
         if MH_Vars.Presets[i].ID == MH_CurrentPresetID then
@@ -1973,9 +1924,7 @@ function MH_ApplyPresetButton_OnClick()
     local id = -1
     local mid = -1
     local u = ""
-    --for i=1, MH_UnitTokensLen do
     for k,v in pairs(MH_Vars.Presets[MH_CurrentPresetIndex].Morphs) do
-        --u = MH_UnitTokens[k]
         id = v.ID
         mid = v.MID
         DEFAULT_CHAT_FRAME:AddMessage(k)
@@ -1991,7 +1940,6 @@ function MH_ApplyPresetButton_OnClick()
                 if MH_CurrentMorphs.Morphs[k] == nil then MH_CurrentMorphs.Morphs[k] = {} end
                 MH_CurrentMorphs.Morphs[k].ID = id
                 MH_CurrentMorphs.Dirty=true
-                --getglobal(MH_MorphButtons[k]):SetChecked(1)
             end
             if mid ~= nil then
                 if not MH_PRESETMODE then
