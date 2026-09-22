@@ -82,7 +82,6 @@ function MH_UpdatePartyMorphUI()
         end
         getglobal("MH_DisplayList_RaidFrame"):Hide()
         getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
-        DEFAULT_CHAT_FRAME:AddMessage("TEST23")
     end
 
     MH_PartyStatus = partyState
@@ -110,7 +109,7 @@ function MH_VariablesLoaded()
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
         MH_Init()
-    elseif event=="BUFF_ADDED_SELF" then 
+    elseif event=="BUFF_ADDED_SELF" then --NamPower Event
         --arg3 is spellID 
         --DEFAULT_CHAT_FRAME:AddMessage(GetSpellRecField(arg3,"effectMechanic"))
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
@@ -143,14 +142,14 @@ function MH_VariablesLoaded()
         --DeepPrint(test)
         --TT_TestFrame_ScrollFrame_EditBox:SetText(TT_Total)
         --TT_TestFrame:Show()
-    elseif event=="BUFF_REMOVED_SELF" then
+    elseif event=="BUFF_REMOVED_SELF" then --NamPower Event
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             --deMorph me...
             DEFAULT_CHAT_FRAME:AddMessage("Test")
             SetUnitMountDisplayID("player", 0)
         end
-    elseif event=="BUFF_ADDED_OTHER" then
+    elseif event=="BUFF_ADDED_OTHER" then --NamPower Event
         --scan party for matching GUIDs
         local token = nil
         if UnitPlayerOrPetInRaid("player") then
@@ -168,7 +167,7 @@ function MH_VariablesLoaded()
         end
         if token ~= nil then --found the player, find their morph...
             local d = MH_GetMountMorph(token)
-            if d == -1 then -- manually morph mount to account for bug...
+            if d == -1 then -- manually morph mount to account for bug... After morphing a mount, you'll need to re-apply all mounts afterward.
                 local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
                 C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
                 local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
@@ -185,7 +184,7 @@ function MH_VariablesLoaded()
                 SetUnitMountDisplayID(token, d)
             end
         end
-    elseif event=="BUFF_REMOVED_OTHER" then
+    elseif event=="BUFF_REMOVED_OTHER" then --NamPower Event
         --scan party for matching GUIDs
         local token = nil
         if UnitPlayerOrPetInRaid("player") then

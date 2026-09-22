@@ -1,10 +1,14 @@
 # Morph Helper
 ![screenshot](https://i.imgur.com/tgfTBiu.png)
 Assists in using the morph lua commands provided by VanillaHelpers.
-Slash commands, and morph window avaiable. Type /mh show to display the window or /mh to learn more.
+Slash commands, and morph window available. Type /mh show to display the window or /mh to learn more.
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
 
-*NOTE*: Requires [VanillaHelpers](https://github.com/isfir/VanillaHelpers) be sure to installed first.
+*v1.60+ REQUIRES THESE CLIENT MODS:* 
+* [VanillaHelpers](https://github.com/isfir/VanillaHelpers)
+* [Nampower](https://github.com/brues-code/nampower) (events)
+* [UnitXP_SP3](https://codeberg.org/konaka/UnitXP_SP3) (timers)
+* [ClassicAPI](https://github.com/brues-code/ClassicAPI) (Spell info queries)
 
 Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
@@ -37,24 +41,37 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * /MH morphUnitItem unitToken inventorySlot itemID - Morphs a unit's item.
 * /MH getUnit unitToken - Displays a unit's display info in chat.
 * /MH getItem itemID - Displays an item's display info in chat.
-* /run MH_MountItem("ItemName","BuffName",displayID)
-* /run MH_MountSpell("SpellName","BuffName",displayID)
 
 ## Known Issues:
-Can't morph *x* NPC
+* Addon Messages don't share item morphs
+    - Item morphs are still WIP, barely supported
 
-* Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
+* Can't morph *x* NPC
+    - Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
 
-Can't morph *x* item
+* Can't morph *x* item
+    - I'm still testing out item morphing viability. 
+    - Limited functionality, ItemIDs must be cached so something you can link from Atlasloot for example would work.
 
-* I'm still testing out item morphing viability. 
-* Limited functionality, ItemIDs must be cached so something you can link from Atlasloot.
+* T-Posing during FlightPaths, mount not displaying on use
+    - If you morph your mount, and then unmorph your mount future mounts might not display
+        - Should be addressed with v1.60, but fix requires client mods
+    - If you morph your mount at all, then flight paths are likely to break. Use /mh FPMorph to set a displayID to fly on regularly.
+    - I recommend `/mh FPMorph 15293`, for the chromatic mount.
 
-T-Posing during FlightPaths, no Gryphons
+* My factions are all messed up? I can't talk to friendly NPCs, they're red now?
+    - Morphing as a different race causes your faction to change internally, possibly so customizations show up properly
+        * Avoid morphing as the opposing faction, try morphing as a displayID for an NPC instead of the race for example
+    - Morphing might mess up your reputation standing. For example, becoming hated with alliance as an alliance player. Need to investigate more.
 
-* If you morph your mount at all, then flight paths are likely to break. Use /mh FPMorph to set a displayID to fly on regularly.
-* I recommend `/mh FPMorph 15293`, for the chromatic mount.
-
-My factions are all messed up?
-
-* Morphing might mess up your reputation standing. For example, becoming hated with alliance as an alliance player. Need to investigate more.
+## Changelog
+* V1.60
+    - Sync morphs between party members with addon messages
+        - uses client mods to resolve GUIDs to client side unit tokens
+    - Improved mount/flight path morphs
+        - Removed janky /run methods
+        - Added button for FP morphs to UI
+        - Uses client mods for improved support by watching buffs
+    - Dynamic UI for parties updated
+        - Supports raids w/ scrollbar
+        - Displays party member names now
