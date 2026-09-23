@@ -194,8 +194,25 @@ function MH_VariablesLoaded()
                 SetUnitMountDisplayID(token, 0)
             end
         end
-    elseif (event == "UNIT_FLAGS") then
+    elseif (event=="UNIT_FLAGS") then
+        local _, _, mountDisplayID = UnitDisplayInfo("player")
         if MH_Vars.FPMorph == nil then
+            if (not UnitOnTaxi("player")) then 
+                    if mountDisplayID ~= 0 then -- if it's isnt 0 on landing its usually a bug
+                        SetUnitMountDisplayID("player", 0)
+                        MH_AMSendMorph("player",MH_AMFPMORPH,0)
+                    end
+            elseif (UnitOnTaxi("player")) then
+                if mountDisplayID == 0 then -- if it's 0 when flying it's usually a bug. Set to faction FP default, gryphon or wyvern
+                    if UnitFactionGroup("player")=="Horde" then
+                        SetUnitMountDisplayID("player", MH_WYVERN)
+                        MH_AMSendMorph("player", MH_WYVERN)
+                    else
+                        SetUnitMountDisplayID("player", MH_GRYPHON)
+                        MH_AMSendMorph("player",MH_AMFPMORPH, MH_GRYPHON)
+                    end
+                end
+            end
             return
         end
         if (not UnitOnTaxi("player")) then 
@@ -205,7 +222,7 @@ function MH_VariablesLoaded()
             SetUnitMountDisplayID("player", MH_Vars.FPMorph)
             MH_AMSendMorph("player",MH_AMFPMORPH,MH_Vars.FPMorph)
         end
-    elseif event == "CHAT_MSG_ADDON" then
+    elseif event=="CHAT_MSG_ADDON" then
         if MH_Vars.MsgRecv and arg4 ~= UnitName("PLAYER") and arg1==MH_AMPREFIX then
             MH_AMHandler(arg2,arg3,arg4)
         end
@@ -217,8 +234,10 @@ function MH_Registers()
     MH_Listener:RegisterEvent("PARTY_MEMBERS_CHANGED");
     MH_Listener:RegisterEvent("BUFF_ADDED_SELF");
     MH_Listener:RegisterEvent("BUFF_REMOVED_SELF");
-    MH_Listener:RegisterEvent("BUFF_ADDED_OTHER");
-    MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
+    if MH_Vars.MountImprovements then
+        MH_Listener:RegisterEvent("BUFF_ADDED_OTHER");
+        MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
+    end
     MH_Listener:RegisterEvent("UNIT_FLAGS");
     MH_Listener:RegisterEvent("CHAT_MSG_ADDON");
     MH_Listener:RegisterEvent("RAID_ROSTER_UPDATE");
@@ -449,6 +468,9 @@ function MH_Init()
     if not MH_Vars.MsgSend then
         MH_Vars.MsgSend = true
         MH_Vars.MsgRecv = true
+    end
+    if not MH_Vars.MountImprovements then
+        MH_Vars.MountImprovements = true
     end
     --initialize display lists
     r = GetRealmName()
@@ -997,6 +1019,16 @@ MH_AppliedPresetID = 0
 MH_CurrentPresetID = 0 
 
 --Utility Functions
+function MH_UpdateMountImprovements()
+    if MH_Vars.MountImprovements then
+        MH_Listener:RegisterEvent("BUFF_ADDED_OTHER");
+        MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
+    else
+        MH_Listener:UnregisterEvent("BUFF_ADDED_OTHER");
+        MH_Listener:UnregisterEvent("BUFF_REMOVED_OTHER");
+    end
+end
+
 function MH_MountCheck(u)
     local i = 1
     local _, _, spellID = UnitBuff(u,i)

@@ -63,6 +63,10 @@ MH_AMSWAPMID = 3
 MH_AMFPMORPH = 4
 MH_AMSTAGEMOUNT = 5
 
+-- FP FIX
+MH_GRYPHON = 6852
+MH_WYVERN = 6581
+
 MH_PRESETS = "Presets"
 MH_NEWPRESET = "New Preset"
 MH_ADDPRESETS = "+"
@@ -220,6 +224,19 @@ MH_Menu=
         tooltipText = "Morphs from other party members will apply locally",
         checked = function() return MH_Vars.MsgRecv  end, 
         func =  function() MH_Vars.MsgRecv = not MH_Vars.MsgRecv end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Group Mount Improvements",
+        tooltipTitle = "Enable Group Mount Improvements",
+        tooltipText = "Enables watching new buffs on others to apply mount displays.\nNecessary to work around some bugs, and QoL but may cause lag in raids or populated areas.",
+        checked = function() return MH_Vars.MountImprovements end, 
+        func =  function() 
+            MH_Vars.MountImprovements = not MH_Vars.MountImprovements 
+            MH_UpdateMountImprovements() 
+        end,
         notCheckable = false,
         value=nil,
         hasArrow=false

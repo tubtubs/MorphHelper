@@ -2,7 +2,10 @@ v1.60
 Addon Message broadcasts to party/raid members syncing morphs
 Improved FP morph support
 - added button to UI to change FP morph
+- Fall back when you'd usually be t-posing
 Improved Mount morph support (requires client mods: UnitXP_SP3, ClassicAPI, Nampower)
+- Works around some VanillaHelpers bugs
+- Smart morph for better mount morph init
 Improved Dynamic UI for Parties, and now Raids. Shows player names among other improvements
 Exposed methods for morphing mounts (/run MH_MountItem) removed, it relied on a janky system
 v1.51
