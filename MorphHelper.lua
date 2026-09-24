@@ -116,7 +116,7 @@ function MH_VariablesLoaded()
                 d = MH_CurrentMorphs.Morphs["player"].MID 
             end
             if d == nil then -- manually morph mount to account for bug...
-                MH_FixMount(u)
+                MH_FixMount("player")
             else
                 SetUnitMountDisplayID("player", d)
             end
