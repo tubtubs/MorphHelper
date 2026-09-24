@@ -106,7 +106,6 @@ function MH_VariablesLoaded()
         MH_Init()
     elseif event=="BUFF_ADDED_SELF" then --NamPower Event
         --arg3 is spellID 
-        --DEFAULT_CHAT_FRAME:AddMessage(GetSpellRecField(arg3,"effectMechanic"))
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             --Morph me...
@@ -117,18 +116,7 @@ function MH_VariablesLoaded()
                 d = MH_CurrentMorphs.Morphs["player"].MID 
             end
             if d == nil then -- manually morph mount to account for bug...
-                local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
-                C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
-                local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
-                -- there's a chance this info isn't ready after first query?
-                -- just keep retrying a few more times, seems to always work...
-                if cinfo == nil or cinfo.displayID == nil then
-                    TT_QueuedMount = spellEffectUnit[1]
-                    TT_QueuedToken = "player"
-                    UnitXP("timer", "arm", 0, 125, "MH_MountMorphTimer")
-                else
-                    SetUnitMountDisplayID("player", cinfo.displayID)
-                end
+                MH_FixMount(u)
             else
                 SetUnitMountDisplayID("player", d)
             end
@@ -141,7 +129,7 @@ function MH_VariablesLoaded()
         end
     elseif event=="BUFF_ADDED_OTHER" then --NamPower Event
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
-        if spellEffectName[1] ~= 78 then -- if it isn't a mount spell don't check further
+        if spellEffectName[1] ~= 78 then -- if it isn't a mount buff don't check further
             return
         end
         --scan party for matching GUIDs
@@ -1105,6 +1093,11 @@ end
 
 function MH_SetCurrentPresetID(PresetID)
     MH_CurrentPresetID = PresetID
+    for i=1, getn(MH_Vars.Presets) do
+        if MH_Vars.Presets[i].ID == PresetID then
+            MH_CurrentPresetIndex = i
+        end
+    end
     MH_Presets_Dewdrop:Close()
     MH_DisplayList_UpdateButtons()
 end
@@ -2065,7 +2058,7 @@ function MH_ApplyPresetButton_OnClick()
         mid = v.MID
         DEFAULT_CHAT_FRAME:AddMessage(k)
 
-        if (UnitExists(k) or MH_PRESETMODE) then
+        if (UnitExists(k)==1 or MH_PRESETMODE) then
 
             if id ~= nil then
                 if not MH_PRESETMODE then
@@ -2080,7 +2073,7 @@ function MH_ApplyPresetButton_OnClick()
             if mid ~= nil then
                 if not MH_PRESETMODE then
                     SetUnitMountDisplayID(k, mid)
-                    MH_AMSendMorph(k, MH_AMMORPHMOUNT, id)
+                    MH_AMSendMorph(k, MH_AMMORPHMOUNT, mid)
                     DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s's mount to %s", u, mid))
                 end
                 if MH_CurrentMorphs.Morphs[k] == nil then MH_CurrentMorphs.Morphs[k] = {} end
@@ -2142,7 +2135,7 @@ end
 -- 0 : player morph
 -- 1 : mount morph
 -- 2 : id remap
--- 3 : mid remap
+-- 3 : mid remap -- possibly broken vanillahelpers side
 -- 4 : FP Morph
 -- 5 : stage mount
 function MH_AMSendMorph(token, m, id)
