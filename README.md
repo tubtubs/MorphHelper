@@ -3,7 +3,7 @@
 Assists in using the morph lua commands provided by VanillaHelpers.
 Slash commands, and morph window available. Type /mh show to display the window or /mh to learn more.
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
-*V1.60* Now supports syncing morphs between party/raid members, improved UI, expanded mount/fp support
+*V1.60* Now supports syncing morphs between party/raid members, improved UI for raids, expanded mount/fp support
 
 Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
@@ -52,6 +52,7 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * Performance
     - Reduced memory usage by moving display lists to seperate on demand loaded addons
     - Improved mount support listens for buff changes, it may cause lag in raids or populated areas
+        - Can be disabled in minimap button dropdown
 
 * Addon Messages don't share item morphs
     - Item morphs are still WIP, barely supported
@@ -63,6 +64,9 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
     - I'm still testing out item morphing viability. 
     - Limited functionality, ItemIDs must be cached so something you can link from Atlasloot for example would work.
 
+* Can't swap displayIDs for Mounts
+    - I think its a bug in the client mod
+
 * T-Posing during FlightPaths, mount not displaying on use
     - If you morph your mount, and then unmorph your mount future mounts might not display
         - Should be addressed with v1.60, but fix requires client mods
@@ -73,6 +77,10 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
     - Morphing as a different race causes your faction to change internally, possibly so customizations show up properly
         * Avoid morphing as the opposing faction, try morphing as a displayID for an NPC instead of the race for example
     - Morphing might mess up your reputation standing. For example, becoming hated with alliance as an alliance player. Need to investigate more.
+
+* Checked status on Wand/Mount morph buttons
+    - In a raid group it won't be checked on yourself, it'll check the buttons for player instead
+    - Target buttons will attempt to resolve to a group/raid member instead, will only be checked if the targetting player isn't in your group
 
 ## Changelog
 * V1.60

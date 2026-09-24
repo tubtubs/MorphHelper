@@ -1071,30 +1071,32 @@ function MH_ResetAll()
     for k,v in MH_CurrentMorphs.Morphs do 
         MH_CurrentMorphs.Morphs[k] = nil
     end
+
     -- reset all party members...
     if UnitPlayerOrPetInRaid("player") then
         for i=1, MH_MAXRAID do
-            u = "raid"..i
-            if UnitExists(u)==1 then
-                MH_MorphReset(u)
-                MH_MorphMountReset(u)
+            toke = "raid"..i
+            if UnitExists(toke)==1 then
+                MH_MorphReset(toke)
+                MH_MorphMountReset(toke)
             end
         end
     elseif GetNumPartyMembers() > 0 then 
-        for i=1, GetNumPartyMembers() do
-            u = "party"..i
-            if UnitExists(u)==1 then
-                MH_MorphReset(u)
-                MH_MorphMountReset(u)
+
+        for i=1, GetNumPartyMembers()-1 do
+
+            toke = "party"..i
+            if UnitExists(toke)==1 then
+                MH_MorphReset(toke)
+                MH_MorphMountReset(toke)
             end
         end
     end
     for i=1, 2 do -- player/target
-        u = MH_UnitTokens[i]
-        DEFAULT_CHAT_FRAME:AddMessage(u)
-        if UnitExists(u)==1 then
-            MH_MorphReset(u)
-            MH_MorphMountReset(u)
+        toke = MH_UnitTokens[i]
+        if UnitExists(toke)==1 then
+            MH_MorphReset(toke)
+            MH_MorphMountReset(toke)
         end
     end
     MH_CurrentMorphs.Dirty = false
@@ -1176,9 +1178,9 @@ function MH_MorphReset(u)
     --Morphing to a creature after another race makes resetting possible
     --Resets native displayID or something
     if not MH_PRESETMODE then
-        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
         SetUnitDisplayID(u, 13) 
         SetUnitDisplayID(u, 0)
+        MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
     end
     MH_DisplayList_UpdateButtons()
 end
@@ -2152,10 +2154,8 @@ function MH_AMSendMorph(token, m, id)
     else
         return
     end
-    if UnitExists(token) then
     local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
     SendAddonMessage(MH_AMPREFIX, msg, channel)
-    end
 end
 
 -- oops two different protocols whatever

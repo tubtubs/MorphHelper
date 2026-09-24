@@ -388,7 +388,6 @@
         </Scripts>
     </Button>
 
-
 	<Button name="MH_RaidGroupButtonTemplate" movable="true" clampedToScreen="true" virtual="true">
 		<Size>
 			<AbsDimension x="142" y="14"/>
@@ -641,7 +640,6 @@
 		</Scripts>
 	</Frame>
 
-
     <Frame name="MH_DisplayList" frameStrat="DIALOG" movable="true" enableMouse="true" hidden="true">
         <Anchors>
             <Anchor point="CENTER" relativeTo="UIParent">
@@ -651,7 +649,7 @@
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="686" y="248" />
+            <AbsDimension x="696" y="248" />
         </Size>
         <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
             <BackgroundInsets>
@@ -803,7 +801,7 @@
                     <Anchors>
                         <Anchor point="TOPRIGHT">
                             <Offset>
-                                <AbsDimension x="-58" y="-50" />
+                                <AbsDimension x="-63" y="-50" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -842,12 +840,12 @@
                 </FontString>
                 <FontString name="$parentParty1Title" font="GameFontNormal" text="MH_Party1">
                     <Size>
-                        <AbsDimension x="190" y="0" />
+                        <AbsDimension x="60" y="0" />
                     </Size>
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentTargetTitle">
                             <Offset>
-                                <AbsDimension x="0" y="-25" />
+                                <AbsDimension x="-68" y="-25" />
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -864,7 +862,7 @@
                 </FontString>
                 <FontString name="$parentParty2Title" font="GameFontNormal" text="MH_Party2">
                     <Size>
-                        <AbsDimension x="190" y="0" />
+                        <AbsDimension x="60" y="0" />
                     </Size>
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentParty1Title">
@@ -886,7 +884,7 @@
                 </FontString>
                 <FontString name="$parentParty3Title" font="GameFontNormal" text="MH_Party3">
                     <Size>
-                        <AbsDimension x="190" y="0" />
+                        <AbsDimension x="60" y="0" />
                     </Size>
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentParty2Title">
@@ -908,7 +906,7 @@
                 </FontString>
                 <FontString name="$parentParty4Title" font="GameFontNormal" text="MH_Party4">
                     <Size>
-                        <AbsDimension x="190" y="0" />
+                        <AbsDimension x="60" y="0" />
                     </Size>
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentParty3Title">
@@ -1632,7 +1630,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parentParty4Title">
                         <Offset>
-                            <AbsDimension x="-68" y="-38"/>
+                            <AbsDimension x="-8" y="-38"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -1945,7 +1943,7 @@
                     </Anchor>
                 </Anchors>
                 <Size>
-                    <AbsDimension x="235" y="48" />
+                    <AbsDimension x="245" y="48" />
                 </Size>
                 <Frames>
                     <EditBox name = "$parent_OldIDEditBox" letters="7" numeric="true" autoFocus="false">
@@ -2044,12 +2042,12 @@
                             <Layer level="BACKGROUND">
                                 <FontString name="$parentTitle" font="GameFontNormal" text="MH_NEWIDTITLE">
                                     <Size>
-                                        <AbsDimension x="50" y="0" />
+                                        <AbsDimension x="62" y="0" />
                                     </Size>
                                     <Anchors>
                                         <Anchor point="TOPRIGHT">
                                             <Offset>
-                                                <AbsDimension x="-55" y="-8" />
+                                                <AbsDimension x="-50" y="-8" />
                                             </Offset>
                                         </Anchor>
                                     </Anchors>
