@@ -287,7 +287,7 @@ MH_WI_Examples =
     {
         name = "MorphHelper Safe Mount Example",
         tooltip = "Morphs the players mount as a Reindeer.\nTakes effect the next time you mount or immediately if mounted.\nType /mh for more commands",
-        example = "\n/mh morph safemount player 1991",
+        example = "\n/mh safemount player 1991",
         check = function() return true end,
     },
     {

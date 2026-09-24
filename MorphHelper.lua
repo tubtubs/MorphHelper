@@ -44,6 +44,8 @@ function MH_UpdatePartyMorphUI()
             getglobal(MH_MorphMountResetButtons[i]):Hide() 
         end
     elseif GetNumPartyMembers() > 0 then 
+        getglobal("MH_DisplayList_RaidFrame"):Hide()
+        getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
         for i=3,MH_UnitTokensLen do
             u = MH_UnitTokens[i]
             if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
@@ -138,6 +140,10 @@ function MH_VariablesLoaded()
             SetUnitMountDisplayID("player", 0)
         end
     elseif event=="BUFF_ADDED_OTHER" then --NamPower Event
+        local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        if spellEffectName[1] ~= 78 then -- if it isn't a mount spell don't check further
+            return
+        end
         --scan party for matching GUIDs
         local token = nil
         if UnitPlayerOrPetInRaid("player") then
@@ -155,20 +161,9 @@ function MH_VariablesLoaded()
         end
         if token ~= nil then --found the player, find their morph...
             if MH_CurrentMorphs.Morphs[token] == nil or MH_CurrentMorphs.Morphs[token].MID == nil then -- manually morph mount to account for bug... After morphing a mount, you'll need to re-apply all mounts afterward.
-                local spellEffectUnit = GetSpellRecField(arg3,"effectMiscValue")
-                C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
-                local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
-                -- there's a chance this info isn't ready after first query?
-                if cinfo == nil or cinfo.displayID == nil then
-                    --TT_QueuedMount = spellEffectUnit[1]
-                    --TT_QueuedToken = token
-                    TT_QueuedMounts[token] = spellEffectUnit[1]
-                    UnitXP("timer", "arm", 125, 125, MH_MountMorphTimer)
-                else
-                    SetUnitMountDisplayID(token, cinfo.displayID)
-                end
+                MH_FixMount(token)
             elseif MH_CurrentMorphs.Morphs[token] ~= nil and MH_CurrentMorphs.Morphs[token].MID ~= nil then
-                SetUnitMountDisplayID(token, MH_CurrentMorphs.Morphs[token])
+                SetUnitMountDisplayID(token, MH_CurrentMorphs.Morphs[token].MID)
             end
         end
     elseif event=="BUFF_REMOVED_OTHER" then --NamPower Event
@@ -195,6 +190,7 @@ function MH_VariablesLoaded()
             end
         end
     elseif (event=="UNIT_FLAGS") then
+        if arg1 ~= "player" then return end
         local _, _, mountDisplayID = UnitDisplayInfo("player")
         if MH_Vars.FPMorph == nil then
             if (not UnitOnTaxi("player")) then 
@@ -609,7 +605,6 @@ function MH_Init()
     MH_MinimapIconRegister()
     MH_DewdropRegister()
     MH_Presets_DewdropRegister()
-    MH_UpdatePartyMorphUI()
     MH_Registers()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
 end
@@ -1047,32 +1042,63 @@ local function sort_ids(a,b)
     return a.ID < b.ID
 end
 
-function MH_ResetAll()
-    for i=1,MH_UnitTokensLen do
-        u = MH_UnitTokens[i]
-        if MH_DisplayList:IsShown() then
-            getglobal(MH_MorphButtons[i]):SetChecked(0)
-            getglobal(MH_MorphMountButtons[i]):SetChecked(0)
+function MH_FixMount(u)
+    local i = 1
+    local _, _, spellID = UnitBuff(u,i)
+    local found = 0
+    while UnitBuff(u,i) do
+        local spellEffectName = GetSpellRecField(spellID,"effectApplyAuraName")
+        if spellEffectName[1] == 78 then
+            local spellEffectUnit = GetSpellRecField(spellID,"effectMiscValue")
+            C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
+            local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
+            if cinfo == nil or cinfo.displayID == nil then
+                TT_QueuedMounts[u] = spellEffectUnit[1]
+                UnitXP("timer", "arm", 125, 125, MH_MountMorphTimer)
+            else
+                SetUnitMountDisplayID(u, cinfo.displayID)
+            end
         end
+        local icon, idk, spellID = UnitBuff(u,i)
+        i = i+1
     end
-    MH_CurrentMorphs.Dirty = false
-    for k, v in pairs(MH_CurrentMorphs.Morphs) do
+end
+
+-- aggressively wipes stored morphs, and demorphs everyone in group/party
+-- including yourself and target
+function MH_ResetAll()
+    -- wipe anything stored
+    for k,v in MH_CurrentMorphs.Morphs do 
         MH_CurrentMorphs.Morphs[k] = nil
     end
     -- reset all party members...
-    if GetNumPartyMembers() > 0 then
-        for i=1, getn(groupMembers) do
-            u = groupMembers[i].token
-            MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
-            SetUnitDisplayID(u, 13) 
-            SetUnitDisplayID(u, 0)
-            MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
-            SetUnitMountDisplayID(u, 0)
+    if UnitPlayerOrPetInRaid("player") then
+        for i=1, MH_MAXRAID do
+            u = "raid"..i
+            if UnitExists(u)==1 then
+                MH_MorphReset(u)
+                MH_MorphMountReset(u)
+            end
+        end
+    elseif GetNumPartyMembers() > 0 then 
+        for i=1, GetNumPartyMembers() do
+            u = "party"..i
+            if UnitExists(u)==1 then
+                MH_MorphReset(u)
+                MH_MorphMountReset(u)
+            end
         end
     end
-    if (MH_DisplayList:IsShown()) then
-        MH_DisplayList_UpdateButtons()
+    for i=1, 2 do -- player/target
+        u = MH_UnitTokens[i]
+        DEFAULT_CHAT_FRAME:AddMessage(u)
+        if UnitExists(u)==1 then
+            MH_MorphReset(u)
+            MH_MorphMountReset(u)
+        end
     end
+    MH_CurrentMorphs.Dirty = false
+    MH_DisplayList_UpdateButtons()
 end
 
 function MH_SetCurrentPresetID(PresetID)
@@ -1096,6 +1122,7 @@ function MH_ApplyPresetID(PresetID)
         DEFAULT_CHAT_FRAME:AddMessage(format("PresetID: %s not found.", PresetID))
     end
     MH_Dewdrop:Close()
+    MH_DisplayList_UpdateButtons()
 end
 
 function MH_Morph(u, displayID)
@@ -1103,11 +1130,11 @@ function MH_Morph(u, displayID)
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].ID = displayID
     MH_CurrentMorphs.Dirty=true
-    MH_DisplayList_UpdateButtons()
     if (not MH_PRESETMODE) then
         MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
         SetUnitDisplayID(u, displayID)  
     end
+    MH_DisplayList_UpdateButtons()
 end
 
 -- mounts if mounted, stages otherwise
@@ -1124,15 +1151,11 @@ function MH_StageMount(u, displayID)
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].MID = displayID
     MH_CurrentMorphs.Dirty=true
-    --MH_DisplayList_UpdateButtons()
     MH_AMSendMorph(u, MH_AMSTAGEMOUNT, displayID)
+    MH_DisplayList_UpdateButtons()
 end
 --IsAltKeyDown()
 function MH_MorphMount(u, displayID)
-    if not MH_MountCheck(u) then 
-        MH_StageMount(u, displayID)
-        return
-    end
     if MH_CurrentMorphs.Morphs[u] == nil then MH_CurrentMorphs.Morphs[u] = {} end
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].MID = displayID
@@ -1142,6 +1165,7 @@ function MH_MorphMount(u, displayID)
         MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
         SetUnitMountDisplayID(u, displayID)
     end
+    MH_DisplayList_UpdateButtons()
 end
 
 function MH_MorphReset(u)
@@ -1156,6 +1180,7 @@ function MH_MorphReset(u)
         SetUnitDisplayID(u, 13) 
         SetUnitDisplayID(u, 0)
     end
+    MH_DisplayList_UpdateButtons()
 end
 
 function MH_MorphMountReset(u)
@@ -1164,9 +1189,14 @@ function MH_MorphMountReset(u)
         if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
     end
     if not MH_PRESETMODE then
-        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
-        SetUnitMountDisplayID(u, 0)
+        if MH_MountCheck(u) then
+            MH_FixMount(u)
+        else
+            MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
+            SetUnitMountDisplayID(u, 0)
+        end
     end
+    MH_DisplayList_UpdateButtons()
 end
 
 -- Raid Group functions
@@ -1315,6 +1345,9 @@ function MH_DisplayList_OnClick()
 end
 
 function MH_DisplayList_UpdateButtons()
+    if MH_DisplayList== nil or not MH_DisplayList:IsShown() then
+        return
+    end
     --Morph Buttons if no ID selected
     txtID = MH_DisplayList_IDEditBox:GetText()
     if UnitPlayerOrPetInRaid("player") then --raid buttons
@@ -1423,6 +1456,21 @@ function MH_DisplayList_UpdateButtons()
             getglobal(MH_MorphMountResetButtons[i]):Disable()
             getglobal(MH_MorphInfoButtons[i]):Disable()
             getglobal(MH_MountInfoButtons[i]):Disable()
+        end
+        if MH_CurrentMorphs.Morphs[u] ~= nil then
+            if MH_CurrentMorphs.Morphs[u].ID ~= nil then
+                getglobal(MH_MorphButtons[i]):SetChecked(1)
+            else
+                getglobal(MH_MorphButtons[i]):SetChecked(0)
+            end
+            if MH_CurrentMorphs.Morphs[u].MID ~= nil then
+                getglobal(MH_MorphMountButtons[i]):SetChecked(1)
+            else
+                getglobal(MH_MorphMountButtons[i]):SetChecked(0)
+            end
+        else
+            getglobal(MH_MorphButtons[i]):SetChecked(0)
+            getglobal(MH_MorphMountButtons[i]):SetChecked(0)
         end
     end
 
@@ -2104,8 +2152,10 @@ function MH_AMSendMorph(token, m, id)
     else
         return
     end
+    if UnitExists(token) then
     local msg = format("%s:%s:%s", GetUnitGUID(token), m, id)
     SendAddonMessage(MH_AMPREFIX, msg, channel)
+    end
 end
 
 -- oops two different protocols whatever
@@ -2186,6 +2236,7 @@ function MH_AMHandler(arg2, arg3, arg4)
                 --DEFAULT_CHAT_FRAME:AddMessage(parsed_args[2])
                 if tonumber(parsed_args[2]) == MH_AMMORPHPLAYER then
                     if tonumber(parsed_args[3]) == -1 then
+                        if MH_CurrentMorphs.Morphs[token] == nil or MH_CurrentMorphs.Morphs[token].ID == nil then return end 
                         MH_CurrentMorphs.Morphs[token].ID = nil
                         if MH_CurrentMorphs.Morphs[token].MID == nil then MH_CurrentMorphs.Morphs[token] = nil end
                         SetUnitDisplayID(token, 0)
@@ -2198,6 +2249,7 @@ function MH_AMHandler(arg2, arg3, arg4)
                     MH_DisplayList_UpdateButtons()
                 elseif tonumber(parsed_args[2]) == MH_AMMORPHMOUNT then
                     if tonumber(parsed_args[3]) == -1 then
+                        if MH_CurrentMorphs.Morphs[token] == nil or MH_CurrentMorphs.Morphs[token].MID == nil then return end 
                         MH_CurrentMorphs.Morphs[token].MID = nil
                         if MH_CurrentMorphs.Morphs[token].ID == nil then MH_CurrentMorphs.Morphs[token] = nil end
                         SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
@@ -2213,7 +2265,7 @@ function MH_AMHandler(arg2, arg3, arg4)
                 elseif tonumber(parsed_args[2]) == MH_AMSTAGEMOUNT then
                     if MH_CurrentMorphs.Morphs[token] == nil then MH_CurrentMorphs.Morphs[token] = {} end
                     MH_CurrentMorphs.Morphs[token].GUID = GetUnitGUID(token)
-                    MH_CurrentMorphs.Morphs[token].MID = displayID
+                    MH_CurrentMorphs.Morphs[token].MID = parsed_args[3]
                     MH_CurrentMorphs.Dirty=true
                     MH_DisplayList_UpdateButtons()
                 else
