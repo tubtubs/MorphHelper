@@ -1630,7 +1630,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parentParty4Title">
                         <Offset>
-                            <AbsDimension x="-8" y="-38"/>
+                            <AbsDimension x="2" y="-38"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
