@@ -82,6 +82,7 @@ MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually appl
 MH_RESETALLTOOLTIP = "Click to reset all available unit's morphs"
 MH_MINIMAPTOGGLETOOLTIP = "Show minimap icon"
 
+MH_TOOLTIPBROADCAST = "Click to broadcast current morphs and swaps to party/raid"
 MH_TOOLTIPMORPH = "Click to morph %s"
 MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount.\nMorphs if mounted, stages otherwise.\nHold alt to force morph."
 MH_TOOLTIPMORPHRESET = "Click to reset %s's morphs\nRelogging will clear morphs if this fails"
@@ -205,6 +206,14 @@ MH_Menu=
         tooltipTitle = "Reset Window",
         tooltipText = "Resets the MorphHelper window's position",
         func =  function() MH_DisplayList_ResetPos() MH_Dewdrop:Close() end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Broadcast Morphs",
+        tooltipTitle = "Broadcast Morphs",
+        tooltipText = MH_TOOLTIPBROADCAST,
+        func =  function() MH_BroadcastMorphs() end,
         value=nil,
         hasArrow=false
     },

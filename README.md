@@ -16,8 +16,6 @@ Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples comman
 * [UnitXP_SP3](https://codeberg.org/konaka/UnitXP_SP3) (timers)
 * [ClassicAPI](https://github.com/brues-code/ClassicAPI) (Spell info queries)
 
-
-
 ## Installation:
 0. Install the client mods listed above
 1. Click the Code button to the upper right hand corner and select download or click [here](https://github.com/tubtubs/MorphHelper/archive/refs/heads/master.zip).

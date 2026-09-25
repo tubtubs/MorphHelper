@@ -929,6 +929,36 @@
             </Layer>
         </Layers>
         <Frames>
+            <CheckButton name="$parent_BroadcastButton" virtual="true">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="TOP" relativeTo="$parent">
+                        <Offset>
+                            <AbsDimension x="74" y="-42"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <NormalTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\broadcast.tga"/>
+                <PushedTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\broadcast.tga"/>
+                <DisabledTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\broadcast_disabled.tga"/>
+                <HighlightTexture inherits="GlueScrollBarButton" file="Interface\AddOns\MorphHelper\Assets\broadcast.tga" alphaMode="ADD"/>
+                <Scripts>
+                    <OnClick>
+                        MH_BroadcastMorphs()
+                    </OnClick>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+                        GameTooltip:SetText(MH_TOOLTIPBROADCAST);
+                        GameTooltip:Show()
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
             <!-- Scroll Frame Area Stuff-->
             <Frame name="$parentLayer2">
                 <Anchors>

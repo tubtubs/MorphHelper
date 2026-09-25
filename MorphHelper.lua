@@ -300,6 +300,8 @@ local function doCommand(parsed_args)
             MH_ResetAll()
         elseif parsed_args[1]==string.lower(MH_OPT15) then
             MH_ListPresets()
+        elseif parsed_args[1]==string.lower(MH_OPT18) then
+            MH_BroadcastMorphs()
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
         end
@@ -340,10 +342,10 @@ local function doCommand(parsed_args)
         elseif parsed_args[1] == string.lower(MH_OPT22) then
             MH_SafeMount(parsed_args[2], tonumber(parsed_args[3]))
         elseif parsed_args[1] == string.lower(MH_OPT3) then
-            RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+            MH_SwapID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
             MH_AMSendSwap(MH_AMSWAPID, parsed_args[2], parsed_args[3])
         elseif parsed_args[1] == string.lower(MH_OPT4) then
-            RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+            MH_SwapMID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
             MH_AMSendSwap(MH_AMSWAPMID, parsed_args[2], parsed_args[3])
         else
             DEFAULT_CHAT_FRAME:AddMessage(MH_SLASHUNKNOWN,1,0.3,0.3)
@@ -583,6 +585,10 @@ function MH_Init()
     MH_CurrentMorphs = {
         Dirty=false,
         Morphs = {  
+        },
+        IDSwaps = {
+        },
+        MIDSwaps = {
         }
     }
     if MorphHelper_Icon == nil then
@@ -792,6 +798,7 @@ MH_OPT14 = "applyPreset"
 MH_OPT15 = "listPresets"
 MH_OPT16 = "FPMorph"
 MH_OPT17 = "minimap"
+MH_OPT18 = "broadcast"
 
 MH_SLASHHELP0 = "|cFF00FF00" .. MH_NAME .. ":|r This is the help topic for |cFFFFFF00".. SLASH_MORPHHELPER1 .. " " ..
                     SLASH_MORPHHELPER2  .." " .. SLASH_MORPHHELPER3 .. ".|r\n"
@@ -809,6 +816,8 @@ MH_SLASHHELP16 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT16 ..
 "|cFF00FF00 displayID|r - On taxis morph mount to displayID. Set to -1 to disable.\n"
 MH_SLASHHELP17 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT17 ..
 "|cFF00FF00 {hide/show}|r - Show or hide the minimap button\n"
+MH_SLASHHELP18 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT18 ..
+"|cFF00FF00|r - Broadcasts current morphs and swaps to party/raid\n"
 
 MH_SLASHHELP1 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT1 ..
 "|cFF00FF00 unitToken displayID|r - Morphs unit to a displayID.\n"
@@ -831,7 +840,7 @@ MH_SLASHHELP7 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT7 ..
 MH_SLASHHELP8 = "|cFFFFFF00 " ..SLASH_MORPHHELPER3.. " " .. MH_OPT8 ..
 "|cFF00FF00 unitToken inventorySlot itemID|r - Morphs a unit's item.\n"
 
-MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP17 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP21 .. MH_SLASHHELP22 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
+MH_SLASHHELP = MH_SLASHHELP0 .. MH_SLASHHELP9 .. MH_SLASHHELP17 .. MH_SLASHHELP10 .. MH_SLASHHELP13 .. MH_SLASHHELP18 .. MH_SLASHHELP15 .. MH_SLASHHELP14 .. MH_SLASHHELP1 .. MH_SLASHHELP2 .. MH_SLASHHELP21 .. MH_SLASHHELP22 .. MH_SLASHHELP16 .. MH_SLASHHELP3 .. MH_SLASHHELP4 ..
                  MH_SLASHHELP5 .. MH_SLASHHELP8 .. MH_SLASHHELP6 .. MH_SLASHHELP7 
 MH_SLASHUNKNOWN = "|cFF00FF00".. MH_NAME .. ":|r unknown command"
 
@@ -850,8 +859,8 @@ function MH_GenderFlipMode()
     for i=1, l_p do
         MH_AMSendSwap(MH_AMSWAPID, p[i][1],p[i][2])
         MH_AMSendSwap(MH_AMSWAPID, p[i][2],p[i][1])
-        RemapDisplayID(p[i][1],p[i][2])
-        RemapDisplayID(p[i][2],p[i][1])
+        MH_SwapID(p[i][1],p[i][2])
+        MH_SwapID(p[i][2],p[i][1])
     end
     DEFAULT_CHAT_FRAME:AddMessage("Secret gender swap mode engaged!")
 end
@@ -873,8 +882,8 @@ function MH_SecretCowPowers()
     for i=1, l_p do
         MH_AMSendSwap(MH_AMSWAPID, p[i][1],t_m)
         MH_AMSendSwap(MH_AMSWAPID, p[i][2],t_w)
-        RemapDisplayID(p[i][1],t_m)
-        RemapDisplayID(p[i][2],t_w)
+        MH_SwapID(p[i][1],t_m)
+        MH_SwapID(p[i][2],t_w)
     end
     DEFAULT_CHAT_FRAME:AddMessage("Secret cow powers engaged!")
 end
@@ -1055,11 +1064,9 @@ end
 -- aggressively wipes stored morphs, and demorphs everyone in group/party
 -- including yourself and target
 function MH_ResetAll()
-    -- wipe anything stored
-    for k,v in MH_CurrentMorphs.Morphs do 
-        MH_CurrentMorphs.Morphs[k] = nil
-    end
-
+    -- wipe stored morphs
+    MH_CurrentMorphs.Morphs = {}
+    
     -- reset all party members...
     if UnitPlayerOrPetInRaid("player") then
         for i=1, MH_MAXRAID do
@@ -1088,7 +1095,73 @@ function MH_ResetAll()
         end
     end
     MH_CurrentMorphs.Dirty = false
+
+    -- reset ID Swaps
+    for i=1, getn(MH_CurrentMorphs.IDSwaps) do
+        v = MH_CurrentMorphs.IDSwaps[i]
+        RemapDisplayID(v.old, v.old)
+    end
+    for i=1, getn(MH_CurrentMorphs.MIDSwaps) do
+        v = MH_CurrentMorphs.MIDSwaps[i]
+        RemapMountDisplayID(v.old, v.old)
+    end
+    -- wipe ID Swaps
+    MH_CurrentMorphs.IDSwaps = {}
+    MH_CurrentMorphs.MIDSwaps = {}
     MH_DisplayList_UpdateButtons()
+end
+
+function MH_ClearIDSwap(id)
+    for i,j in ipairs(MH_CurrentMorphs.IDSwaps) do
+        if j.old == id then
+            j = nil
+        end
+    end
+end
+
+function MH_ClearMIDSwap(id)
+    for i,j in ipairs(MH_CurrentMorphs.MIDSwaps) do
+        if j.old == id then
+            j = nil
+        end
+    end
+end
+
+function MH_SwapID(oldid, newid)
+    RemapDisplayID(oldid, newid)
+    if oldid == newid then -- reset
+        MH_ClearIDSwap(oldid)
+    else
+        found = 0 
+        for i,j in ipairs(MH_CurrentMorphs.IDSwaps) do
+            if j.old == id then
+                found =1
+            end
+        end
+        if found ~= 0 then -- overwrite if it's in the list already
+            MH_CurrentMorphs.IDSwaps[found] = {old=oldid, new=newid}
+        else
+            table.insert(MH_CurrentMorphs.IDSwaps, {old=oldid, new=newid})
+        end    end
+end
+
+function MH_SwapMID(oldid, newid)
+    RemapMountDisplayID(oldid, newid)
+    if oldid == newid then -- reset
+        MH_ClearIDSwap(oldid)
+    else
+        found = 0 
+        for i,j in ipairs(MH_CurrentMorphs.MIDSwaps) do
+            if j.old == id then
+                found =1
+            end
+        end
+        if found ~= 0 then -- overwrite if it's in the list already
+            MH_CurrentMorphs.MIDSwaps[found] = {old=oldid, new=newid}
+        else
+            table.insert(MH_CurrentMorphs.MIDSwaps, {old=oldid, new=newid})
+        end
+    end
 end
 
 function MH_SetCurrentPresetID(PresetID)
@@ -1581,7 +1654,9 @@ function MH_ScrollToDisplayID(displayID)
         MH_CurrentList = 1
         DEFAULT_CHAT_FRAME:AddMessage(format("Found displayID: %s",displayID))
         MH_DisplayList_DisplayListScrollFrame:SetVerticalScroll((floor((found-1)*8)))
+        MH_DisplayList.selectedIcon = 1+ FauxScrollFrame_GetOffset(MH_DisplayList_DisplayListScrollFrame);
         MH_DisplayList_Update()
+        MH_DisplayList_UpdateButtons()
     end
 end
 
@@ -2056,15 +2131,13 @@ function MH_ApplyPresetButton_OnClick()
     for k,v in pairs(MH_Vars.Presets[MH_CurrentPresetIndex].Morphs) do
         id = v.ID
         mid = v.MID
-        DEFAULT_CHAT_FRAME:AddMessage(k)
-
         if (UnitExists(k)==1 or MH_PRESETMODE) then
 
             if id ~= nil then
                 if not MH_PRESETMODE then
                     SetUnitDisplayID(k, id)
                     MH_AMSendMorph(k, MH_AMMORPHPLAYER, id)
-                    DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s to %s", u, id))
+                    --DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s to %s", u, id))
                 end
                 if MH_CurrentMorphs.Morphs[k] == nil then MH_CurrentMorphs.Morphs[k] = {} end
                 MH_CurrentMorphs.Morphs[k].ID = id
@@ -2074,13 +2147,11 @@ function MH_ApplyPresetButton_OnClick()
                 if not MH_PRESETMODE then
                     SetUnitMountDisplayID(k, mid)
                     MH_AMSendMorph(k, MH_AMMORPHMOUNT, mid)
-                    DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s's mount to %s", u, mid))
+                    --DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s's mount to %s", u, mid))
                 end
                 if MH_CurrentMorphs.Morphs[k] == nil then MH_CurrentMorphs.Morphs[k] = {} end
                 MH_CurrentMorphs.Morphs[k].MID = mid
                 MH_CurrentMorphs.Dirty=true
-                -- TODO: Check the checked status of buttons after applying presets...?
-                --getglobal(MH_MorphMountButtons[k]):SetChecked(1)
             end
         end
     end
@@ -2107,6 +2178,7 @@ function MH_DisplayList_IDSwapsButton_OnClick()
     local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     MH_AMSendSwap(MH_AMSWAPID, oldID, newID)
+    table.insert(MH_CurrentMorphs.IDSwaps, {old=oldID, new=newID})
     RemapDisplayID(oldID, newID)
 end
 
@@ -2114,6 +2186,7 @@ function MH_DisplayList_MountIDSwapsButton_OnClick()
     local newID = MH_DisplayList_SwapFrame_NewIDEditBox:GetText()
     local oldID = MH_DisplayList_SwapFrame_OldIDEditBox:GetText()
     MH_AMSendSwap(MH_AMSWAPMID, oldID, newID)
+    table.insert(MH_CurrentMorphs.MIDSwaps, {old=oldID, new=newID})
     RemapMountDisplayID(oldID, newID)
 end
 
@@ -2184,6 +2257,31 @@ function MH_MountMorphTimer(timer)
     end
 end
 
+function MH_BroadcastMorphs()
+    if not UnitPlayerOrPetInRaid("player") and not (GetNumPartyMembers() > 0) then
+        DEFAULT_CHAT_FRAME:AddMessage("Aborted sharing morphs, not in valid party or raid.")
+        return
+    end
+    for k,v in MH_CurrentMorphs.Morphs do
+        if v.ID ~= nil then
+            MH_AMSendMorph(k, MH_AMMORPHPLAYER, v.ID)
+            DEFAULT_CHAT_FRAME:AddMessage(k .. " lol" .. v.ID)
+        end
+        if v.MID ~= nil then
+            MH_AMSendMorph(k, MH_AMMORPHMOUNT, v.MID)
+        end
+    end
+    for i=1, getn(MH_CurrentMorphs.IDSwaps) do
+        v = MH_CurrentMorphs.IDSwaps[i]
+        MH_AMSendSwap(MH_AMSWAPID, v.old, v.new)
+    end
+    for i=1, getn(MH_CurrentMorphs.MIDSwaps) do
+        v = MH_CurrentMorphs.MIDSwaps[i]
+        MH_AMSendSwap(MH_AMSWAPMID, v.old, v.new)
+    end
+    DEFAULT_CHAT_FRAME:AddMessage("Successfully broadcasted all morphs and swaps.")
+end
+
 function MH_AMHandler(arg2, arg3, arg4)
     --DEFAULT_CHAT_FRAME:AddMessage(arg2)
     local parsed_args = {}
@@ -2195,9 +2293,9 @@ function MH_AMHandler(arg2, arg3, arg4)
     local len = getn(parsed_args)
     if len == 3 then
         if tonumber(parsed_args[1]) == MH_AMSWAPID then
-            RemapDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+            MH_SwapID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
         elseif tonumber(parsed_args[1]) == MH_AMSWAPMID then
-            RemapMountDisplayID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
+            MH_SwapMID(tonumber(parsed_args[2]), tonumber(parsed_args[3]))
         else
             --find the unit token...
             local token = nil
