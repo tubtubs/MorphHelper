@@ -253,10 +253,23 @@ MH_Menu=
         text = "Enable Group Mount Improvements",
         tooltipTitle = "Enable Group Mount Improvements",
         tooltipText = "Enables watching new buffs on others to apply mount displays.\nNecessary to work around some bugs, and QoL but may cause lag in raids or populated areas.",
-        checked = function() return MH_Vars.MountImprovements end, 
+        checked = function() return MH_Vars.GroupMountImprovements end, 
         func =  function() 
-            MH_Vars.MountImprovements = not MH_Vars.MountImprovements 
-            MH_UpdateMountImprovements() 
+            MH_Vars.GroupMountImprovements = not MH_Vars.GroupMountImprovements 
+            MH_UpdateGroupMountImprovements() 
+        end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Personal Mount Improvements",
+        tooltipTitle = "Enable Personal Mount Improvements",
+        tooltipText = "Enables watching new buffs on yourself to apply mount displays.\nNecessary to work around some bugs, and QoL.",
+        checked = function() return MH_Vars.PersonalMountImprovements end, 
+        func =  function() 
+            MH_Vars.PersonalMountImprovements = not MH_Vars.PersonalMountImprovements 
+            MH_UpdatePersonalMountImprovements() 
         end,
         notCheckable = false,
         value=nil,

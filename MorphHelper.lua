@@ -24,12 +24,6 @@ local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
 --event handler and init
-function MH_Test()
-    if UnitAffectingCombat("player") then
-        DEFAULT_CHAT_FRAME:AddMessage("TRUE")
-    end
-end
-
 function MH_UpdatePartyMorphUI()
     if (UnitPlayerOrPetInRaid("player") and MH_PRESETMODE==MH_PRESETMODE_DISABLE) or MH_PRESETMODE==MH_PRESETMODE_RAID then
         getglobal("MH_DisplayList_RaidFrame"):Show()
@@ -217,9 +211,11 @@ end
 function MH_Registers()
     MH_Listener:RegisterEvent("PLAYER_TARGET_CHANGED");
     MH_Listener:RegisterEvent("PARTY_MEMBERS_CHANGED");
-    MH_Listener:RegisterEvent("BUFF_ADDED_SELF");
-    MH_Listener:RegisterEvent("BUFF_REMOVED_SELF");
-    if MH_Vars.MountImprovements then
+    if MH_Vars.PersonalMountImprovements then
+        MH_Listener:RegisterEvent("BUFF_ADDED_SELF");
+        MH_Listener:RegisterEvent("BUFF_REMOVED_SELF");
+    end
+    if MH_Vars.GroupMountImprovements then
         MH_Listener:RegisterEvent("BUFF_ADDED_OTHER");
         MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
     end
@@ -456,8 +452,11 @@ function MH_Init()
         MH_Vars.MsgSend = true
         MH_Vars.MsgRecv = true
     end
-    if not MH_Vars.MountImprovements then
-        MH_Vars.MountImprovements = true
+    if not MH_Vars.GroupMountImprovements then
+        MH_Vars.GroupMountImprovements = true
+    end
+    if not MH_Vars.PersonalMountImprovements then
+        MH_Vars.PersonalMountImprovements = true
     end
     --initialize display lists
     r = GetRealmName()
@@ -1068,13 +1067,23 @@ MH_AppliedPresetID = 0
 MH_CurrentPresetID = 0 
 
 --Utility Functions
-function MH_UpdateMountImprovements()
-    if MH_Vars.MountImprovements then
+function MH_UpdateGroupMountImprovements()
+    if MH_Vars.GroupMountImprovements then
         MH_Listener:RegisterEvent("BUFF_ADDED_OTHER");
         MH_Listener:RegisterEvent("BUFF_REMOVED_OTHER");
     else
         MH_Listener:UnregisterEvent("BUFF_ADDED_OTHER");
         MH_Listener:UnregisterEvent("BUFF_REMOVED_OTHER");
+    end
+end
+
+function MH_UpdatePersonalMountImprovements()
+    if MH_Vars.PersonalMountImprovements then
+        MH_Listener:RegisterEvent("BUFF_ADDED_SELF");
+        MH_Listener:RegisterEvent("BUFF_REMOVED_SELF");
+    else
+        MH_Listener:UnregisterEvent("BUFF_ADDED_SELF");
+        MH_Listener:UnregisterEvent("BUFF_REMOVED_SELF");
     end
 end
 
@@ -1109,9 +1118,7 @@ function MH_FixMount(u)
             if cinfo == nil or cinfo.displayID == nil then
                 TT_QueuedMounts[u] = spellEffectUnit[1]
                 UnitXP("timer", "arm", 65, 125, "MH_MountMorphTimer")
-                DEFAULT_CHAT_FRAME:AddMessage("TEST2") --TODO: Test queueing some more.
             else
-                DEFAULT_CHAT_FRAME:AddMessage("TEST3")
                 SetUnitMountDisplayID(u, cinfo.displayID)
             end
         end
@@ -1257,9 +1264,7 @@ function MH_Morph(u, displayID)
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].ID = displayID
     MH_CurrentMorphs.Dirty=true
-    DEFAULT_CHAT_FRAME:AddMessage("HELP1"..MH_PRESETMODE)
     if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
-        DEFAULT_CHAT_FRAME:AddMessage("HELP2")
         MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
         SetUnitDisplayID(u, displayID)  
     end
