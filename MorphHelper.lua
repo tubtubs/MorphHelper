@@ -1323,10 +1323,10 @@ function MH_MorphMountReset(u)
         if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
     end
     if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
+        MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
         if MH_MountCheck(u) then
             MH_FixMount(u)
         else
-            MH_AMSendMorph(u,MH_AMMORPHMOUNT, -1)
             SetUnitMountDisplayID(u, 0)
         end
     end
@@ -2454,7 +2454,11 @@ function MH_AMHandler(arg2, arg3, arg4)
                         if MH_CurrentMorphs.Morphs[token] == nil or MH_CurrentMorphs.Morphs[token].MID == nil then return end 
                         MH_CurrentMorphs.Morphs[token].MID = nil
                         if MH_CurrentMorphs.Morphs[token].ID == nil then MH_CurrentMorphs.Morphs[token] = nil end
-                        SetUnitMountDisplayID(token, tonumber(parsed_args[3]))
+                        if MH_MountCheck(token) then
+                            MH_FixMount(token)
+                        else
+                            SetUnitMountDisplayID(token, 0)
+                        end
                     else
                         if MH_CurrentMorphs.Morphs[token] == nil then MH_CurrentMorphs.Morphs[token] = {} end
                         MH_CurrentMorphs.Morphs[token].MID = tonumber(parsed_args[3])
