@@ -67,7 +67,17 @@ MH_AMSTAGEMOUNT = 5
 MH_GRYPHON = 6852
 MH_WYVERN = 6581
 
-MH_PRESETS = "Presets"
+MH_PRESETMODE_DISABLE = 0
+MH_PRESETMODE_DISABLETIP = "Disable"
+MH_PRESETMODE_SOLO = 1
+MH_PRESETMODE_SOLOTIP = "Solo"
+MH_PRESETMODE_PARTY = 2
+MH_PRESETMODE_PARTYTIP = "Party" 
+MH_PRESETMODE_RAID = 3
+MH_PRESETMODE_RAIDTIP = "Raid" 
+
+
+MH_PRESETS = "Presets >"
 MH_NEWPRESET = "New Preset"
 MH_ADDPRESETS = "+"
 MH_DELETEPRESET = "-"
@@ -77,7 +87,9 @@ MH_PRESETSTOOLTIP = "Click to select a preset"
 MH_ADDPRESETSTOOLTIP = "Click to add new preset"
 MH_DELETEPRESETTOOLTIP = "Click to delete current preset"
 MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
-MH_PRESETMODETITLE = "Preset Mode:"
+MH_PRESETMODETITLE = "Preset Mode:" -- TODO: REMOVE
+MH_PRESETMODETITLEOFF = "Preset Mode: Off"
+MH_PRESETMODETITLEON = "Preset Mode: On"
 MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually apply in this mode, unit's won't be checked."
 MH_RESETALLTOOLTIP = "Click to reset all available unit's morphs"
 MH_MINIMAPTOGGLETOOLTIP = "Show minimap icon"
@@ -273,6 +285,50 @@ MH_Menu=
         value=nil,
         hasArrow=false
     }
+}
+
+MH_PresetModeMenu=
+{
+    {
+        text = "Disable",
+        tooltipTitle = "Disable Preset Mode",
+        tooltipText = "All morphs will immediately take effect",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_DISABLE  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_DISABLE MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Solo",
+        tooltipTitle = "Solo Preset Mode",
+        tooltipText = "Shows solo UI, stages morphs",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_SOLO  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_SOLO MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Party",
+        tooltipTitle = "Party Preset Mode",
+        tooltipText = "Shows 5m party UI, stages morphs",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_PARTY  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_PARTY MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Raid",
+        tooltipTitle = "Raid Preset Mode",
+        tooltipText = "Shows 40m raid UI, stages morphs",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_RAID  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_RAID MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
 }
 
 MH_CloseButton = 

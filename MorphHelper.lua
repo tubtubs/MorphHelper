@@ -18,6 +18,7 @@ local _G = getfenv(0)
 local libIcon = LibStub("LibDBIcon-1.0");
 local libData = LibStub("LibDataBroker-1.1");
 MH_Dewdrop = AceLibrary("Dewdrop-2.0");
+MH_PresetsMode_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
 
 MH_DISPLAY_LISTS ={}
@@ -30,7 +31,7 @@ function MH_Test()
 end
 
 function MH_UpdatePartyMorphUI()
-    if UnitPlayerOrPetInRaid("player") then
+    if (UnitPlayerOrPetInRaid("player") and MH_PRESETMODE==MH_PRESETMODE_DISABLE) or MH_PRESETMODE==MH_PRESETMODE_RAID then
         getglobal("MH_DisplayList_RaidFrame"):Show()
         getglobal("MH_DisplayList_RaidFrameScrollFrame"):Show()
         for i=3,MH_UnitTokensLen do
@@ -43,12 +44,12 @@ function MH_UpdatePartyMorphUI()
             getglobal(MH_MorphResetButtons[i]):Hide()
             getglobal(MH_MorphMountResetButtons[i]):Hide() 
         end
-    elseif GetNumPartyMembers() > 0 then 
+    elseif (GetNumPartyMembers() > 0 and MH_PRESETMODE==MH_PRESETMODE_DISABLE)or MH_PRESETMODE==MH_PRESETMODE_PARTY then 
         getglobal("MH_DisplayList_RaidFrame"):Hide()
         getglobal("MH_DisplayList_RaidFrameScrollFrame"):Hide()
         for i=3,MH_UnitTokensLen do
             u = MH_UnitTokens[i]
-            if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
+            if (UnitExists(u) or MH_PRESETMODE==MH_PRESETMODE_PARTY) then --hides invalid units, or shows if preset mode
                 --disable morph buttons if no displayID is selected
                 getglobal(MH_MorphLabels[i]):Show()
                 getglobal(MH_MorphButtons[i]):Show()
@@ -67,7 +68,7 @@ function MH_UpdatePartyMorphUI()
                 getglobal(MH_MorphMountResetButtons[i]):Hide()
             end
         end
-    elseif GetNumPartyMembers() == 0 then
+    elseif GetNumPartyMembers() == 0 or MH_PRESETMODE==MH_PRESETMODE_SOLO then
         for i=3,MH_UnitTokensLen do
             u = MH_UnitTokens[i]
             getglobal(MH_MorphLabels[i]):Hide()
@@ -109,16 +110,16 @@ function MH_VariablesLoaded()
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             --Morph me...
-            local d
+            local display
             if MH_CurrentMorphs.Morphs["player"] == nil then
-                d = nil
+                display = nil
             else
-                d = MH_CurrentMorphs.Morphs["player"].MID 
+                display = MH_CurrentMorphs.Morphs["player"].MID 
             end
-            if d == nil then -- manually morph mount to account for bug...
+            if display == nil then -- manually morph mount to account for bug...
                 MH_FixMount("player")
             else
-                SetUnitMountDisplayID("player", d)
+                SetUnitMountDisplayID("player", display)
             end
         end
     elseif event=="BUFF_REMOVED_SELF" then --NamPower Event
@@ -598,6 +599,7 @@ function MH_Init()
     end
     MH_MinimapIconRegister()
     MH_DewdropRegister()
+    MH_PresetsMode_DewdropRegister()
     MH_Presets_DewdropRegister()
     MH_Registers()
     DEFAULT_CHAT_FRAME:AddMessage(MH_NAMEVERSION .. " loaded.")
@@ -752,6 +754,60 @@ function MH_DewdropRegister()
             'dontHook', true
         )
     end
+end
+
+function MH_PresetsMode_DewdropRegister()
+    MH_PresetsMode_Dewdrop:Register(MH_DisplayList_PresetModeDropButtonButton, --Bound Frame
+        'point', function(parent) --Point
+            return "TOP", "BOTTOM"
+        end,
+        'children', function(level, value) --Children
+            if level == 1 then
+                for i,j in ipairs(MH_PresetModeMenu) do
+                    if j.notCheckable ~= nil and not j.notCheckable then                            
+                        MH_PresetsMode_Dewdrop:AddLine(
+                            'text', j.text,
+                            'tooltipTitle', j.tooltipTitle,
+                            'tooltipText', j.tooltipText,  
+                            'textR', 1,
+                            'textG', 0.82,
+                            'textB', 0,
+                            'func', j.func,
+                            'hasArrow', j.hasArrow,
+                            'checked', j.checked(),
+                            'value', j.value,
+                            'notCheckable', j.notCheckable
+                        )
+                    else
+
+                        MH_PresetsMode_Dewdrop:AddLine(
+                            'text', j.text,
+                            'tooltipTitle', j.tooltipTitle,
+                            'tooltipText', j.tooltipText,  
+                            'textR', 1,
+                            'textG', 0.82,
+                            'textB', 0,
+                            'func', j.func,
+                            'hasArrow', j.hasArrow,
+                            'value', j.value,
+                            'notCheckable', j.notCheckable
+                        )
+                    end
+                end
+
+                --Close button
+                MH_PresetsMode_Dewdrop:AddLine(
+                    'text' , "Close Menu",
+                    'textR', 0,
+                    'textG', 1,
+                    'textB', 1,
+                    'func' , function() MH_PresetsMode_Dewdrop:Close() end,
+                    'notCheckable', true
+                )
+            end
+        end,
+        'dontHook', true
+    )
 end
 
 --Minimap Button Setup
@@ -917,7 +973,8 @@ MH_NUM_RAIDS_SHOWN = 1
 MH_CurrentList = 1
 MH_OLDIDFOCUS = false
 MH_NEWIDFOCUS = false
-MH_PRESETMODE = false
+--MH_PRESETMODE = false
+MH_PRESETMODE = MH_PRESETMODE_DISABLE
 
 MH_MorphLabels = {
     "MH_DisplayListPlayerTitle",
@@ -1043,7 +1100,7 @@ function MH_FixMount(u)
     local i = 1
     local _, _, spellID = UnitBuff(u,i)
     local found = 0
-    while UnitBuff(u,i) do
+    while spellID ~= nil do
         local spellEffectName = GetSpellRecField(spellID,"effectApplyAuraName")
         if spellEffectName[1] == 78 then
             local spellEffectUnit = GetSpellRecField(spellID,"effectMiscValue")
@@ -1051,13 +1108,15 @@ function MH_FixMount(u)
             local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
             if cinfo == nil or cinfo.displayID == nil then
                 TT_QueuedMounts[u] = spellEffectUnit[1]
-                UnitXP("timer", "arm", 125, 125, MH_MountMorphTimer)
+                UnitXP("timer", "arm", 65, 125, "MH_MountMorphTimer")
+                DEFAULT_CHAT_FRAME:AddMessage("TEST2") --TODO: Test queueing some more.
             else
+                DEFAULT_CHAT_FRAME:AddMessage("TEST3")
                 SetUnitMountDisplayID(u, cinfo.displayID)
             end
         end
-        local icon, idk, spellID = UnitBuff(u,i)
         i = i+1
+        _, _, spellID = UnitBuff(u,i)
     end
 end
 
@@ -1198,7 +1257,9 @@ function MH_Morph(u, displayID)
     MH_CurrentMorphs.Morphs[u].GUID = GetUnitGUID(u)
     MH_CurrentMorphs.Morphs[u].ID = displayID
     MH_CurrentMorphs.Dirty=true
-    if (not MH_PRESETMODE) then
+    DEFAULT_CHAT_FRAME:AddMessage("HELP1"..MH_PRESETMODE)
+    if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
+        DEFAULT_CHAT_FRAME:AddMessage("HELP2")
         MH_AMSendMorph(u,MH_AMMORPHPLAYER, displayID)
         SetUnitDisplayID(u, displayID)  
     end
@@ -1229,7 +1290,7 @@ function MH_MorphMount(u, displayID)
     MH_CurrentMorphs.Morphs[u].MID = displayID
     MH_CurrentMorphs.Dirty=true
     --  MH_DisplayList_UpdateButtons()
-    if (not MH_PRESETMODE) then
+    if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
         MH_AMSendMorph(u,MH_AMMORPHMOUNT, displayID)
         SetUnitMountDisplayID(u, displayID)
     end
@@ -1243,7 +1304,7 @@ function MH_MorphReset(u)
     end
     --Morphing to a creature after another race makes resetting possible
     --Resets native displayID or something
-    if not MH_PRESETMODE then
+    if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
         SetUnitDisplayID(u, 13) 
         SetUnitDisplayID(u, 0)
         MH_AMSendMorph(u,MH_AMMORPHPLAYER, -1)
@@ -1256,7 +1317,7 @@ function MH_MorphMountReset(u)
         MH_CurrentMorphs.Morphs[u].MID = nil
         if MH_CurrentMorphs.Morphs[u].ID == nil then MH_CurrentMorphs.Morphs[u] = nil end
     end
-    if not MH_PRESETMODE then
+    if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
         if MH_MountCheck(u) then
             MH_FixMount(u)
         else
@@ -1285,16 +1346,27 @@ function MH_DisplayList_RaidGroup_Update()
     local filledBtn = "MH_DisplayList_RaidFrameFilledSlot"
     local filledBtnName = filledBtn .. "Name"
     groupMembers = {}
-    for i=1, MH_MAXRAID do
-        name, rank, subgroup, level, class, fileName, 
-        zone, online, isDead, role, isML = GetRaidRosterInfo(i);
-        if name~= nil and subgroup == MH_CurrentRaidGroup then
+    if MH_PRESETMODE == MH_PRESETMODE_RAID then
+        for i=1, 5 do
             table.insert(groupMembers, {
-                name = MH_RAID_CLASS_COLORS[fileName]..name.."|r",
+                name = "raid"..(i+((MH_CurrentRaidGroup-1)*5)),
                 class=class,
                 level=level,
-                token="raid"..i
+                token="raid"..(i+((MH_CurrentRaidGroup-1)*5))
             })
+        end
+    else
+        for i=1, MH_MAXRAID do
+            name, rank, subgroup, level, class, fileName, 
+            zone, online, isDead, role, isML = GetRaidRosterInfo(i);
+            if name~= nil and subgroup == MH_CurrentRaidGroup then
+                table.insert(groupMembers, {
+                    name = MH_RAID_CLASS_COLORS[fileName]..name.."|r",
+                    class=class,
+                    level=level,
+                    token="raid"..i
+                })
+            end
         end
     end
     for i=1, 5 do
@@ -1470,7 +1542,7 @@ function MH_DisplayList_UpdateButtons()
     elseif GetNumPartyMembers() > 0 then -- just party members...
         for i=3,MH_UnitTokensLen do
             u = MH_UnitTokens[i]
-            if (UnitExists(u) or MH_PRESETMODE) then --hides invalid units, or shows if preset mode
+            if (UnitExists(u) or MH_PRESETMODE==MH_PRESETMODE_PARTY) then --hides invalid units, or shows if preset mode
                 --disable morph buttons if no displayID is selected
                 if MH_DisplayList.selectedIcon > 0 or string.len(txtID) > 0 then
                     getglobal(MH_MorphButtons[i]):Enable()
@@ -1479,7 +1551,11 @@ function MH_DisplayList_UpdateButtons()
                     getglobal(MH_MorphButtons[i]):Disable()
                     getglobal(MH_MorphMountButtons[i]):Disable()
                 end
-                getglobal(MH_MorphTitles[i]):SetText(GetUnitName(u))
+                if (MH_PRESETMODE==MH_PRESETMODE_PARTY) then
+                    getglobal(MH_MorphTitles[i]):SetText(u)
+                else
+                    getglobal(MH_MorphTitles[i]):SetText(GetUnitName(u))
+                end
                 getglobal(MH_MorphResetButtons[i]):Enable()
                 getglobal(MH_MorphMountResetButtons[i]):Enable()
                 getglobal(MH_MorphInfoButtons[i]):Enable()
@@ -1999,6 +2075,36 @@ function MH_ChangeCategory()
 end
 
 --presets
+function MH_UpdatePresetMode()
+    --Change the UI
+    if MH_PRESETMODE == MH_PRESETMODE_DISABLE then
+        MH_DisplayList_PresetModeDropButtonText:SetText(MH_PRESETMODETITLEOFF)
+    elseif MH_PRESETMODE == MH_PRESETMODE_SOLO then
+        MH_DisplayList_PresetModeDropButtonText:SetText(MH_PRESETMODETITLEON)
+    elseif MH_PRESETMODE == MH_PRESETMODE_PARTY then
+        MH_DisplayList_PresetModeDropButtonText:SetText(MH_PRESETMODETITLEON)
+    elseif MH_PRESETMODE == MH_PRESETMODE_RAID then
+        MH_DisplayList_PresetModeDropButtonText:SetText(MH_PRESETMODETITLEON)
+    end
+    MH_PresetsMode_Dewdrop:Close()
+    MH_UpdatePartyMorphUI()
+    if MH_DisplayList:IsShown() then
+        if MH_PRESETMODE == MH_PRESETMODE_RAID then
+            MH_DisplayList_RaidGroup_Update()
+        else
+            MH_DisplayList_UpdateButtons()
+        end
+    end
+end
+
+function MH_PresetModeDropDownButton_OnClick()
+    PlaySound("igCharacterInfoOpen");
+    if MH_PresetsMode_Dewdrop:IsOpen() then
+        MH_PresetsMode_Dewdrop:Close();
+    else
+        MH_PresetsMode_Dewdrop:Open(this);
+    end
+end
 
 function MH_PresetDropDownButton_OnClick()
     PlaySound("igCharacterInfoOpen");
@@ -2131,10 +2237,10 @@ function MH_ApplyPresetButton_OnClick()
     for k,v in pairs(MH_Vars.Presets[MH_CurrentPresetIndex].Morphs) do
         id = v.ID
         mid = v.MID
-        if (UnitExists(k)==1 or MH_PRESETMODE) then
+        if (UnitExists(k)==1 or MH_PRESETMODE~=MH_PRESETMODE_DISABLE) then
 
             if id ~= nil then
-                if not MH_PRESETMODE then
+                if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
                     SetUnitDisplayID(k, id)
                     MH_AMSendMorph(k, MH_AMMORPHPLAYER, id)
                     --DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s to %s", u, id))
@@ -2144,7 +2250,7 @@ function MH_ApplyPresetButton_OnClick()
                 MH_CurrentMorphs.Dirty=true
             end
             if mid ~= nil then
-                if not MH_PRESETMODE then
+                if (MH_PRESETMODE==MH_PRESETMODE_DISABLE) then
                     SetUnitMountDisplayID(k, mid)
                     MH_AMSendMorph(k, MH_AMMORPHMOUNT, mid)
                     --DEFAULT_CHAT_FRAME:AddMessage(format("Morphed %s's mount to %s", u, mid))
