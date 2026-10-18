@@ -3,7 +3,7 @@
 Assists in using the morph lua commands provided by VanillaHelpers.
 Slash commands, and morph window available. Type /mh show to display the window or /mh to learn more.
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
-*V1.60* Now supports syncing morphs between party/raid members, improved UI for raids, expanded mount/fp support
+*V1.60* Now supports syncing morphs between party/raid members, improved UI for raids, expanded mount/fp support and more
 
 Supports [WoWInit](https://github.com/tubtubs/wowinit), includes examples commands. Great for setting morphs up on login.
 
@@ -59,6 +59,7 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
     - Many limitations imposed by VanillaHelpers calls. Companions, pets, and odd factions (enemy or neutral) don't morph well with VanillaHelpers.
 
 * Can't morph *x* item
+    - NEW: [SaureksCloset](https://github.com/mu-arch/SaureksCloset) recommended for transmog support
     - I'm still testing out item morphing viability. 
     - Limited functionality, ItemIDs must be cached so something you can link from Atlasloot for example would work.
 
@@ -72,6 +73,7 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
     - I recommend `/mh FPMorph 15293`, for the chromatic mount.
 
 * My factions are all messed up? I can't talk to friendly NPCs, they're red now?
+    - NEW: [SaureksCloset](https://github.com/mu-arch/SaureksCloset) recommended to get around this issue.
     - Morphing as a different race causes your faction to change internally, possibly so customizations show up properly
         * Avoid morphing as the opposing faction, try morphing as a displayID for an NPC instead of the race for example
     - Morphing might mess up your reputation standing. For example, becoming hated with alliance as an alliance player. Need to investigate more.
@@ -79,6 +81,8 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
 * Checked status on Wand/Mount morph buttons
     - In a raid group it won't be checked on yourself, it'll check the buttons for player instead
     - Target buttons will attempt to resolve to a group/raid member instead, will only be checked if the targetting player isn't in your group
+
+* Preset Interface is a little awkward but I cba
 
 ## Changelog
 * V1.60
@@ -91,3 +95,4 @@ You can also use the [GitAddonsManager](https://gitlab.com/woblight/GitAddonsMan
     - Dynamic UI for parties updated
         - Supports raids w/ scrollbar
         - Displays party member names now
+        - New preset modes to match the improved UI support

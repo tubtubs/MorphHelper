@@ -465,15 +465,12 @@ function MH_Init()
     if find==nil then --Standard, or Turtle?
         if (TWMinimapShopFrame~=nil or TWMiniMapBattlefieldFrame~=nil or LFT_Minimap~=nil) then --turtle
             EnableAddOn("MorphHelper_Turtle")
-            EnableAddOn("MorphHelper_Mounts")
             loaded, reason = LoadAddOn("MorphHelper_Turtle")
             if reason ~= nil then 
                 DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+                return
             end
-            loaded, reason = LoadAddOn("MorphHelper_Mounts")
-            if reason ~= nil then 
-                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
-            end
+            DisableAddOn("MorphHelper_Mounts")
             DisableAddOn("MorphHelper_Vanilla")
             DisableAddOn("MorphHelper_Wallcraft")
             MH_DISPLAY_LISTS = {
@@ -501,10 +498,12 @@ function MH_Init()
             loaded, reason = LoadAddOn("MorphHelper_Vanilla")
             if reason ~= nil then 
                 DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+                return
             end
             loaded, reason = LoadAddOn("MorphHelper_Mounts")
             if reason ~= nil then 
                 DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+                return
             end
             DisableAddOn("MorphHelper_Turtle")
             DisableAddOn("MorphHelper_Wallcraft")
@@ -538,11 +537,13 @@ function MH_Init()
         EnableAddOn("MorphHelper_Mounts")
         loaded, reason = LoadAddOn("MorphHelper_Wallcraft")
         if reason ~= nil then 
-                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            return
         end
         loaded, reason = LoadAddOn("MorphHelper_Mounts")
         if reason ~= nil then 
-                DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            DEFAULT_CHAT_FRAME:AddMessage(MH_S_MISSING)
+            return
         end
         DisableAddOn("MorphHelper_Turtle")
         DisableAddOn("MorphHelper_Vanilla")
