@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: MorphHelper_Wallcraft
+## Author: |ccf3CE13Ftubtubs 
+## Version: 1.6
+## Notes: Display lists for Wallcraft Gigapatch - Only enable if needed
+## DefaultState: Disabled
+## LoadOnDemand: 1
+RaceList_Wallcraft.lua
+CreatureList_Wallcraft.lua
