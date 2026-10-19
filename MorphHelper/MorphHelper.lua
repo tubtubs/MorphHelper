@@ -102,6 +102,9 @@ function MH_VariablesLoaded()
     elseif event=="BUFF_ADDED_SELF" then --NamPower Event
         --arg3 is spellID 
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        if spellEffectName == nil or spellEffectName[1] == nil then
+            return
+        end
         if spellEffectName[1] == 78 then
             --Morph me...
             local display
@@ -118,12 +121,18 @@ function MH_VariablesLoaded()
         end
     elseif event=="BUFF_REMOVED_SELF" then --NamPower Event
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        if spellEffectName == nil or spellEffectName[1] == nil then
+            return
+        end
         if spellEffectName[1] == 78 then
             --deMorph me...
             SetUnitMountDisplayID("player", 0)
         end
     elseif event=="BUFF_ADDED_OTHER" then --NamPower Event
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+        if spellEffectName == nil or spellEffectName[1] == nil then
+            return
+        end
         if spellEffectName[1] ~= 78 then -- if it isn't a mount buff don't check further
             return
         end
@@ -167,6 +176,9 @@ function MH_VariablesLoaded()
         end
         if token ~= nil then --found the player, find their morph...
             local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
+            if spellEffectName == nil or spellEffectName[1] == nil then
+                return
+            end
             if spellEffectName[1] == 78 then
                 --deMorph me...
                 SetUnitMountDisplayID(token, 0)
@@ -1093,8 +1105,10 @@ function MH_MountCheck(u)
     local _, _, spellID = UnitBuff(u,i)
     while UnitBuff(u,i) do
         local spellEffectName = GetSpellRecField(spellID,"effectApplyAuraName")
-        if spellEffectName[1] == 78 then
-            return true
+        if spellEffectName ~= nil and spellEffectName[1] ~= nil then
+            if spellEffectName[1] == 78 then
+                return true
+            end
         end
         local icon, idk, spellID = UnitBuff(u,i)
         i = i+1
@@ -1112,15 +1126,17 @@ function MH_FixMount(u)
     local found = 0
     while spellID ~= nil do
         local spellEffectName = GetSpellRecField(spellID,"effectApplyAuraName")
-        if spellEffectName[1] == 78 then
-            local spellEffectUnit = GetSpellRecField(spellID,"effectMiscValue")
-            C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
-            local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
-            if cinfo == nil or cinfo.displayID == nil then
-                TT_QueuedMounts[u] = spellEffectUnit[1]
-                UnitXP("timer", "arm", 65, 125, "MH_MountMorphTimer")
-            else
-                SetUnitMountDisplayID(u, cinfo.displayID)
+        if spellEffectName ~= nil and spellEffectName[1] ~= nil then
+            if spellEffectName[1] == 78 then
+                local spellEffectUnit = GetSpellRecField(spellID,"effectMiscValue")
+                C_CreatureInfo.RequestLoadCreatureByID(spellEffectUnit[1])
+                local cinfo = C_CreatureInfo.GetCreatureInfoByID(spellEffectUnit[1])
+                if cinfo == nil or cinfo.displayID == nil then
+                    TT_QueuedMounts[u] = spellEffectUnit[1]
+                    UnitXP("timer", "arm", 65, 125, "MH_MountMorphTimer")
+                else
+                    SetUnitMountDisplayID(u, cinfo.displayID)
+                end
             end
         end
         i = i+1
