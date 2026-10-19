@@ -1415,6 +1415,13 @@ function MH_DisplayList_RaidGroup_Update()
     FauxScrollFrame_Update(MH_DisplayList_RaidFrameScrollFrame, 8 , 1, 32);
 end
 
+function MH_DisplayList_RaidScrollFrame_OnShow()
+    if not UnitPlayerOrPetInRaid("player") and MH_PRESETMODE ~= MH_PRESETMODE_RAID then
+        this:Hide()
+    end
+end
+
+
 --DisplayList Functions
 function MH_DisplayList_ResetPos()
     MH_DisplayList:ClearAllPoints()

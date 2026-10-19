@@ -1757,9 +1757,7 @@
                         FauxScrollFrame_OnVerticalScroll(32, MH_DisplayList_RaidGroup_Update);
                     </OnVerticalScroll>
                     <OnShow>
-                        if not UnitPlayerOrPetInRaid("player") then
-                            this:Hide()
-                        end
+                        MH_DisplayList_RaidScrollFrame_OnShow()
                     </OnShow>
                 </Scripts>
             </ScrollFrame>
