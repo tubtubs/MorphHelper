@@ -2400,7 +2400,7 @@ function MH_BroadcastMorphs()
     for k,v in MH_CurrentMorphs.Morphs do
         if v.ID ~= nil then
             MH_AMSendMorph(k, MH_AMMORPHPLAYER, v.ID)
-            DEFAULT_CHAT_FRAME:AddMessage(k .. " lol" .. v.ID)
+            --DEFAULT_CHAT_FRAME:AddMessage(k .. " lol" .. v.ID)
         end
         if v.MID ~= nil then
             MH_AMSendMorph(k, MH_AMMORPHMOUNT, v.MID)
