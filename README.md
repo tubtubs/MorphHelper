@@ -1,5 +1,5 @@
 # MorphHelper
-[![MorphHelperV1.60](https://img.youtube.com/vi/jfatDBs4yng/maxresdefault.jpg)](https://www.youtube.com/watch?v=jfatDBs4yng "MorphHelper V1.60 Demo")
+[![MorphHelperV1.60](https://i.imgur.com/5PGgpXE.jpeg)](https://www.youtube.com/watch?v=jfatDBs4yng "MorphHelper V1.60 Demo")
 Assists in using the morph lua commands provided by VanillaHelpers.
 Slash commands, and morph window available. Type /mh show to display the window or /mh to learn more.
 Has creature and race morph lists for Vanilla, Wallcraft, and Turtle WoW. However, Mount list is only for vanilla.
