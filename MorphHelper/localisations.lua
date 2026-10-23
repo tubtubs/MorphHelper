@@ -1,0 +1,378 @@
+-- addon info
+MH_NAME		= "MorphHelper";
+MH_VERSION	= "1.6";
+MH_NAMEVERSION	= MH_NAME.." v"..MH_VERSION;
+MH_AUTHOR = "Tubtubs"
+
+MH_ABOUT = MH_NAMEVERSION .. " by " .. MH_AUTHOR
+
+MH_NOPARTY = 0
+MH_PARTY = 1
+MH_RAID = 2
+
+--on load splashes
+MH_S_TWOW = MH_NAME .. ": Turtle Detected"
+MH_S_WC = MH_NAME .. ": Wallcraft Detected"
+MH_S_VWOW = MH_NAME .. ": Vanilla Detected"
+MH_S_MISSING = MH_NAME .. ": Missing a MorphHelper_X addon. Be sure the display lists addons are properly installed.\n Addon will work, but displays lists in the UI will not load."
+
+MH_V_CLASSICAPI = 10510
+MH_V_UNITXP3 = 1774797347
+MH_V_NAMPOWER = 460
+
+MH_V_CLASSICAPI_M = format("%s: Classic API not installed, loading failed.", MH_NAME)
+MH_V_CLASSICAPI_O = format("%s: Classic API out of date need %s or newer, loading failed.", MH_NAME, MH_V_CLASSICAPI)
+MH_V_UNITXP3_M = format("%s: UnitXP3_SP3 not installed, loading failed.", MH_NAME)
+MH_V_UNITXP3_O = format("%s: UnitXP3_SP3 out of date need %s or newer, loading failed.", MH_NAME, MH_V_UNITXP3)
+MH_V_NAMPOWER_M = format("%s: UnitXP3_SP3 not installed, loading failed.", MH_NAME)
+MH_V_NAMPOWER_O = format("%s: UnitXP3_SP3 out of date need %s or newer, loading failed.", MH_NAME, MH_V_NAMPOWER)
+MH_V_VANILLAHELPERS_M = format("%s: VanillaHelpers not installed, loading failed.", MH_NAME)
+
+MH_MAXGROUP = 4
+MH_MAXRAID = 40
+MH_RAID_CLASS_COLORS = {
+    ["HUNTER"] = "|cFFABD473",
+    ["WARLOCK"] = "|cFF9482C9",
+    ["PRIEST"] = "|cFFFFFFFF",
+    ["PALADIN"] = "|cFFF58CBA",
+    ["MAGE"] = "|cFF69CCF0",
+    ["ROGUE"] = "|cFFFFF569",
+    ["DRUID"] = "|cFFFF7D0A",
+    ["SHAMAN"] = "|cFF0070DE",
+    ["WARRIOR"] = "|cFFC79C6E",
+}
+MH_TitleID = "ID"
+MH_TitleTexture="Texture"
+
+MH_Player = "Player"
+MH_Target = "Target"
+MH_Party1 = "Party" .. "1"
+MH_Party2 = "Party" .. "2"
+MH_Party3 = "Party" .. "3"
+MH_Party4 = "Party" .. "4"
+MH_TitleName = "Model"
+MH_TITLEMANUALID = "Manual ID Entry:"
+MH_DEFAULTMINIMAPPOS = 320
+
+-- Addon Messages
+MH_AMPREFIX = "MHE"
+MH_AMMORPHPLAYER = 0
+MH_AMMORPHMOUNT = 1
+MH_AMSWAPID = 2
+MH_AMSWAPMID = 3
+MH_AMFPMORPH = 4
+MH_AMSTAGEMOUNT = 5
+
+-- FP FIX
+MH_GRYPHON = 6852
+MH_WYVERN = 6581
+
+MH_PRESETMODE_DISABLE = 0
+MH_PRESETMODE_DISABLETIP = "Disable"
+MH_PRESETMODE_SOLO = 1
+MH_PRESETMODE_SOLOTIP = "Solo"
+MH_PRESETMODE_PARTY = 2
+MH_PRESETMODE_PARTYTIP = "Party" 
+MH_PRESETMODE_RAID = 3
+MH_PRESETMODE_RAIDTIP = "Raid" 
+
+
+MH_PRESETS = "Presets >"
+MH_NEWPRESET = "New Preset"
+MH_ADDPRESETS = "+"
+MH_DELETEPRESET = "-"
+MH_APPLYPRESET = "Apply"
+MH_RESETALL = "Reset All"
+MH_PRESETSTOOLTIP = "Click to select a preset"
+MH_ADDPRESETSTOOLTIP = "Click to add new preset"
+MH_DELETEPRESETTOOLTIP = "Click to delete current preset"
+MH_APPLYPRESETTOOLTIP = "Click to apply current preset"
+MH_PRESETMODETITLE = "Preset Mode:" -- TODO: REMOVE
+MH_PRESETMODETITLEOFF = "Preset Mode: Off"
+MH_PRESETMODETITLEON = "Preset Mode: On"
+MH_PRESETMODETOOLTIP = "Click to enable preset mode.\nMorphs won't actually apply in this mode, unit's won't be checked."
+MH_RESETALLTOOLTIP = "Click to reset all available unit's morphs"
+MH_MINIMAPTOGGLETOOLTIP = "Show minimap icon"
+
+MH_TOOLTIPBROADCAST = "Click to broadcast current morphs and swaps to party/raid"
+MH_TOOLTIPMORPH = "Click to morph %s"
+MH_TOOLTIPMORPHMOUNT = "Click to morph %s's mount.\nMorphs if mounted, stages otherwise.\nHold alt to force morph."
+MH_TOOLTIPMORPHRESET = "Click to reset %s's morphs\nRelogging will clear morphs if this fails"
+MH_TOOLTIPMORPHINFO = "Click to see %s's displayID"
+MH_TOOLTIPRAIDMORPHINFO = "Click to see %s's displayID\nHold Alt to see their mount displayID"
+MH_TOOLTIPMOUNTINFO = "Click to see %s's mount displayID"
+MH_TOOLTIPMOUNTRESET = "Click to reset %s's mount morphs\nRelogging will clear morphs if this fails"
+MH_TOOLTIPNOUNIT = "Unit not found"
+MH_TOOLTIPFAVORITES = "Click to add to favorites"
+MH_TOOLTIPFAVORITESDELETE = "Click to remove from favorites"
+MH_TOOLTIPFPBTN = "Click to morph your flight path to this\nClick again to disable, or use /mh FPMorph -1"
+MH_TOOLTIPFPBTNDELETE = "Click to disable flight path morphs"
+
+MH_CATEGORY_ALL = "All"
+MH_CATEGORY_RACES = "Races"
+MH_CATEGORY_MOUNTS = "Mounts"
+MH_CATEGORY_FAVORITES = "Favorites"
+
+MH_IDSWAPS = "DisplayID Swap"
+MH_MOUNTIDSWAPS = "Mount ID Swap"
+MH_IDSWAPSTOOLTIP = "Click to enter ID\n|ccf3CE13FTIP:|r Click list or info buttons after for ID"
+MH_OLDIDTITLE = "Old ID:"
+MH_NEWIDTITLE = "New ID:"
+MH_SWAPBUTTONTIP = "Click to swap the old and the new IDs"
+
+MH_MINIMAPTOOLTIP = "MorphHelper\nClick to open options\nRight click and drag to move"
+
+--Wallcraft Presets
+MH_WC_PRESETS = {
+    {
+        Name="Gnomish Motorcycle Gang",
+        ID=1,
+        Morphs = {
+            ["player"] = {
+                ID = 1563,
+                MID = 33086;
+            },
+            ["target"] = {
+                ID = 1563,
+                MID = 33086;
+            },
+            ["party1"] = {
+                ID = 1563,
+                MID = 33086;
+            },
+            ["party2"] = {
+                ID = 1563,
+                MID = 33086;
+            },
+            ["party3"] = {
+                ID = 1563,
+                MID = 33086;
+            },
+            ["party4"] = {
+                ID = 1563,
+                MID = 33086;
+            },
+        };
+    },
+}
+
+--TurtleWoW presets
+--Don't have any to add to turtle, but will stage
+MH_TW_PRESETS = {
+
+}
+
+--Vanilla Presets, always loaded
+MH_DEFAULT_PRESETS = {
+    {
+        Name="Full Orc Male",
+        ID=2,
+        Morphs = {
+            ["player"] = {
+                ID = 51,
+            },
+            ["target"] = {
+                ID = 51,
+            },
+            ["party1"] = {
+                ID = 51,
+            },
+            ["party2"] = {
+                ID = 51,
+            },
+            ["party3"] = {
+                ID = 51,
+            },
+            ["party4"] = {
+                ID = 51,
+            },
+        };
+    }
+}
+
+MH_TEST = "ERROR"
+MH_TESTID = "ERROR"
+
+MH_STARDISABLEDICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2_disabled.tga"
+MH_STARICO = "Interface\\AddOns\\MorphHelper\\Assets\\star2.tga"
+
+MH_FPICO = "Interface\\TaxiFrame\\UI-Taxi-Icon-Yellow"
+MH_FPDISABLEICO = "Interface\\TaxiFrame\\UI-Taxi-Icon-Green"
+
+--drop down menu stuff
+MH_Menu=
+{
+    {
+        text = "Open Window",
+        tooltipTitle =  "Open Window",
+        tooltipText =  "Opens the MorphHelper window",
+        func =  function() 
+            MH_DisplayList:Show() 
+            MH_Dewdrop:Close()
+        end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Reset Window",
+        tooltipTitle = "Reset Window",
+        tooltipText = "Resets the MorphHelper window's position",
+        func =  function() MH_DisplayList_ResetPos() MH_Dewdrop:Close() end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Broadcast Morphs",
+        tooltipTitle = "Broadcast Morphs",
+        tooltipText = MH_TOOLTIPBROADCAST,
+        func =  function() MH_BroadcastMorphs() end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Morph Broadcast",
+        tooltipTitle = "Enable Morph Broadcast",
+        tooltipText = "When morphing it will share with your group",
+        checked = function() return MH_Vars.MsgSend  end, 
+        func =  function() MH_Vars.MsgSend = not MH_Vars.MsgSend end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Receiving Morph Broadcasts",
+        tooltipTitle = "Enable Receiving Morph Broadcast",
+        tooltipText = "Morphs from other party members will apply locally",
+        checked = function() return MH_Vars.MsgRecv  end, 
+        func =  function() MH_Vars.MsgRecv = not MH_Vars.MsgRecv end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Group Mount Improvements",
+        tooltipTitle = "Enable Group Mount Improvements",
+        tooltipText = "Enables watching new buffs on others to apply mount displays.\nNecessary to work around some bugs, and QoL but may cause lag in raids or populated areas.",
+        checked = function() return MH_Vars.GroupMountImprovements end, 
+        func =  function() 
+            MH_Vars.GroupMountImprovements = not MH_Vars.GroupMountImprovements 
+            MH_UpdateGroupMountImprovements() 
+        end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Enable Personal Mount Improvements",
+        tooltipTitle = "Enable Personal Mount Improvements",
+        tooltipText = "Enables watching new buffs on yourself to apply mount displays.\nNecessary to work around some bugs, and QoL.",
+        checked = function() return MH_Vars.PersonalMountImprovements end, 
+        func =  function() 
+            MH_Vars.PersonalMountImprovements = not MH_Vars.PersonalMountImprovements 
+            MH_UpdatePersonalMountImprovements() 
+        end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Presets",
+        tooltipTitle =  "Presets",
+        tooltipText =  "Apply one of the saved presets...",
+        value=2,
+        hasArrow=true
+    },
+    {
+        text = "Reset All",
+        tooltipTitle = "Reset All",
+        tooltipText = "Resets all morphs",
+        func =  function() MH_ResetAll() MH_Dewdrop:Close() end,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "ReloadUI",
+        tooltipTitle = "ReloadUI",
+        tooltipText = "Resets all morphs, even if soft reset fails.\n\nIf this fails, you'll need to relog.",
+        func =  function() MH_ResetAll() MH_Dewdrop:Close() end,
+        value=nil,
+        hasArrow=false
+    }
+}
+
+MH_PresetModeMenu=
+{
+    {
+        text = "Disable",
+        tooltipTitle = "Disable Preset Mode",
+        tooltipText = "All morphs will immediately take effect",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_DISABLE  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_DISABLE MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Solo",
+        tooltipTitle = "Solo Preset Mode",
+        tooltipText = "Shows solo UI, stages morphs",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_SOLO  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_SOLO MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Party",
+        tooltipTitle = "Party Preset Mode",
+        tooltipText = "Shows 5m party UI, stages morphs",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_PARTY  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_PARTY MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+    {
+        text = "Raid",
+        tooltipTitle = "Raid Preset Mode",
+        tooltipText = "Shows 40m raid UI, stages morphs",
+        checked = function() return MH_PRESETMODE == MH_PRESETMODE_RAID  end, 
+        func =  function()  MH_PRESETMODE = MH_PRESETMODE_RAID MH_UpdatePresetMode() end,
+        notCheckable = false,
+        value=nil,
+        hasArrow=false
+    },
+}
+
+MH_CloseButton = 
+{
+    text = "Close Menu",
+    'textR', 0,
+    'textG', 1,
+    'textB', 1,
+    func =  function() MH_Dewdrop:Close() end,
+    'notCheckable', true
+}
+
+MH_WI_Examples = 
+{
+    {
+        name = "MorphHelper Morph Example",
+        tooltip = "Morphs the player into a murloc\nType /mh for more commands",
+        example = "\n/mh morph player 31",
+        check = function() return true end,
+    },
+    {
+        name = "MorphHelper Safe Mount Example",
+        tooltip = "Morphs the players mount as a Reindeer.\nTakes effect the next time you mount or immediately if mounted.\nType /mh for more commands",
+        example = "\n/mh safemount player 1991",
+        check = function() return true end,
+    },
+    {
+        name = "MorphHelper Presets",
+        tooltip = "Pick a preset",
+        example = "",
+        value = "MH_Presets",
+        check = function() return true end,
+    },
+}

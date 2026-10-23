@@ -553,8 +553,9 @@ MH_MountList_V = {
 }
 
 --I'm bluffing, I don't actually have mount lists for custom servers...
+-- Now have a mount list for TurtleWoW though.
 MH_MountList_WC = MH_MountList_V
-MH_MountList_TW = MH_MountList_V
+--MH_MountList_TW = MH_MountList_V
 MH_MountList_VLen = getn(MH_MountList_V)
-MH_MountList_TWLen = MH_MountList_VLen
+--MH_MountList_TWLen = MH_MountList_VLen
 MH_MountList_WCLen = MH_MountList_VLen

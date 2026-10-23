@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: MorphHelper_Mounts
+## Author: |ccf3CE13Ftubtubs 
+## Version: 1.6
+## Notes: Display lists for Vanilla WoW Mounts
+## Used by all 3 modes since I don't have info needed for custom servers
+## DefaultState: Disabled
+## LoadOnDemand: 1
+MountList_Vanilla.lua
