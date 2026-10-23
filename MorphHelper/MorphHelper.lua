@@ -20,10 +20,10 @@ local libData = LibStub("LibDataBroker-1.1");
 MH_Dewdrop = AceLibrary("Dewdrop-2.0");
 MH_PresetsMode_Dewdrop = AceLibrary("Dewdrop-2.0");
 local MH_Presets_Dewdrop = AceLibrary("Dewdrop-2.0");
+local MH_Flying 
 
 MH_DISPLAY_LISTS ={}
 MH_CurrentMorphs ={}
---event handler and init
 function MH_UpdatePartyMorphUI()
     if (UnitPlayerOrPetInRaid("player") and MH_PRESETMODE==MH_PRESETMODE_DISABLE) or MH_PRESETMODE==MH_PRESETMODE_RAID then
         getglobal("MH_DisplayList_RaidFrame"):Show()
@@ -78,6 +78,25 @@ function MH_UpdatePartyMorphUI()
     end
 end
 
+function MH_FlightMorph()
+    local _, _, mountDisplayID = UnitDisplayInfo("player")
+    if MH_Vars.FPMorph == nil then
+        if mountDisplayID == 0 then -- if it's 0 when flying it's usually a bug. Set to faction FP default, gryphon or wyvern
+            if UnitFactionGroup("player")=="Horde" then
+                SetUnitMountDisplayID("player", MH_WYVERN)
+                MH_AMSendMorph("player", MH_WYVERN)
+            else
+                SetUnitMountDisplayID("player", MH_GRYPHON)
+                MH_AMSendMorph("player",MH_AMFPMORPH, MH_GRYPHON)
+            end
+        end
+    else
+        SetUnitMountDisplayID("player", MH_Vars.FPMorph)
+        MH_AMSendMorph("player",MH_AMFPMORPH,MH_Vars.FPMorph)
+    end    
+end
+
+--event handler and init
 function MH_VariablesLoaded()
     if (event=="PLAYER_TARGET_CHANGED") then
         if MH_DisplayList:IsShown() then
@@ -99,6 +118,8 @@ function MH_VariablesLoaded()
         end
     elseif (event=="PLAYER_LOGIN") then -- Variables Loaded
         MH_Init()
+        MH_Flying = UnitOnTaxi("player") or false
+        if (MH_Flying) then MH_FlightMorph() end
     elseif event=="BUFF_ADDED_SELF" then --NamPower Event
         --arg3 is spellID 
         local spellEffectName = GetSpellRecField(arg3,"effectApplyAuraName")
@@ -186,32 +207,16 @@ function MH_VariablesLoaded()
         end
     elseif (event=="UNIT_FLAGS") then
         if arg1 ~= "player" then return end
-        local _, _, mountDisplayID = UnitDisplayInfo("player")
-        if MH_Vars.FPMorph == nil then
-            if (not UnitOnTaxi("player")) then 
-                    if mountDisplayID ~= 0 then -- if it's isnt 0 on landing its usually a bug
-                        SetUnitMountDisplayID("player", 0)
-                        MH_AMSendMorph("player",MH_AMFPMORPH,0)
-                    end
-            elseif (UnitOnTaxi("player")) then
-                if mountDisplayID == 0 then -- if it's 0 when flying it's usually a bug. Set to faction FP default, gryphon or wyvern
-                    if UnitFactionGroup("player")=="Horde" then
-                        SetUnitMountDisplayID("player", MH_WYVERN)
-                        MH_AMSendMorph("player", MH_WYVERN)
-                    else
-                        SetUnitMountDisplayID("player", MH_GRYPHON)
-                        MH_AMSendMorph("player",MH_AMFPMORPH, MH_GRYPHON)
-                    end
-                end
+        if (UnitOnTaxi("player")) then 
+            MH_Flying = true --flag used to check if your dismounting...
+            MH_FlightMorph()
+        elseif (MH_Flying) then
+            MH_Flying = false
+            local _, _, mountDisplayID = UnitDisplayInfo("player")
+            if mountDisplayID ~= 0 then -- if it's isnt 0 on landing its usually a bug
+                SetUnitMountDisplayID("player", 0)
+                MH_AMSendMorph("player",MH_AMFPMORPH,0)
             end
-            return
-        end
-        if (not UnitOnTaxi("player")) then 
-            SetUnitMountDisplayID("player", 0)
-            MH_AMSendMorph("player",MH_AMFPMORPH,0)
-        elseif (UnitOnTaxi("player")) then
-            SetUnitMountDisplayID("player", MH_Vars.FPMorph)
-            MH_AMSendMorph("player",MH_AMFPMORPH,MH_Vars.FPMorph)
         end
     elseif event=="CHAT_MSG_ADDON" then
         if MH_Vars.MsgRecv and arg4 ~= UnitName("PLAYER") and arg1==MH_AMPREFIX then
@@ -1103,15 +1108,16 @@ end
 function MH_MountCheck(u)
     local i = 1
     local _, _, spellID = UnitBuff(u,i)
-    while UnitBuff(u,i) do
+    local found = 0
+    while spellID ~= nil do
         local spellEffectName = GetSpellRecField(spellID,"effectApplyAuraName")
         if spellEffectName ~= nil and spellEffectName[1] ~= nil then
             if spellEffectName[1] == 78 then
                 return true
             end
         end
-        local icon, idk, spellID = UnitBuff(u,i)
         i = i+1
+        _, _, spellID = UnitBuff(u,i)
     end
     return false
 end
@@ -1290,7 +1296,7 @@ end
 
 -- mounts if mounted, stages otherwise
 function MH_SafeMount(u, displayID)
-    if not MH_MountCheck(u) then 
+    if not (MH_MountCheck(u) or UnitOnTaxi(u)) then 
         MH_StageMount(u, displayID)
     else
         MH_MorphMount(u, displayID)
